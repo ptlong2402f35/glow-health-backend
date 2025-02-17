@@ -23,7 +23,7 @@ class AuthService {
             const accessToken = jwt.sign(
                 {
                     user_id: user.id,
-                    userName: user.userName,
+                    phone: user.phone,
                     role: user.role,
                     active: user.active
                 },
@@ -66,7 +66,7 @@ class AuthService {
                 const accessToken = jwt.sign(
                     {
                         user_id: user.id,
-                        userName: user.userName,
+                        phone: user.phone,
                         role: user.role,
                         active: user.active
                     },
@@ -131,90 +131,20 @@ class AuthService {
         try {
 			let passHashed = bcrypt.hashSync(data.password, 10);
             let user;
-            let transaction = await sequelize.transaction();
-            try {
-                user = await User.create(
-                    {
-                        userName: data.userName,
-                        email: data.email,
-                        password: passHashed,
-                        role: data.role,
-                        active: true,
-                        createdAt: new Date(),
-                        updatedAt: new Date()
-                    },
-                    {
-                        transaction: transaction
-                    }
-                );
-                if(!user) throw UpdateFailMessage;
-                if(data.role === UserRole.Student) {
-                    const student = await Student.create(
-                        {
-                            userId: user.id,
-                            active: true,
-                            name: data.name,
-                            gender: data.gender,
-                            birthday: data.birthday || null,
-                            age: data.age,
-                            phone: data.phone,
-                            email: data.email,
-                            address: data.address,
-                            createdAt: new Date(),
-                            updatedAt: new Date()
-                        },
-                        {
-                            transaction: transaction
-                        }
-                    );
+            user = await User.create(
+                {
+                    userName: data.userName,
+                    phone: data.phone,
+                    email: data.email,
+                    password: passHashed,
+                    role: data.role,
+                    active: true,
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                    resetKey: uuid.v4()
                 }
-                if(data.role === UserRole.Parent) {
-                    const parent = await Parent.create(
-                        {
-                            userId: user.id,
-                            active: true,
-                            name: data.name,
-                            gender: data.gender,
-                            birthday: data.birthday || null,
-                            phone: data.phone,
-                            age: data.age,
-                            email: data.email,
-                            address: data.address,
-                            createdAt: new Date(),
-                            updatedAt: new Date()
-                        },
-                        {
-                            transaction: transaction
-                        }
-                    );
-                }
-                if(data.role === UserRole.Teacher) {
-                    const teacher = await Teacher.create(
-                        {
-                            userId: user.id,
-                            active: true,
-                            name: data.name,
-                            gender: data.gender,
-                            birthday: data.birthday || null,
-                            phone: data.phone,
-                            age: data.age,
-                            email: data.email,
-                            level: data.level,
-                            address: data.address,
-                            createdAt: new Date(),
-                            updatedAt: new Date()
-                        },
-                        {
-                            transaction: transaction
-                        }
-                    );
-                }
-                await transaction.commit();
-            }
-            catch (err1) {
-                await transaction.rollback();
-                throw err1;
-            }
+            );
+            if(!user) throw UpdateFailMessage;
             let resp = {
                 userId: user.id,
             };
@@ -231,13 +161,13 @@ class AuthService {
         }
     }
 
-    async checkUserNameExist(userName) {
+    async checkPhoneExist(phone) {
         try {
-            if(!userName) return null;
+            if(!phone) return null;
     
             return await User.findOne({
                 where: {
-                    userName: userName
+                    phone: phone
                 }
             });
         }

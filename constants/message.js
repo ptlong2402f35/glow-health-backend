@@ -4,7 +4,7 @@ const UpdateDoneMessage = "UpdateDoneMessage";
 const UpdateFailMessage = "UpdateFailMessage";
 //Empty Info
 const EmailEmpty = "EmailEmpty";
-const UserNameEmpty = "UserNameEmpty";
+const UserPhoneEmpty = "UserPhoneEmpty";
 const PasswordEmpty = "PasswordEmpty";
 const PasswordNotMatch = "PasswordNotMatch";
 const ConfirmPasswordNotMatch = "ConfirmPasswordNotMatch";
@@ -61,7 +61,7 @@ module.exports = {
     UpdateDoneMessage,
     UpdateFailMessage,
     EmailEmpty,
-    UserNameEmpty,
+    UserPhoneEmpty,
     PasswordEmpty,
     PasswordNotMatch,
     ConfirmPasswordNotMatch,

@@ -87,6 +87,15 @@ class CommunicationService {
         }
     }
 
+    async sendForgetPasswordEmail(email, user) {
+        try {
+
+        }
+        catch (err) {
+            throw err;
+        }
+    }
+
 }
 
 module.exports = {

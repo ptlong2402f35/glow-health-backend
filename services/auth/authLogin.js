@@ -14,7 +14,7 @@ class AuthLogin {
         try {
             let user = await User.findOne({
                 where: {
-                    userName: data.userName,
+                    phone: data.phone,
                 }
             });
             if(!user) throw UserNotFound;
