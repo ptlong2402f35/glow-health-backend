@@ -10,5 +10,6 @@ const StaffRole = {
 }
 
 module.exports = {
-    UserRole
+    UserRole,
+    StaffRole
 }

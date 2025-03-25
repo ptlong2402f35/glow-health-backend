@@ -1,4 +1,5 @@
 const User = require("../models").User;
+const Staff = require("../models").Staff;
 const util = require("util");
 const { AuthService } = require("../services/auth/authService");
 const {AuthLogin} = require("../services/auth/authLogin"); 
@@ -10,6 +11,7 @@ const SuccessRespMessage = require("../resources/translation.json").message.done
 const config = require("../config/config");
 const { UserService } = require("../services/user/userService");
 const { FirebaseConfig } = require("../firebase/firebaseConfig");
+const { UserRole } = require("../constants/roles");
 
 class AuthController {
     login = async (req, res, next) => {
@@ -102,6 +104,8 @@ class AuthController {
 
             if(userByPhone) throw ExistedPhone;
 
+            data.role = UserRole.Customer;
+
             let resp = await new AuthService().handleCustomerSignup(data);
 
             return res.status(200).json({
@@ -145,7 +149,13 @@ class AuthController {
             let user = await User.findOne({
                 where: {
                     id: userId
-                }
+                },
+                include: [
+                    {
+                        model: Staff,
+                        as: "staff"
+                    }
+                ]
             });
             if(!user) throw UserNotFound;
             

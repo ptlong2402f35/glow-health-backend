@@ -18,12 +18,8 @@ const CustomerNotFound = "CustomerNotFound";
 const PartnerNotFound = "PartnerNotFound";
 const FormNotFound = "FormNotFound";
 const OrderNotFound = "OrderNotFound";
-const ParentNotFound = "ParentNotFound";
-const StudentNotFound = "StudentNotFound";
-const ClassNotFound = "ClassNotFound";
-const TeacherNotFound = "TeacherNotFound";
-const CenterNotFound = "CenterNotFound";
-const CostNotFound = "CostNotFound";
+const StaffNotFound = "StaffNotFound";
+
 const TransactionNotFound = "TransactionNotFound";
 const ProgramNotFound = "ProgramNotFound";
 
@@ -70,10 +66,9 @@ module.exports = {
     ExistedPhone,
     UserNotFound,
     CustomerNotFound,
-    PartnerNotFound,
+    StaffNotFound,
     FormNotFound,
     OrderNotFound,
-    ClassStatusInvalid,
     OrderStatusInvalid,
     OrderTimerInvalid,
     EmailFormatNotValid,
@@ -84,19 +79,9 @@ module.exports = {
     NotOwnerOrder,
     ExpiredResetKey,
     UserNotActive,
-    ParentNotFound,
-    StudentNotFound,
-    ClassNotFound,
-    TeacherNotFound,
-    NotConnectParent,
-    ClassHasOpened,
-    ClassHasEnoughStudent,
-    OpenClassCreateStartAtNotValid,
-    CenterNotFound,
-    TeacherNotActive,
-    ClassNotActive,
+
     AdminOnly,
-    CostNotFound,
+
     TransactionNotFound,
     TotalMoneyIsOver,
     ProgramNotFound

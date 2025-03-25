@@ -44,6 +44,8 @@ module.exports = (sequelize, DataTypes) => {
             forwardFromOrderId: DataTypes.INTEGER,
             createdAt: DataTypes.DATE,
             updatedAt: DataTypes.DATE,
+            staffSerivcePriceIds: DataTypes.INTEGER,
+            voucherId: DataTypes.INTEGER,
         },
         {
             sequelize,

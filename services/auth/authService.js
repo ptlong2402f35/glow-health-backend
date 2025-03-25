@@ -1,7 +1,4 @@
 const User = require("../../models").User;
-const Student = require("../../models").Student;
-const Parent = require("../../models").Parent;
-const Teacher = require("../../models").Teacher;
 const jwt = require("jsonwebtoken");
 var bcrypt = require("bcryptjs");
 var uuid = require("uuid");
@@ -12,7 +9,7 @@ const { UserRole } = require("../../constants/roles");
 const { UserNotFound, UpdateFailMessage, ExpiredResetKey, UpdateDoneMessage, UserNotActive } = require("../../constants/message");
 const { CommunicationType } = require("../../constants/type");
 const DefaultPartnerPassword = process.env.DEFAULT_PARTNER_PASSWORD?.trim() || "";
-const DefaultServiceFee = process.env.DEFAULT_SERVICE_FEE ? parseFloat(process.env.DEFAULT_SERVICE_FEE) : 5.5;
+
 class AuthService {
     constructor() {
 
@@ -127,7 +124,7 @@ class AuthService {
         }
     }
 
-    async handleCustomerSignup(data) {
+    async handleCustomerSignup(data, transaction) {
         try {
 			let passHashed = bcrypt.hashSync(data.password, 10);
             let user;
@@ -142,6 +139,9 @@ class AuthService {
                     createdAt: new Date(),
                     updatedAt: new Date(),
                     resetKey: uuid.v4()
+                },
+                {
+                    ...(transaction ? {transaction} : {}),
                 }
             );
             if(!user) throw UpdateFailMessage;
