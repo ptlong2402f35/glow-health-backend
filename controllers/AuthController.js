@@ -1,5 +1,5 @@
-const User = require("../models").User;
-const Staff = require("../models").Staff;
+const User = require("../model").User;
+const Staff = require("../model").Staff;
 const util = require("util");
 const { AuthService } = require("../services/auth/authService");
 const {AuthLogin} = require("../services/auth/authLogin"); 
@@ -9,7 +9,6 @@ const { Validation } = require("../utils/validation");
 const { TranslateService } = require("../services/translateService");
 const SuccessRespMessage = require("../resources/translation.json").message.done;
 const config = require("../config/config");
-const { UserService } = require("../services/user/userService");
 const { FirebaseConfig } = require("../firebase/firebaseConfig");
 const { UserRole } = require("../constants/roles");
 

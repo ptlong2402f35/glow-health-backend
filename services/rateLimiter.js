@@ -1,4 +1,4 @@
-const { GeneralRedisClient } = require("./communication/generalRedisClient");
+const { GeneralRedisClient } = require("./generalRedisClient");
 const ExpiredRateLimiterTimer = process.env.EXPIRED_RATE_LIMITER_TIMER ? parseInt(process.env.EXPIRED_RATE_LIMITER_TIMER) : 5;
 const REDIS_DISCONNECT_EXCEPTION = "REDIS_DISCONNECT_EXCEPTION";
 

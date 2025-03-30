@@ -1,9 +1,9 @@
 
 const CustomerAddress = require("../../../model").CustomerAddress;
-const Province = require("../../../models").Province;
-const District = require("../../../models").District;
-const Commune = require("../../../models").Commune;
-const Vourcher = require("../../../models").Vourcher;
+const Province = require("../../../model").Province;
+const District = require("../../../model").District;
+const Commune = require("../../../model").Commune;
+const Vourcher = require("../../../model").Vourcher;
 const crypto = require("crypto");
 const util = require("util");
 const { PriceHelper } = require("../priceHelper");
@@ -52,7 +52,6 @@ class OrderCreateBuilder {
                 dataOrder: builtData,
                 address,
                 orderCode,
-                timeData,
                 money,
             };
         }

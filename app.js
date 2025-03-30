@@ -4,7 +4,6 @@ var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 const crypto = require('crypto');
-const notiJob = require("./services/job/scheduleNotiJob");
 
 var indexRouter = require("./routes/index");
 var api = require("./routes/api");
@@ -115,11 +114,10 @@ function onListening() {
 	debug("Listening on " + bind);
 }
 
-new FirebaseConfig().getInstance().init();
-notiJob.start();
+// new FirebaseConfig().getInstance().init();
 
-new GeneralRedisClient()
-		.getInstance()
-		.getClient();
+// new GeneralRedisClient()
+// 		.getInstance()
+// 		.getClient();
 //connect socket
 setTimeout(()=>initSocket(server), 5000);

@@ -1,0 +1,64 @@
+[
+    {
+        "label": "Massage tại nhà",
+        "image": "",
+        "serviceGroup": "Massage",
+        "quickStaffService": [
+            {
+                "image": "",
+                "label": "",
+                "description": "",
+                "name": "",
+                "detailStaff": {},
+                "staffServiceIds": []
+            },
+            {
+                "image": "",
+                "label": "",
+                "description": "",
+                "name": "",
+                "detailStaff": {},
+                "staffServiceIds": []
+            },
+            {
+                "image": "",
+                "label": "",
+                "description": "",
+                "name": "",
+                "detailStaff": {},
+                "staffServiceIds": []
+            }
+        ]
+    },
+    {
+        "label": "Training tại nhà",
+        "image": "",
+        "serviceGroup": "Training",
+        "quickStaffService": [
+            {
+                "image": "",
+                "label": "",
+                "description": "",
+                "name": "",
+                "detailStaff": {},
+                "staffServiceIds": []
+            },
+            {
+                "image": "",
+                "label": "",
+                "description": "",
+                "name": "",
+                "detailStaff": {},
+                "staffServiceIds": []
+            },
+            {
+                "image": "",
+                "label": "",
+                "description": "",
+                "name": "",
+                "detailStaff": {},
+                "staffServiceIds": []
+            }
+        ]
+    }
+]

@@ -1,0 +1,168 @@
+{
+    "message": {
+        "done": {
+            "UpdateDoneMessage": {
+                "vi": "Thành công",
+                "en": "Done!"
+            }
+        },
+        "error": {
+            "UpdateFailMessage": {
+                "vi": "Đã có lỗi xảy ra",
+                "en": "Some thing gone wrong"
+            },
+            "EmailEmpty": {
+                "vi": "Vui lòng nhập email",
+                "en": "Please fill your email"
+            },
+            "PasswordEmpty": {
+                "vi": "Vui lòng nhập mật khẩu",
+                "en": "Please fill your password"
+            },
+            "PasswordNotMatch": {
+                "vi": "Sai mật khẩu",
+                "en": "Password does not match. Please try again"
+            },
+            "ConfirmPasswordNotMatch": {
+                "vi": "Mật khẩu nhắc lại không trùng khớp",
+                "en": "Confirm password does not match. Please try again"
+            },
+            "InputInfoEmpty": {
+                "vi": "Vui lòng nhập đủ thông tin",
+                "en": "Please fill enough your infomation"
+            },
+            "ExistedEmail": {
+                "vi": "Email đã tồn tại",
+                "en": "Email has been already taken"
+            },
+            "ExistedPhone": {
+                "vi": "Số điện thoại đã tồn tại",
+                "en": "Phone has been already taken"
+            },
+            "UserNotFound": {
+                "vi": "Người dùng không tồn tại",
+                "en": "User is not exist"
+            },
+            "CustomerNotFound": {
+                "vi": "Người dùng không tồn tại",
+                "en": "User is not exist"
+            },
+            "PartnerNotFound": {
+                "vi": "Đối tác không tồn tại",
+                "en": "Partner is not exist"
+            },
+            "FormNotFound": {
+                "vi": "Form không tồn tại",
+                "en": "Form is not exist"
+            },
+            "OrderNotFound": {
+                "vi": "Đơn hàng không tồn tại",
+                "en": "Order is not exist"
+            },
+            "FormStatusInvalid": {
+                "vi": "Trạng thái của form không hợp lệ",
+                "en": "Form's status is invalid"
+            },
+            "OrderStatusInvalid": {
+                "vi": "Trạng thái của đơn hàng không hợp lệ",
+                "en": "Order's status is invalid"
+            },
+            "OrderTimerInvalid": {
+                "vi": "Thời gian của đơn hàng không hợp lệ",
+                "en": "Order's time is invalid"
+            },
+            "PaymentInitFailedException": {
+                "vi": "Khởi tạo giao dịch thất bại",
+                "en": "Transaction initialization failed"
+            },
+            "PaymentCurrencyNotSupportException": {
+                "vi": "Đơn vị tiền tệ không hỗ trợ",
+                "en": "Currency not supported"
+            },
+            "PaymentCheckFailedException": {
+                "vi": "Kiểm tra giao dịch thất bại",
+                "en": "Transaction check failed"
+            },
+            "PaymentCheckInvalidException": {
+                "vi": "Kiểm tra trạng thái giao dịch không hợp lệ",
+                "en": "Transaction status check failed"
+            },
+            "RefundFailedException": {
+                "vi": "Hoàn tiền giao dịch thất bại",
+                "en": "Transaction refund failed"
+            },
+            "PaypalAuthenticationFailed": {
+                "vi": "Đã có lỗi xảy ra",
+                "en": ""
+            },
+            "EmailFormatNotValid": {
+                "vi": "Email không đúng định dạng",
+                "en": "Email format is not correct"
+            },
+            "PhoneFormatNotValid": {
+                "vi": "Số điện thoại không đúng định dạng",
+                "en": "Phone number format is not correct"
+            },
+            "AdminOrderCannotPaid": {
+                "vi": "Không thể thực hiện thao tác này",
+                "en": "Cannot complete this action"
+            },
+            "TimeExpiredAction": {
+                "vi": "Thao tác đã quá hạn",
+                "en": "Actions is expired"
+            },
+            "ExpiredResetKey": {
+                "vi": "Mã quên mật khẩu đã quá hạn",
+                "en": "Forget code is expired"
+            },
+            "NotEnoughPermission": {
+                "vi": "Mã quên mật khẩu đã quá hạn",
+                "en": "You don't have enough permission for this"
+            },
+            "NotOwnerOrder": {
+                "vi": "Bạn không sở hữu đơn hàng này",
+                "en": "This is not your order"
+            },
+            "TotalMoneyIsOver": {
+                "vi": "Giao dịch không được lớn hơn số tiền còn nợ / chưa trả",
+                "en": "Total money is more than debt money"
+            },
+            "CenterNotFound": {
+                "vi": "Trung tâm này không tồn tại",
+                "en": "Center is not exist"
+            },
+            "ParentNotFound": {
+                "vi": "Phụ huynh không tồn tại",
+                "en": "Parent is not exist"
+            },
+            "StudentNotFound": {
+                "vi": "Học sinh không tồn tại",
+                "en": ""
+            },
+            "ClassNotFound": {
+                "vi": "Lớp học không tồn tại",
+                "en": ""
+            },
+            "TeacherNotFound": {
+                "vi": "Giáo viên không tồn tại",
+                "en": ""
+            },
+            "NotConnectParent": {
+                "vi": "Phụ huynh chưa liên kết với học sinh",
+                "en": ""
+            },
+            "ClassHasOpened": {
+                "vi": "Lớp học này đã mở",
+                "en": ""
+            },
+            "OpenClassCreateStartAtNotValid": {
+                "vi": "Trạng thái của lớp học không hợp lệ",
+                "en": ""
+            },
+            "ClassHasEnoughStudent": {
+                "vi": "Lớp học này đã đủ học sinh",
+                "en": ""
+            }
+        }
+    }
+}

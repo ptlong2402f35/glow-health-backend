@@ -1,10 +1,10 @@
 const { Op } = require("sequelize");
 const { FirebaseConfig } = require("../../firebase/firebaseConfig");
 const { EmailService } = require("./emailService");
-const Notification = require("../../models").Notification;
+const Notification = require("../../model").Notification;
 let FireBaseProjectId = process.env.FIREBASE_PROJECT_ID || "english-center-1e883";
 let FCMPushNotiUrl = `https://fcm.googleapis.com/v1/projects/${FireBaseProjectId}/messages:send`
-const User = require("../../models").User;
+const User = require("../../model").User;
 
 class CommunicationService {
     emailService;

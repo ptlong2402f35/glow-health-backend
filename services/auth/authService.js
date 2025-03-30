@@ -1,8 +1,8 @@
-const User = require("../../models").User;
+const User = require("../../model").User;
 const jwt = require("jsonwebtoken");
 var bcrypt = require("bcryptjs");
 var uuid = require("uuid");
-const { sequelize } = require("../../models");
+const { sequelize } = require("../../model");
 const JWT_CONFIG = require("../../config/jwt");
 const { CommunicationService } = require("../communication/communicationService");
 const { UserRole } = require("../../constants/roles");

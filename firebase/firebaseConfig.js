@@ -11,7 +11,6 @@ const httpProxyAgent = require('https-proxy-agent');
 const env = process.env.NODE_ENV;
 const FirebaseEndpoint = "https://fcm.googleapis.com/v1/projects/english-center-1e883/messages:send";
 console.log(process.env.FIREBASE_SERVICE_ACCOUNT_JSON)
-const serviceAccount = require("../english-center-1e883-firebase-adminsdk-xqrnt-7578eb8db3.json");
 
 class FirebaseConfig {
     static instance;
@@ -36,7 +35,7 @@ class FirebaseConfig {
               databaseUrl = 'https://english-center-backend.vercel.app/';
         }
         this.firebase = firebase.initializeApp({
-            credential: firebase.credential.cert(serviceAccount),
+            credential: firebase.credential.cert(""),
             // databaseURL: databaseUrl,
             // projectId: "english-center-1e883"
         })

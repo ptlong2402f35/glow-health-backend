@@ -16,8 +16,17 @@ const OrderStatus = {
     Denied: 5
 }
 
+const OrderForwarderStatus = {
+	Unknown: -1,
+	Begin: 1,
+	End: 2,
+	Reject: 3, // forwarder rejected by recommended staff
+	Switched: 4, // customer accept and created order with recommended staff
+};
+
 module.exports = {
     StoreStatus,
     VourcherStatus,
-    OrderStatus
+    OrderStatus,
+    OrderForwarderStatus
 }

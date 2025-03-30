@@ -1,4 +1,4 @@
-const User = require("../../models").User;
+const User = require("../../model").User;
 var bcrypt = require("bcryptjs");
 const { AuthService } = require("./authService");
 const JWT_CONFIG = require("../../config/jwt");
