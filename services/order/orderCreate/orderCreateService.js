@@ -4,6 +4,7 @@ const { sequelize } = require("../../../model");
 const { OrderForwarderService } = require("../orderForwarderService");
 const { OrderCreateBuilder } = require("./orderCreateBuilder");
 const Order = require("../../../model").Order;
+const OrderPrice = require("../../../model").OrderPrice;
 const Staff = require("../../../model").Staff;
 const Transaction = require("../../../model").Transaction;
 const UserMoneyNotEnoughException = "UserMoneyNotEnoughException";
@@ -19,7 +20,27 @@ class OrderCreateService {
     async createSwitchOrderFromBaseOrder(baseOrder, forwardStaff) {
         await Order.create(
             {
-                ...baseOrder.dataValues,
+                total: baseOrder.total,
+                totalPay: baseOrder.totalPay,
+                address: baseOrder.address,
+                provinceId: baseOrder.provinceId,
+                districtId: baseOrder.districtId,
+                communeId: baseOrder.communeId,
+                lat: baseOrder.lat,
+                long: baseOrder.long,
+                customerUserId: baseOrder.customerUserId,
+                paymentMethodId: baseOrder.paymentMethodId,
+                fee: baseOrder.fee,
+                note: baseOrder.note,
+                earningRate: baseOrder.earningRate,
+                reasonCancel: baseOrder.reasonCancel,
+                totalReceive: baseOrder.totalReceive,
+                expiredAt: baseOrder.expiredAt,
+                autoFinishAt: baseOrder.autoFinishAt,
+                chatBoxId: baseOrder.chatBoxId,
+                timerTime: baseOrder.timerTime,
+                additionalFee: baseOrder.additionalFee,
+                type: baseOrder.type,
                 staffId: forwardStaff.id,
                 storeId: forwardStaff.storeId || 0,
                 code: this.orderCreateBuilder.generateCode(),
@@ -52,10 +73,10 @@ class OrderCreateService {
                 case PaymentMethod.Wallet: {
                     let transaction = await sequelize.transaction();
                     try {
-                        if(userCustomer.totalMoney < order.totalPay) throw UserMoneyNotEnoughException;
+                        if(userCustomer.totalMoney < money?.totalPay) throw UserMoneyNotEnoughException;
                         await userCustomer.update(
                             {
-                                totalMoney: userCustomer.totalMoney - order.totalPay
+                                totalMoney: userCustomer.totalMoney - money.totalPay
                             },
                             {
                                 transaction
@@ -76,6 +97,7 @@ class OrderCreateService {
                     throw new Error("Payment method not supported");
                 }
             }
+            await this.createOrderPrices(order.id, data.staffServicePriceIds);
             await this.createOrderForwarder(order);
             //noti
 
@@ -93,6 +115,15 @@ class OrderCreateService {
         catch (err) {
             throw err;
         }
+    }
+
+    async createOrderPrices(orderId, priceIds) {
+        let data = priceIds.map(item => ({
+            orderId: orderId,
+            staffServicePriceId: item
+        }));
+
+        return await OrderPrice.bulkCreate(data);
     }
 
     async createTransaction(order, userCustomer) {

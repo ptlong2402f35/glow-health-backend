@@ -75,7 +75,7 @@ class ServiceGroupController {
             );
 
 
-            return res.status(200).json(resp);
+            return res.status(200).json({message: "DONE"});
         }
         catch (err) {
             console.error(err);

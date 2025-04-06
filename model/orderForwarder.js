@@ -11,7 +11,18 @@ module.exports = (sequelize, DataTypes) => {
          */
 
         static associate(models) {
-
+            OrderForwarder.belongsTo(models.Staff, {
+                foreignKey: "staffId",
+                as: "staff"
+            });
+            OrderForwarder.belongsTo(models.Store, {
+                foreignKey: "storeId",
+                as: "store"
+            });
+            OrderForwarder.belongsTo(models.Order, {
+                foreignKey: "orderId",
+                as: "baseOrder"
+            });
         }
     }
     OrderForwarder.init(

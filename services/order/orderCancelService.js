@@ -28,17 +28,17 @@ class OrderCancelService {
         let {order, staff, customerUser} = await this.prepare(id);
         if(!await this.validate(order)) return;
 
-        await this.updateOrder(order, data);
+        await this.updateOrder(order, data, true);
         await this.updateStaff(staff);
         //noti
         await this.customerNoti(customerUser);
         await this.staffNoti(staff);
     }
 
-    async updateOrder(order, data) {
+    async updateOrder(order, data, isStaffCancel) {
         await order.update(
             {
-                status: OrderStatus.Canceled,
+                status: isStaffCancel ? OrderStatus.StaffCanceled : OrderStatus.Canceled,
                 reasonCancel: data.reasonCancel
             }
         );
@@ -73,7 +73,9 @@ class OrderCancelService {
     }
 
     async prepare(id) {
+        console.log("id", id);
         let order =  await Order.findByPk(id);
+        console.log("order ===", order.dataValues)
         let staff = await Staff.findOne(
             {
                 where: {

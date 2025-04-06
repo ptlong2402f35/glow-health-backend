@@ -20,8 +20,8 @@ module.exports = (sequelize, DataTypes) => {
 		}
 
 		static associate(models) {
-			User.belongsTo(models.Store, {
-				foreignKey: "ownStoreId",
+			User.hasOne(models.Store, {
+				foreignKey: "ownUserId",
 				as: "storeOwner",
 			});
 			User.hasOne(models.Staff, {
@@ -52,7 +52,10 @@ module.exports = (sequelize, DataTypes) => {
             role: DataTypes.INTEGER,
 			active: DataTypes.BOOLEAN,
 			phone: DataTypes.STRING,
-			totalMoney: DataTypes.DOUBLE,
+			totalMoney: {
+				type: DataTypes.DOUBLE,
+				defaultValue: 0,
+			},
 			userCoordinate: DataTypes.GEOMETRY("POINT"),
 			gender: DataTypes.INTEGER,
 			chatBoxUpdatedAt: { type: DataTypes.DATE, defaultValue: new Date() },

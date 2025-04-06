@@ -3,7 +3,7 @@ const StoreStatus = {
     Disabled: 2
 }
 
-const VourcherStatus = {
+const VoucherStatus = {
     Active: 1,
     Disactive: 2
 }
@@ -13,7 +13,8 @@ const OrderStatus = {
     Approved: 2,
     Finished: 3,
     Canceled: 4,
-    Denied: 5
+    Denied: 5,
+    StaffCanceled: 6
 }
 
 const OrderForwarderStatus = {
@@ -26,7 +27,7 @@ const OrderForwarderStatus = {
 
 module.exports = {
     StoreStatus,
-    VourcherStatus,
+    VoucherStatus,
     OrderStatus,
     OrderForwarderStatus
 }

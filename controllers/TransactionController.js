@@ -62,7 +62,9 @@ class TransactionController {
                         walletUser,
                         {
                             ...data,
-                            userCreate: AdminUserId
+                            userCreate: AdminUserId,
+                            forUserId: data.userId,
+                            add: true
                         },
                         t
                     );
@@ -76,7 +78,9 @@ class TransactionController {
                         walletUser,
                         {
                             ...data,
-                            userCreate: AdminUserId
+                            userCreate: AdminUserId,
+                            forUserId: data.userId,
+                            add: false
                         },
                         t
                     );

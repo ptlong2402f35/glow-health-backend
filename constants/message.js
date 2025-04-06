@@ -45,10 +45,9 @@ const UserNotActive = "UserNotActive";
 const TeacherNotActive = "TeacherNotActive";
 const ClassNotActive = "ClassNotActive";
 
-//Class
-const ClassHasOpened = "ClassHasOpened";
-const ClassHasEnoughStudent = "ClassHasEnoughStudent";
-const OpenClassCreateStartAtNotValid = "OpenClassCreateStartAtNotValid";
+//Payment
+const PaymentMethodNotValid = "PaymentMethodNotValid";
+
 
 //Trans
 const TotalMoneyIsOver = "TotalMoneyIsOver";
@@ -84,5 +83,6 @@ module.exports = {
 
     TransactionNotFound,
     TotalMoneyIsOver,
-    ProgramNotFound
+    ProgramNotFound,
+    PaymentMethodNotValid
 }

@@ -2,6 +2,7 @@ const { Op } = require("sequelize");
 const { sequelize } = require("../../model");
 const { OrderForwarderStatus } = require("../../constants/status");
 const { OrderForwarderType } = require("../../constants/type");
+const util = require("util");
 
 const Staff = require("../../model").Staff;
 const OrderForwarder = require("../../model").OrderForwarder;
@@ -39,12 +40,13 @@ class OrderForwarderService {
 				}
 			],
 		});
-
+        // console.log("order", util.inspect(order, false, null, true));
 		return await this.startOrderForwarding(order);
     }
 
     async startOrderForwarding(order) {
         if (!EnableForwardStaff) return [];
+        console.log("start forwarding order", order.dataValues);
 		if (!order) return [];
 
 		let { customerUser } = await this.prepare(order);
@@ -71,7 +73,7 @@ class OrderForwarderService {
 		console.log(`==== [OrderForwardStarter] done create order forwarders`);
 
 		if (recommendStaffs?.length) {
-			await this.notiOrderForwardStaffs(order, records, stores, customerUser);
+			// await this.notiOrderForwardStaffs(order, records, stores, customerUser);
 			console.log(`==== [OrderForwardStarter] done notify forwarders`);
 		}
 
@@ -90,10 +92,12 @@ class OrderForwarderService {
         let serviceIds = order.prices.map(item => item.staffServiceId);
         let serviceGroups = order.prices.map(item => item.staffService.serviceGroupId);
         let baseUserId = order.customerUserId;
+        let distanceConds = order.lat && order.log;
+        let baseStaffId = order.staffId;
         
         //OR where
         let addressWhere = [
-            sequelize.where(
+            ...(distanceConds ? [sequelize.where(
                 sequelize.fn(
                     "ST_DWithin",
                     sequelize.literal(`"coordinatet"::geography`),
@@ -101,7 +105,7 @@ class OrderForwarderService {
 					ForwardStaffDistanceApply,
                 ),
                 true
-            ),
+            )] : []),
             ...(order.provinceId ? [{ provinceId: order.provinceId }] : []),
             ...(order.districtId ? [{ districtId: order.districtId }] : []),
             ...(order.communeId ? [{ communeId: order.communeId }] : []),
@@ -113,14 +117,14 @@ class OrderForwarderService {
                 [Op.or]: [
                     {
                         serviceIds: {
-                            [Op.in]: serviceIds
+                            [Op.overlap]: serviceIds
                         }
                     },
                     {
                         serviceGroupIds: {
-                            [Op.in]: serviceGroups
+                            [Op.overlap]: serviceGroups
                         }
-                    }
+                    },
                 ]
             },
             {
@@ -129,6 +133,11 @@ class OrderForwarderService {
             {
                 userId: {
                     [Op.ne]: baseUserId
+                }
+            },
+            {
+                id: {
+                    [Op.ne]: baseStaffId
                 }
             },
             {
@@ -141,31 +150,39 @@ class OrderForwarderService {
             }
         ];
 
+        console.log("where", util.inspect(where, false, null, true));
+
         let staffs = await Staff.findAll(
             {
                 where: {
                     [Op.and]: where,
-                    limit: 20,
-                    order: [
-				        ...([sequelize.literal("distance asc")]),
-                    ],
-                    attributes: [
-                        "id",
-                        "userId",
-                        "gender",
-                        "storeId",
-                        "serviceIds",
-                        "serviceGroups",
+                },
+                limit: 20,
+                order: [
+                    ...(
+                        distanceConds ? [
+                            [sequelize.literal("distance asc")]
+                        ] : []
+                    ),
+                    ["rateAvg", "desc"]
+                ],
+                attributes: [
+                    "id",
+                    "userId",
+                    "gender",
+                    "storeId",
+                    "serviceIds",
+                    "serviceGroupIds",
+                    ...(distanceConds ?
                         [
-                            sequelize.fn(
-                                "ST_DistanceSphere",
-                                sequelize.col("coordinate"),
-                                sequelize.fn("ST_MakePoint", order.long || 0, order.lat || 0),
-                            ),
-                            "distance",
-                        ],
-                    ]
-                }
+                        sequelize.fn(
+                            "ST_DistanceSphere",
+                            sequelize.col("coordinate"),
+                            sequelize.fn("ST_MakePoint", order.long || 0, order.lat || 0),
+                        ),
+                        "distance",
+                    ] : []),
+                ]
             }
         );
 
@@ -174,6 +191,7 @@ class OrderForwarderService {
 
     prepareStore(staffs) {
         let storeIds = staffs.map(item => item.storeId);
+        if(!storeIds || !storeIds.length) return [];
         return Store.findAll({
             where: {
                 id: {
@@ -200,7 +218,7 @@ class OrderForwarderService {
 			type: OrderForwarderType.Normal,
 			timerTime: order.timerTime,
 		}));
-		for (let store of stores || []) {
+		for (let store of stores) {
 			if(store.id !== order.storeId) {
 				forwarders.push({
 					status: OrderForwarderStatus.Begin,

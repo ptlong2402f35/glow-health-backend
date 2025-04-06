@@ -10,7 +10,7 @@ class OrderReviewService {
     constructor() {}
 
     async review(data, orderId) {
-        let {order, userCustomer, staff} = await this.prepare(orderId);
+        let {order, customerUser, staff} = await this.prepare(orderId);
         if(!await this.validate(order)) return;
 
         let review = await this.updateReview(order, data);
@@ -56,7 +56,7 @@ class OrderReviewService {
                 include: [
                     {
                         model: User,
-                        as: "userCustomer"
+                        as: "customerUser"
                     },
                     {
                         model: Staff,
@@ -68,7 +68,7 @@ class OrderReviewService {
 
         return {
             order: order,
-            userCustomer: order.userCustomer,
+            customerUser: order.customerUser,
             staff: order.staff
         }
     }

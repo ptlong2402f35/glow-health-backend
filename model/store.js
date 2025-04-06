@@ -20,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
                 foreignKey: "storeId",
                 as: "storeMembers"
             });
-            Store.hasMany(models.User, {
+            Store.belongsTo(models.User, {
                 foreignKey: "ownUserId",
                 as: "storeOwnerUser"
             });

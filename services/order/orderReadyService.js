@@ -50,7 +50,6 @@ class OrderReadyService {
         }
 
         await this.readyOrder(orderForwarder);
-        await this.updateStaffForwardIds(order, chosenStaffIds)
         //noti ready
         //socket ready
         return {
@@ -92,7 +91,6 @@ class OrderReadyService {
         }
 
         await this.readyOrder(orderForwarder);
-        await this.updateStaffForwardIds(order, [staff.id]);
         //noti ready
         //socket ready
         return {
@@ -171,19 +169,6 @@ class OrderReadyService {
                 }
             );
         }
-    }
-
-    async updateStaffForwardIds(order, staffIds) {
-        await Order.update(
-            {
-                staffForwardIds: [...new Set([...(order.staffForwardIds || []), ...staffIds])],
-            },
-            {
-                where: {
-                    id: order.id
-                }
-            }
-        )
     }
 
     async prepare(orderId, staffId, storeId) {

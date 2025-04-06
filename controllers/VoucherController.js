@@ -2,13 +2,13 @@
 const { Op } = require("sequelize");
 const { ErrorService } = require("../services/errorService");
 const { StaffServiceHelper } = require("../services/staffService/staffServiceHelper");
-const { VourcherStatus } = require("../constants/status");
-const { VourcherService } = require("../services/vourcher/vourcherService");
+const { VoucherStatus } = require("../constants/status");
+const { VoucherService } = require("../services/voucher/voucherService");
 
-const Vourcher = require("../model").Vourcher;
+const Voucher = require("../model").Voucher;
 
-class VourcherController {
-    getVourcher = async (req, res, next) => {
+class VoucherController {
+    getVoucher = async (req, res, next) => {
         try {
             let page = req.query.page ? parseInt(req.query.page) : 1;
             let perPage = req.query.perPage ? parseInt(req.query.perPage) : 1;
@@ -44,7 +44,7 @@ class VourcherController {
                 ]
             }
 
-            let data = await Vourcher.paginate({
+            let data = await Voucher.paginate({
                 page,
                 paginate: perPage,
                 where: conds,
@@ -63,16 +63,16 @@ class VourcherController {
         }
     }
 
-    createVourcher = async (req, res, next) => {
+    createVoucher = async (req, res, next) => {
         try {
             let data = req.body;
-            let bData = new VourcherService().build(
+            let bData = new VoucherService().build(
                 {
                     ...data,
-                    status: VourcherStatus.Active
+                    status: VoucherStatus.Active
                 }
             );
-            let resp = await Vourcher.create(
+            let resp = await Voucher.create(
                 {
                     ...bData
                 }
@@ -87,17 +87,17 @@ class VourcherController {
         }
     }
 
-    updateVourcher = async (req, res, next) => {
+    updateVoucher = async (req, res, next) => {
         try {
             let id = req.params.id ? parseInt(req.params.id) : null;
             if(!id) throw InputInfoEmpty;
             let data = req.body;
-            let bData = new VourcherService().build(
+            let bData = new VoucherService().build(
                 {
                     ...data,
                 }
             );
-            let resp = await Vourcher.update(
+            let resp = await Voucher.update(
                 {
                     ...bData
                 },
@@ -118,11 +118,11 @@ class VourcherController {
         }
     }
 
-    removeVourcher = async (req, res, next) => {
+    removeVoucher = async (req, res, next) => {
         try {
             let id = req.params.id ? parseInt(req.params.id) : null;
             if(!id) throw InputInfoEmpty;
-            await Vourcher.destroy(
+            await Voucher.destroy(
                 {
                     where: {
                         id
@@ -139,11 +139,11 @@ class VourcherController {
         }
     }
 
-    updateVourcherStatus = async (req, res, next) => {
+    updateVoucherStatus = async (req, res, next) => {
         try {
             let id = req.params.id ? parseInt(req.params.id) : null;
             if(!id) throw InputInfoEmpty;
-            await Vourcher.update(
+            await Voucher.update(
                 {
                     status: req.body.status
                 },
@@ -164,4 +164,4 @@ class VourcherController {
     }
 }
 
-module.exports = new VourcherController();
+module.exports = new VoucherController();

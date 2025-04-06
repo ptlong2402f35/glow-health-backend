@@ -7,8 +7,10 @@ class CustomerAddressControler {
     userGetAddress = async (req, res, next) => {
         try {
             let userId = req.user.userId;
+
+            console.log("userId", userId);
             
-            let resp = CustomerAddress.findAll({
+            let resp = await CustomerAddress.findAll({
                 where: {
                     customerUserId: userId
                 }
@@ -32,6 +34,7 @@ class CustomerAddressControler {
                 ...data,
                 active: true,
                 default: data.isSetDefault ? true : false,
+                customerUserId: userId,
             });
 
             return res.status(200).json({message: "DONE", resp});
@@ -47,6 +50,8 @@ class CustomerAddressControler {
         try {
             let userId = req.user.userId;
             let data = req.body;
+            let id = req.params.id ? parseInt(req.params.id) : null;
+            if(!id) throw InputInfoEmpty;
             
             let resp = await CustomerAddress.update({
                 ...data,
@@ -54,7 +59,7 @@ class CustomerAddressControler {
             }, {
                 where: {
                     customerUserId: userId,
-                    id: data.id
+                    id
                 }
             });
 
@@ -69,12 +74,12 @@ class CustomerAddressControler {
 
     userRemoveAddress = async (req, res, next) => {
         try {
+            let id = req.params.id ? parseInt(req.params.id) : null;
+            if(!id) throw InputInfoEmpty;
             let userId = req.user.userId;
-            let data = req.body;
-            if(!data.phone || !data.customerName) throw InputInfoEmpty;
-            await CustomerAddress.delete({
+            await CustomerAddress.destroy({
                 where: {
-                    id: data.id,
+                    id,
                     customerUserId: userId
                 }
             });

@@ -3,13 +3,14 @@ const CustomerAddress = require("../../../model").CustomerAddress;
 const Province = require("../../../model").Province;
 const District = require("../../../model").District;
 const Commune = require("../../../model").Commune;
-const Vourcher = require("../../../model").Vourcher;
+const Voucher = require("../../../model").Voucher;
 const crypto = require("crypto");
 const util = require("util");
 const { PriceHelper } = require("../priceHelper");
 const { OrderHelper } = require("../orderHelper");
 const { OrderStatus } = require("../../../constants/status");
 const { OrderType } = require("../../../constants/type");
+const { Op } = require("sequelize");
 const ForwardStaffDuration = process.env.FORWARD_STAFF_DURATION || 1000 * 60 * 60; // 60 minutes
 
 class OrderCreateBuilder {
@@ -26,9 +27,11 @@ class OrderCreateBuilder {
             let orderLat = address.lat ? address.lat : null;
             let orderLong = address.long ? address.long : null;
             let orderCode = this.generateCode();
-            let {money, vourcher} = await this.buildMoneyData(
+            let {money, voucher} = await this.buildMoneyData(
                 data
             );
+
+            console.log("money", money);
 			let current = new Date();
             let forwardExpiredAt = new Date(current.getTime() + ForwardStaffDuration);
 			
@@ -43,7 +46,7 @@ class OrderCreateBuilder {
                     orderCode,
                     money,
                     forwardExpiredAt,
-                    vourcher
+                    voucher
                 },
                 {isQuickForward}
             );
@@ -67,28 +70,8 @@ class OrderCreateBuilder {
 			if (addressId) {
 				address = await CustomerAddress.findOne({
 					where: { id: addressId },
-					include: [
-						{
-							model: Province,
-							as: "province",
-							attributes: ["id", "name"],
-						},
-						{
-							model: District,
-							as: "district",
-							attributes: ["id", "name"],
-						},
-						{
-							model: Commune,
-							as: "commune",
-							attributes: ["id", "name"],
-						},
-					],
 				});
 				address = address ? address : {};
-			}
-			if (isStoreOrder) {
-				address = await this.addressService.getAddressStoreStation(staff, userCustomer);
 			}
 
             return address;
@@ -116,22 +99,34 @@ class OrderCreateBuilder {
 
     async buildMoneyData(data) {
         try {
-            let vourcherIds = [];
-            let vourcher;
+            let voucherIds = [];
+            let voucher;
+            let current = new Date();
             if (data.voucherCode) {
-                vourcher = await Vourcher.findOne({
-                    where: { code: data.voucherCode },
+                voucher = await Voucher.findOne({
+                    where: { 
+                        code: {
+                            [Op.iLike]: data.voucherCode
+                        },
+                        startAt: {
+                            [Op.lte]: current
+                        },
+                        endAt: {
+                            [Op.gte]: current
+                        }
+                    },
                 });
-                vourcherIds.push(vourcher.id);
+                console.log("voucher apply ===", voucher.id);
+                voucherIds.push(voucher.id);
             }
             let money =  await this.priceHelper.calcOrderFee({
                 staffServicePriceIds: data.staffServicePriceIds,
-                vourcherId: vourcherIds[0],
+                voucherId: voucherIds[0],
             });
 
             return {
                 money,
-                vourcher
+                voucher
             }
         }
         catch (err) {
@@ -151,7 +146,7 @@ class OrderCreateBuilder {
             orderCode,
             money,
             forwardExpiredAt,
-            vourcher
+            voucher
         } = {},
         {
             isQuickForward, 
@@ -185,7 +180,7 @@ class OrderCreateBuilder {
             earningRate: money.earningRate,
             forwardFromOrderId: data.forwardFromOrderId,
             staffServicePriceIds: data.staffServicePriceIds,
-            vourcherId: vourcher.id,
+            voucherId: voucher?.id,
         }
     }
 }

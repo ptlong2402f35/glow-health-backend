@@ -53,7 +53,7 @@ class AuthController {
         try {
             let data = req.body;
             data.userName = data.userName?.trim()?.toLowerCase();
-            if(!data.userName) {
+            if(!data.phone) {
                 throw UserPhoneEmpty;
             }
             if(!data.password) {

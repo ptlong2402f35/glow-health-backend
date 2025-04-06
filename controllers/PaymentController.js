@@ -1,11 +1,12 @@
 const { ErrorService } = require("../services/errorService");
+const PaymentMethod = require("../resources/paymentMethod.json");
 
 class PaymentController {
     getPaymentMethod = async (req, res, next) => {
         try {
             
 
-            return res.status(200).json({message: "DONE"});
+            return res.status(200).json(PaymentMethod);
         }
         catch (err) {
             console.error(err);

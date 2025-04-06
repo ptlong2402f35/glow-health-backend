@@ -1,3 +1,5 @@
+const { Op } = require("sequelize");
+const { InputInfoEmpty } = require("../constants/message");
 const { StoreStatus } = require("../constants/status");
 const { ErrorService } = require("../services/errorService");
 const { StaffCreateService } = require("../services/staff/staffCreateService");
@@ -78,6 +80,8 @@ class StoreController {
     adminUpdateStore = async (req, res, next) => {
         try {
             let data = req.body;
+            let storeId = req.params.id ? parseInt(req.params.id) : null;
+            if(!storeId) throw InputInfoEmpty;
 
             let bData ={
                 name: data.name,
@@ -89,7 +93,7 @@ class StoreController {
                 bData,
                 {
                     where: {
-                        id: data.storeId
+                        id: storeId
                     }
                 }
             );
@@ -105,14 +109,15 @@ class StoreController {
 
     adminRemoveStore = async (req, res, next) => {
         try {
-            let id = req.params.id ? parseInt(req.params.id) : null;
+            let storeId = req.params.id ? parseInt(req.params.id) : null;
+            if(!storeId) throw InputInfoEmpty;
             await Store.update(
                 {
                     status: StoreStatus.Disabled
                 },
                 {
                     where: {
-                        id
+                        id: storeId
                     }
                 }
             );

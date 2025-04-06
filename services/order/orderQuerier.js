@@ -5,6 +5,7 @@ const Store = require("../../model").Store;
 const StaffService = require("../../model").StaffService;
 const Service = require("../../model").Service;
 const StaffServicePrice = require("../../model").StaffServicePrice;
+const ServiceGroup = require("../../model").ServiceGroup;
 
 class OrderQuerier {
     constructor() {}
@@ -90,6 +91,7 @@ class OrderQuerier {
 
     buildAttributes() {
         let attributes = [
+            "id",
             "staffId",
             "total",
             "totalPay",
@@ -131,14 +133,14 @@ class OrderQuerier {
 			},
             {
 				model: User,
-				as: "customer",
+				as: "customerUser",
                 attributes: ["id", "userName", "phone"]
 			},
 			...(includeStaffServicesPrice
 				? [
 						{
 							model: StaffServicePrice,
-							as: "staffServicePrices",
+							as: "prices",
 							include: [
 								{
 									model: StaffService,
@@ -161,7 +163,7 @@ class OrderQuerier {
 			...(includeStore ? [{
 				model: Store,
 				as: "store",
-				attributes:["id", "name", "storeStation"],
+				attributes:["id", "name"],
 			}] : []),
 		];
 	}

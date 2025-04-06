@@ -19,7 +19,6 @@ class StaffServiceController {
 
             let data = await StaffService.findAll({
                 where: {
-                    active: true,
                     staffId: staffId
                 },
                 order: [["id", "desc"]],
@@ -44,13 +43,7 @@ class StaffServiceController {
         const staffServiceHelper = new StaffServiceHelper();
         try {
             let id = req.params.id ? parseInt(req.params.id) : null;
-            let staffId = req.body.staffId;
             if(!id) throw InputInfoEmpty;
-            let data = req.body;
-            if(!staffId) throw StaffNotFound;
-
-            let staff = await Staff.findByPk(staffId);
-            if(!staff) throw StaffNotFound;
 
             await StaffServicePrice.destroy(
                 {
@@ -59,10 +52,8 @@ class StaffServiceController {
                     }
                 }
             );
-            let sspData = data.prices.map(item => staffServiceHelper.buildStaffServicePriceData(item)).filter(val => val);
-            await StaffServicePrice.bulkCreate(sspData);
             let ssData = staffServiceHelper.buildStaffServiceData(data);
-            let staffService = await StaffService.update(
+            await StaffService.update(
                 {
                     ...ssData
                 },
@@ -72,6 +63,15 @@ class StaffServiceController {
                     }
                 }
             );
+            let staffService = await StaffService.findByPk(id);
+            let sspData = data.prices.map(item => staffServiceHelper.buildStaffServicePriceData(
+                {
+                    ...item,
+                    staffServiceId: staffService.id,
+                    serviceGroupId: staffService.serviceGroupId
+                }
+            )).filter(val => val);
+            await StaffServicePrice.bulkCreate(sspData);
 
             return res.status(200).json(staffService);
         }
@@ -86,21 +86,27 @@ class StaffServiceController {
         const staffServiceHelper = new StaffServiceHelper();
         try {
             let staffId = req.body.staffId;
-            if(!id) throw InputInfoEmpty;
             let data = req.body;
             if(!staffId) throw StaffNotFound;
 
             let staff = await Staff.findByPk(staffId);
             if(!staff) throw StaffNotFound;
 
-            let sspData = data.prices.map(item => staffServiceHelper.buildStaffServicePriceData(item)).filter(val => val);
-            await StaffServicePrice.bulkCreate(sspData);
             let ssData = staffServiceHelper.buildStaffServiceData(data);
             let staffService = await StaffService.create(
                 {
-                    ...ssData
+                    ...ssData,
                 }
             );
+            let sspData = data.prices.map(item => 
+                staffServiceHelper.buildStaffServicePriceData({
+                    ...item,
+                    staffServiceId: staffService.id,
+                    serviceGroupId: staffService.serviceGroupId
+                }))
+                .filter(val => val);
+            await StaffServicePrice.bulkCreate(sspData);
+            await staffServiceHelper.staffUpdateHandler(staffId);
 
             return res.status(200).json(staffService);
         }
@@ -114,13 +120,8 @@ class StaffServiceController {
     adminRemoveStaffService = async (req, res, next) => {
         try {
             let id = req.params.id ? parseInt(req.params.id) : null;
-            let staffId = req.body.staffId;
             if(!id) throw InputInfoEmpty;
-            if(!staffId) throw StaffNotFound;
-
-            let staff = await Staff.findByPk(staffId);
-            if(!staff) throw StaffNotFound;
-
+            let staffService = await StaffService.findByPk(id);
             await StaffServicePrice.destroy(
                 {
                     where: {
@@ -135,6 +136,8 @@ class StaffServiceController {
                     }
                 }
             );
+
+            await new StaffServiceHelper().staffUpdateHandler(staffService.staffId);
 
             return res.status(200).json({message: "DONE"});
         }
@@ -165,7 +168,7 @@ class StaffServiceController {
             );
             let data = await new StaffServiceHelper().getDefaultFormat(staffServices);
 
-            return res.status(200).json({message: "DONE"});
+            return res.status(200).json(data);
         }
         catch (err) {
             console.error(err);
@@ -189,10 +192,8 @@ class StaffServiceController {
                     }
                 }
             );
-            let sspData = data.prices.map(item => staffServiceHelper.buildStaffServicePriceData(item)).filter(val => val);
-            await StaffServicePrice.bulkCreate(sspData);
             let ssData = staffServiceHelper.buildStaffServiceData(data);
-            let staffService = await StaffService.update(
+            await StaffService.update(
                 {
                     ...ssData
                 },
@@ -202,6 +203,13 @@ class StaffServiceController {
                     }
                 }
             );
+            let staffService = await StaffService.findByPk(id);
+            let sspData = data.prices.map(item => staffServiceHelper.buildStaffServicePriceData({
+                ...item,
+                staffServiceId: staffService.id,
+                serviceGroupId: staffService.serviceGroupId
+            })).filter(val => val);
+            await StaffServicePrice.bulkCreate(sspData);
 
             return res.status(200).json(staffService);
         }
@@ -234,6 +242,7 @@ class StaffServiceController {
                     }
                 }
             );
+            await new StaffServiceHelper().staffUpdateHandler(staff.id);
 
             return res.status(200).json(staffService);
         }

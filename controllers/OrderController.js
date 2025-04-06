@@ -7,7 +7,7 @@ const { OrderFinishService } = require("../services/order/orderFinishService");
 const { OrderHelper } = require("../services/order/orderHelper");
 const { OrderQuerier } = require("../services/order/orderQuerier");
 const { OrderSwitch } = require("../services/order/switch/orderSwitch");
-const { OrderForwarderStatus } = require("../constants/status");
+const { OrderForwarderStatus, OrderStatus } = require("../constants/status");
 const { OrderReadyService } = require("../services/order/orderReadyService");
 const { OrderRejectService } = require("../services/order/orderRejectService");
 const { OrderReviewService } = require("../services/order/orderReviewService");
@@ -133,7 +133,7 @@ class OrderController {
             let id = req.params.id ? parseInt(req.params.id) : null;
             if(!id) throw InputInfoEmpty;
             
-            await new OrderFinishService().finish(id);
+            await new OrderFinishService().adminFinish(id);
 
             return res.status(200).json({message: "DONE"});
         }
@@ -149,7 +149,7 @@ class OrderController {
             let id = req.params.id ? parseInt(req.params.id) : null;
             if(!id) throw InputInfoEmpty;
             
-            await new OrderCancelService().cancel(id);
+            await new OrderCancelService().cancel(req.body, id);
 
             return res.status(200).json({message: "DONE"});
         }
@@ -207,7 +207,7 @@ class OrderController {
             let id = req.params.id ? parseInt(req.params.id) : null;
             if(!id) throw InputInfoEmpty;
             let userId = req.user.userId;
-            let includes = orderQuerier.buildIncludes(
+            let includes = await orderQuerier.buildIncludes(
                 {
                     includeStore: true,
                     includeStaffServicesPrice: true
@@ -225,6 +225,37 @@ class OrderController {
             );
 
             return res.status(200).json(order);
+        }
+        catch (err) {
+            console.error(err);
+            let {code, message} = new ErrorService(req).getErrorResponse(err);
+            return res.status(code).json({message});
+        }
+    }
+
+    getMyOrderForwarder = async (req, res, next) => {
+        const orderQuerier = new OrderQuerier();
+        try {
+            let orderId = req.params.orderId ? parseInt(req.params.orderId) : null;
+            if(!orderId) throw InputInfoEmpty;
+            let userId = req.user.userId;
+            
+            let orders = await OrderForwarder.findAll(
+                {
+                    where: {
+                        orderId: orderId,
+                        isAccept: true
+                    },
+                    include: [
+                        {
+                            model: Staff,
+                            as: "staff",
+                        }
+                    ]
+                }
+            );
+
+            return res.status(200).json(orders);
         }
         catch (err) {
             console.error(err);
@@ -260,10 +291,15 @@ class OrderController {
             let data = req.body;
             let userId = req.user.userId;
             let orderId = req.params.id ? parseInt(req.params.id) : null;
+            if(!orderId) throw InputInfoEmpty;
+            console.log("orderId", orderId);
+            await new OrderCancelService().customerCancel(
+                {
+                    ...data, 
+                    userId
+                }, orderId);
 
-            let order = await new OrderCancelService().customerCancel(data, orderId);
-
-            return res.status(200).json(order);
+            return res.status(200).json({message: "DONE"});
         }
         catch (err) {
             console.error(err);
@@ -277,9 +313,9 @@ class OrderController {
             let data = req.body;
             let userId = req.user.userId;
 
-            let order = await new OrderSwitch().switchOrderToForwarder(data.baseOrderId, data.fowardOrderId);
+            await new OrderSwitch().switchOrderToForwarder(data.baseOrderId, data.forwardOrderId);
 
-            return res.status(200).json(order);
+            return res.status(200).json({message: "Done switch order to forwarder"});
         }
         catch (err) {
             console.error(err);
@@ -291,8 +327,7 @@ class OrderController {
     getStaffOrders = async (req, res, next) => {
         const orderQuerier = new OrderQuerier();
         try {
-            let page = req.query.page ? parseInt(req.query.page) : 1;
-            let perPage = req.query.perPage ? parseInt(req.query.perPage) : 10;
+            let limit = req.query.limit ? parseInt(req.query.limit) : 10;
             let orderOffset = req.query.orderOffset ? parseInt(req.query.orderOffset) : 0;
             let forwardOffset = req.query.forwardOffset ? parseInt(req.query.forwardOffset) : 0;
             let userId = req.user.userId;
@@ -303,8 +338,17 @@ class OrderController {
                 staffId: staff.id,
             });
 
+            conds = [
+                ...conds,
+                // {
+                //     status: {
+                //         [Op.notIn]: [OrderStatus.Canceled, OrderStatus.Denied]
+                //     }
+                // }
+            ]
+
             let attributes = orderQuerier.buildAttributes();
-            let includes = orderQuerier.buildIncludes(
+            let includes = await orderQuerier.buildIncludes(
                 {
                     includeStaffServicesPrice: true,
                     includeStore : true
@@ -314,8 +358,10 @@ class OrderController {
 
             let orders = await Order.findAll(
                 {
-                    where: conds,
-                    limit: perPage,
+                    where: {
+                        [Op.and]: conds
+                    },
+                    limit: limit,
                     offset: orderOffset,
                     attributes,
                     include: includes,
@@ -331,7 +377,7 @@ class OrderController {
                             [Op.notIn]: [OrderForwarderStatus.Switched, OrderForwarderStatus.Reject]
                         }
                     },
-                    limit: perPage,
+                    limit: limit,
                     offset: forwardOffset,
                     include: [
                         {
@@ -366,7 +412,7 @@ class OrderController {
                 }
             );
 
-            let data = await new OrderHelper().orderStaffProcessDisplay(orders, orderForwarders, {orderOffset, forwardOffset, limit: perPage});
+            let data = await new OrderHelper().orderStaffProcessDisplay(orders, orderForwarders, {orderOffset, forwardOffset, limit});
 
             return res.status(200).json(data);
 
@@ -409,13 +455,27 @@ class OrderController {
 
     readyOrder = async (req, res, next) => {
         try {
-            let data = req.body;
+            let id = req.params.id ? parseInt(req.params.id) : null;
+            if(!id) throw InputInfoEmpty;
             let userId = req.user.userId;
+            console.log("userId", userId);
             let staff = await Staff.findOne({where: {userId}});
 
-            let {isApprove, isReady, isQuickForward} = await new OrderReadyService().ready(data.orderId, staff);
+            let {isApproved, isReady, isQuickForward} = await new OrderReadyService().ready(id, staff);
+
+            if(isApproved) {
+                return res.status(200).json({message: "Approve order successfully"})
+            }
+
+            if(isReady) {
+                return res.status(200).json({message: "ready forward order successfully"})
+            }
+
+            if(isQuickForward) {
+                return res.status(200).json({message: "Approve quick order successfully"})
+            }
             
-            return res.status(200).json({message: "DONE"})
+            return res.status(200).json({message: "DONE"});
         }
         catch (err) {
             console.error(err);
@@ -426,11 +486,15 @@ class OrderController {
 
     rejectOrder = async (req, res, next) => {
         try {
+            let id = req.params.id ? parseInt(req.params.id) : null;
+            if(!id) throw InputInfoEmpty;
             let data = req.body;
             let userId = req.user.userId;
             let staff = await Staff.findOne({where: {userId}});
 
-            await new OrderRejectService().defaultReject(data.orderId, staff);
+            let isOwner = await new OrderRejectService().defaultReject(id, staff);
+
+            if(isOwner) return res.status(200).json({message: "reject my order successfully"});
             
             return res.status(200).json({message: "DONE"})
         }
@@ -443,11 +507,13 @@ class OrderController {
 
     cancelOrder = async (req, res, next) => {
         try {
+            let id = req.params.id ? parseInt(req.params.id) : null;
+            if(!id) throw InputInfoEmpty; 
             let data = req.body;
             let userId = req.user.userId;
             let staff = await Staff.findOne({where: {userId}});
 
-            await new OrderCancelService().cancel(data, data.orderId);
+            await new OrderCancelService().cancel(data, id);
             
             return res.status(200).json({message: "DONE"})
         }
@@ -458,18 +524,14 @@ class OrderController {
         }
     }
 
-    cancelMyOrder = async (req, res, next) => {
+    finishOrder = async (req, res, next) => {
         try {
-            let data = req.body;
-            let userId = req.user.userId;
-
-            await new OrderCancelService().customerCancel(
-                {
-                    ...data,
-                    userId
-                }, data.orderId);
+            let id = req.params.id ? parseInt(req.params.id) : null;
+            if(!id) throw InputInfoEmpty;
             
-            return res.status(200).json({message: "DONE"})
+            await new OrderFinishService().finish(id);
+
+            return res.status(200).json({message: "DONE"});
         }
         catch (err) {
             console.error(err);
@@ -670,6 +732,4 @@ class OrderController {
 
 }
 
-module.exports = {
-    OrderController
-}
+module.exports = new OrderController();

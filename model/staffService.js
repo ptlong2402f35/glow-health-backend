@@ -20,6 +20,10 @@ module.exports = (sequelize, DataTypes) => {
                 foreignKey: "serviceId",
                 as: "service"
             });
+            StaffService.belongsTo(models.ServiceGroup, {
+                foreignKey: "serviceGroupId",
+                as: "serviceGroup"
+            });
             StaffService.hasMany(models.StaffServicePrice, {
                 foreignKey: "staffServiceId",
                 as: "prices"

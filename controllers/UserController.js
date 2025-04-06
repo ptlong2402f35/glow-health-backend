@@ -79,10 +79,11 @@ class UserController {
     updatePassword = async (req, res, next) => {
         try {
             let userId = req.user.userId;
-            if(!data.password) throw PasswordEmpty;
+            let data = req.body;
+            if(!data.password || !data.oldPassword) throw PasswordEmpty;
 
             let user = await User.findByPk(userId);
-            let checkPass = bcrypt.compareSync(data.password, user.password);
+            let checkPass = bcrypt.compareSync(data.oldPassword, user.password);
             if(!checkPass) throw PasswordNotMatch;
             let passHashed = bcrypt.hashSync(data.password, 10);
             await user.update(
@@ -171,7 +172,7 @@ class UserController {
             let userId = req.user.userId;
             let active = req.body.active;
             
-            let user = await User.findOne(userId);
+            let user = await User.findByPk(userId);
             if(!user) throw UserNotFound;
             await user.update(
                 {

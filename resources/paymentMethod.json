@@ -1,0 +1,12 @@
+[
+    {
+        "name": "Tiền mặt",
+        "code": "cash",
+        "value": 1
+    },
+    {
+        "name": "Ví glow",
+        "code": "glow wallet",
+        "value": 2
+    }
+]

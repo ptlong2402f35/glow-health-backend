@@ -20,8 +20,12 @@ class StaffCreateService {
 
             let t = await sequelize.transaction();
             try {
-                await this.createUser(data, t);
-                staff = await this.createStaff(data, t);
+                let {user} = await this.createUser(data, t);
+                staff = await this.createStaff(
+                    {
+                        ...data,
+                        userId: user.id
+                    }, t);
                 await t?.commit();
 
             }
@@ -47,7 +51,7 @@ class StaffCreateService {
                 }
             );
     
-            await Staff.create(
+            return await Staff.create(
                 builtData,
                 {
                     ...(t ? {transaction: t} : {})
@@ -61,7 +65,7 @@ class StaffCreateService {
 
     async createUser(data, t) {
         try {
-            await this.authService.handleCustomerSignup(
+            return await this.authService.handleCustomerSignup(
                 {
                     ...data,
                     password: DefaultStaffPassword,

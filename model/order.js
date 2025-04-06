@@ -11,7 +11,27 @@ module.exports = (sequelize, DataTypes) => {
          */
 
         static associate(models) {
-
+            Order.belongsTo(models.User, {
+				foreignKey: "customerUserId",
+				as: "customerUser",
+			});
+            Order.belongsTo(models.Staff, {
+				foreignKey: "staffId",
+				as: "staff",
+			});
+            Order.belongsTo(models.Voucher, {
+				foreignKey: "voucherId",
+				as: "voucher",
+			});
+            Order.belongsToMany(models.StaffServicePrice, {
+                through: "OrderPrices",
+				foreignKey: "orderId",
+				as: "prices",
+			});
+            Order.belongsTo(models.Store, {
+				foreignKey: "storeId",
+				as: "store",
+			});
         }
     }
     Order.init(
@@ -44,7 +64,6 @@ module.exports = (sequelize, DataTypes) => {
             forwardFromOrderId: DataTypes.INTEGER,
             createdAt: DataTypes.DATE,
             updatedAt: DataTypes.DATE,
-            staffSerivcePriceIds: DataTypes.INTEGER,
             voucherId: DataTypes.INTEGER,
         },
         {

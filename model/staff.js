@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
                 foreignKey: "userId",
                 as: "user",
             });
-            Staff.hasOne(models.Staff, {
+            Staff.hasOne(models.Store, {
                 foreignKey: "ownStaffId",
                 constraints: false,
                 as: "ownStore",
@@ -23,6 +23,10 @@ module.exports = (sequelize, DataTypes) => {
             Staff.belongsTo(models.Store, {
                 foreignKey: "storeId",
                 as: "store"
+            });
+            Staff.hasMany(models.StaffService, {
+                foreignKey: "staffId",
+                as: "staffServices",
             });
         }
     }

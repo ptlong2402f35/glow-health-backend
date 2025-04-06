@@ -1,3 +1,4 @@
+const { Op } = require("sequelize");
 const { OrderStatusInvalid, InputInfoEmpty } = require("../../constants/message");
 const { OrderStatus, OrderForwarderStatus } = require("../../constants/status");
 
@@ -28,14 +29,19 @@ class OrderRejectService {
 
     async defaultReject(orderId, staff) {
         try {
+            let isOwner;
             if(!orderId || !staff) throw InputInfoEmpty;
             let {order, orderForwarder} = await this.prepare(orderId, staff.id, staff.storeId);
-
             if(order.staffId === staff.id) {
                 await this.rejectOrder(orderId);
+                isOwner = true;
             }
-            
             await this.rejectForwarder(orderForwarder.id);
+            if(isOwner) {
+
+            }
+
+            return isOwner;
 
         }
         catch (err) {

@@ -47,7 +47,7 @@ class TransactionService {
             }
         );
 
-        return trans
+        return trans;
     }
 
     async topupWallet(walletUser, data, transaction, opts) {
@@ -88,7 +88,7 @@ class TransactionService {
             forUserId: data.forUserId,
             content: data.content,
             orderId: data.orderId,
-            money: data.money,
+            money: data.amount,
             totalMoney: data.totalMoney,
             userCreate: data.userCreate,
             success: true,

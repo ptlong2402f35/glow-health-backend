@@ -14,11 +14,11 @@ class OrderHelper {
             //sort by order status
             let approvedOrders = orders.filter(order => order.status === OrderStatus.Approved);
             approvedOrders.sort((a,b) => a.createdAt < b.createdAt ? 1 : -1);
-            let pendingOrders = orders.filter(order => [OrderStatus.Pending, OrderStatus.Denied].includes(order.status));
+            let pendingOrders = orders.filter(order => [OrderStatus.Pending].includes(order.status));
             pendingOrders.sort((a,b) => a.createdAt < b.createdAt ? 1 : -1);
             let beginForwardOrder = orderForwarders.filter(order => order.status === OrderForwarderStatus.Begin);
             beginForwardOrder.sort((a,b) => a.createdAt < b.createdAt ? 1 : -1);
-            let otherOrder = orders.filter(order => ![OrderStatus.Approved, OrderStatus.Pending, OrderStatus.Denied].includes(order.status));
+            let otherOrder = orders.filter(order => ![OrderStatus.Approved, OrderStatus.Pending].includes(order.status));
             otherOrder.sort((a,b) => a.createdAt < b.createdAt ? 1 : -1);
             let otherForwarderOrder = orderForwarders.filter(order => ![OrderForwarderStatus.Begin].includes(order.status));
             otherForwarderOrder.sort((a,b) => a.createdAt < b.createdAt ? 1 : -1);
@@ -57,7 +57,7 @@ class OrderHelper {
             }
 
             return {
-                resp,
+                docs: resp,
                 orderOffset,
                 forwardOffset
             };
@@ -81,6 +81,10 @@ class OrderHelper {
         order.setDataValue("baseOrderId", order.id);
         order.forwardOrderId = forwardOrder.id;
         order.setDataValue("forwardOrderId", forwardOrder.id);
+        order.forwardOrderStatus = forwardOrder.status;
+        order.setDataValue("forwardOrderStatus", forwardOrder.status);
+        order.forwardAccept = forwardOrder.isAccept;
+        order.setDataValue("forwardAccept", forwardOrder.isAccept);
 
         return order;
     }

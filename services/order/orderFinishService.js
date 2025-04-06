@@ -1,5 +1,5 @@
 const { PaymentMethod } = require("../../constants/constants");
-const { OrderStatusInvalid } = require("../../constants/message")
+const { OrderStatusInvalid, NotEnoughPermission, PaymentMethodNotValid } = require("../../constants/message")
 const { OrderStatus } = require("../../constants/status");
 const { sequelize } = require("../../model");
 const { TransactionService } = require("../transaction/transactionService");
@@ -13,9 +13,17 @@ class OrderFinishService {
         this.transactionService = new TransactionService();
     }
 
-    async finish(id) {
+    async adminFinish(id) {
+        return await this.finish(id, true);
+    }
+
+    async finish(id, isAdmin) {
         let {order, staff, customerUser} = await this.prepare(id);
         if(!await this.validate(order)) return;
+
+        if(!isAdmin) {
+            if(order.staffId !== staff.id) throw NotEnoughPermission;
+        }
 
         await this.updateOrder(order);
         await this.updateStaff(staff);
@@ -43,19 +51,22 @@ class OrderFinishService {
 
     async updateStaffWallet(staff, order) {
         let amount = order.totalPay - order.totalReceive;
+        console.log("order", order.paymentMethodId);
+        console.log("amount", amount);
         switch(order.paymentMethodId) {
             case PaymentMethod.Cash: {
                 let trans;
                 const t = await sequelize.transaction();
                 try {
                     let walletUser = await this.transactionService.getWalletUser(staff.userId);
+                    console.log("walletUser", walletUser)
                     trans = await this.transactionService.chargeWallet(
                         walletUser,
                         {
                             forUserId: walletUser.id,
                             content: "Tiền thu phí dịch vụ Glow Healthy",
                             orderId: order.id,
-                            money: amount,
+                            amount: amount,
                             totalMoney: walletUser.totalMoney - amount,
                             userCreate: walletUser.id,
                             add :false
@@ -85,7 +96,7 @@ class OrderFinishService {
                             forUserId: walletUser.id,
                             content: `Bạn được cộng ${order.totalReceive} vào ví do hoàn thành đơn ${order.code}`,
                             orderId: order.id,
-                            money: order.totalReceive,
+                            amount: order.totalReceive,
                             totalMoney: walletUser.totalMoney + order.totalReceive,
                             userCreate: walletUser.id,
                             add: true
@@ -102,7 +113,7 @@ class OrderFinishService {
                 return trans;
             }
             default: {
-                
+                throw PaymentMethodNotValid;
             }
         }
     }

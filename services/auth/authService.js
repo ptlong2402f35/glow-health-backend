@@ -86,7 +86,7 @@ class AuthService {
             }
         }
         catch (err) {
-
+            throw err;
         }
     }
 
@@ -147,6 +147,7 @@ class AuthService {
             if(!user) throw UpdateFailMessage;
             let resp = {
                 userId: user.id,
+                user: user
             };
             const {accessToken, refreshToken, expiredIn} = await this.generateToken(user);
             if(accessToken && refreshToken) {

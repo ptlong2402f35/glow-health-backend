@@ -2,7 +2,7 @@ const { Op } = require("sequelize");
 const staff = require("../model/staff");
 const { StaffQuerier } = require("../services/staff/staffQuerier");
 const { ErrorService } = require("../services/errorService");
-const { UserNotFound, NotEnoughPermission } = require("../constants/message");
+const { UserNotFound, NotEnoughPermission, InputInfoEmpty } = require("../constants/message");
 const { StaffCreateService } = require("../services/staff/staffCreateService");
 const { StaffRegisterService } = require("../services/staff/staffRegisterService");
 const { StaffUpdateService } = require("../services/staff/staffUpdateService");
@@ -78,7 +78,7 @@ class StaffController {
         try {
             let data = req.body;
             let staff = await new StaffCreateService().adminCreateStaff(data);
-
+            console.log("staff", staff);
             return res.status(200).json(staff);
         }
         catch (err) {
@@ -92,13 +92,15 @@ class StaffController {
         let staffCreateService = new StaffCreateService();
         try {
             let data = req.body;
+            let staffId = req.params.id ? parseInt(req.params.id) : null;
+            if(!staffId) throw InputInfoEmpty;
             let builtData = new StaffCreateService().build(data);
 
             await Staff.update(
                 builtData,
                 {
                     where: {
-                        id: data.userId
+                        id: staffId
                     }
                 }
             );
@@ -115,6 +117,7 @@ class StaffController {
     adminDeactiveStaff = async (req, res, next) => {
         try {
             let id = req.params.id ? parseInt(req.params.id) : null;
+            let data = req.body;
             await Staff.update(
                 {
                     active: data.active

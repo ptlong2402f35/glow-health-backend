@@ -15,12 +15,15 @@ class OrderSwitch {
     }
 
     async switchOrderToForwarder(baseOrderId, forwardOrderId) {
+        console.log("baseOrderId", baseOrderId);
+        console.log("forwardOrderId", forwardOrderId);
         let {baseOrder, anotherFOrder, forwardOrder, forwardStaff} = await this.prepare(baseOrderId, forwardOrderId);
         if(!await this.validate(baseOrder)) return;
-
+        console.log("ano", anotherFOrder)
         await this.cancelBaseOrder(baseOrder);
         await this.cancelAnotherForwardOrder(anotherFOrder);
         await this.updateAndCreateForwardOrder(baseOrder, forwardOrder, forwardStaff);
+        await this.updateForwardStaff(forwardStaff);
 
         //noti
     }
@@ -59,9 +62,22 @@ class OrderSwitch {
         await this.orderCreateService.createSwitchOrderFromBaseOrder(baseOrder, forwardStaff);
     }
 
+    async updateForwardStaff(forwardStaff) {
+        await Staff.update(
+            {
+                busy: true
+            },
+            {
+                where: {
+                    id: forwardStaff.id
+                }
+            }
+        );
+    }
+
     async prepare(baseOrderId, forwardOrderId) {
         let baseOrder = await Order.findByPk(baseOrderId);
-        let anotherFOrder = OrderForwarder.findAll(
+        let anotherFOrder = await OrderForwarder.findAll(
             {
                 where: {
                     orderId: baseOrderId,
@@ -89,7 +105,7 @@ class OrderSwitch {
     }
 
     async validate(baseOrder) {
-        if(baseOrder.status != OrderStatus.Pending) throw OrderStatusInvalid;
+        if(![OrderStatus.Pending, OrderStatus.Denied].includes(baseOrder.status)) throw OrderStatusInvalid;
         return true;
     }
 }

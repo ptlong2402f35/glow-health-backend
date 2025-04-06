@@ -1,5 +1,5 @@
 
-class VourcherService {
+class VoucherService {
     constructor() {}
 
     build(data) {
@@ -13,11 +13,11 @@ class VourcherService {
             scope: data.scope,
             staffId: data.staffId,
             storeId: data.storeId,
-            active: data.active
+            status: data.status
         }
     }
 }
 
 module.exports = {
-    VourcherService
+    VoucherService
 }

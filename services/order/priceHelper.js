@@ -1,16 +1,16 @@
 const { Op } = require("sequelize");
 
 const StaffServicePrice = require("../../model").StaffServicePrice;
-const Vourcher = require("../../model").Vourcher;
+const Voucher = require("../../model").Voucher;
 
 class PriceHelper {
     factors;
     servicePriceFactory;
-    vourcherFactory;
+    voucherFactory;
     constructor() {
-        this.factors = [new ServicePriceFactory, new VourcherFactory];
+        this.factors = [new ServicePriceFactory, new VoucherFactory];
         this.servicePriceFactory = new ServicePriceFactory();
-        this.vourcherFactory = new VourcherFactory();
+        this.voucherFactory = new VoucherFactory();
     }
 
     async calcOrderFee(data) {
@@ -26,8 +26,8 @@ class PriceHelper {
         let ssPrices = await this.servicePriceFactory.fetch(data.staffServicePriceIds);
         price.total = await this.servicePriceFactory.getTotal(ssPrices);
 
-        let vourchers = await this.vourcherFactory.fetch([data.vourcherId]);
-        price.reduce = await this.vourcherFactory.getTotal(vourchers);
+        let vouchers = await this.voucherFactory.fetch([data.voucherId]);
+        price.reduce = await this.voucherFactory.getTotal(vouchers);
 
         price.totalPay = price.total - price.reduce;
         price.totalReceive = price.total * price.earningRate;
@@ -69,12 +69,12 @@ class ServicePriceFactory {
     }
 }
 
-class VourcherFactory {
+class VoucherFactory {
     constructor() {}
 
     async fetch(ids) {
         if(!ids) return [];
-        let vourchers = await Vourcher.findAll(
+        let vouchers = await Voucher.findAll(
             {
                 where: {
                     id:{
@@ -84,10 +84,10 @@ class VourcherFactory {
             }
         );
 
-        return vourchers;
+        return vouchers;
     }
 
-    getTotal() {
+    getTotal(prices) {
         let total = prices.reduce((acc ,cur) => acc + (cur.reduceValue || 0), 0);
         return total;
     }
@@ -96,5 +96,5 @@ class VourcherFactory {
 module.exports = {
     PriceHelper,
     ServicePriceFactory,
-    VourcherFactory
+    VoucherFactory
 }

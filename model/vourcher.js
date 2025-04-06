@@ -3,7 +3,7 @@ const { Model } = require("sequelize");
 const sequelizePaginate = require("sequelize-paginate");
 
 module.exports = (sequelize, DataTypes) => {
-    class Service extends Model {
+    class Voucher extends Model {
         /**
          * Helper method for defining associations.
          * This method is not a part of Sequelize lifecycle.
@@ -11,26 +11,28 @@ module.exports = (sequelize, DataTypes) => {
          */
 
         static associate(models) {
-            Service.belongsTo(models.ServiceGroup, {
-                foreignKey: "serviceGroupId",
-                as: "serviceGroup"
-            });
+
         }
     }
-    Service.init(
+    Voucher.init(
         {
-            name: DataTypes.TEXT,
-            active: DataTypes.BOOLEAN,
-            description: DataTypes.TEXT,
-            serviceGroupId: DataTypes.INTEGER,
+            code: DataTypes.TEXT,
+            reduceValue: DataTypes.DOUBLE,
+            reducePercent: DataTypes.DOUBLE,
+            startAt: DataTypes.DATE,
+            endAt: DataTypes.DATE,
+            status: DataTypes.INTEGER,
+            scope: DataTypes.INTEGER,
+            staffId: DataTypes.INTEGER,
+            storeId: DataTypes.INTEGER,
             createdAt: DataTypes.DATE,
             updatedAt: DataTypes.DATE,
         },
         {
             sequelize,
-            modelName: "Service",
+            modelName: "Voucher",
         },
     );
-    sequelizePaginate.paginate(Service);
-    return Service;
+    sequelizePaginate.paginate(Voucher);
+    return Voucher;
 };

@@ -1,4 +1,4 @@
-const VourcherScope = {
+const VoucherScope = {
     Full: 1,
     Special: 2
 }
@@ -10,6 +10,6 @@ const PaymentMethod = {
 }
 
 module.exports = {
-    VourcherScope,
+    VoucherScope,
     PaymentMethod
 }
