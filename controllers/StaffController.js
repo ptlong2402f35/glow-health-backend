@@ -181,7 +181,19 @@ class StaffController {
             let staff = await Staff.findOne({
                 where: {
                     id,
-                }
+                },
+                include: [
+                    {
+                        model: StaffService,
+                        as: "staffService",
+                        include: [
+                            {
+                                model: StaffServicePrice,
+                                as: "prices"
+                            }
+                        ]
+                    }
+                ]
             });
 
             return res.status(200).json(staff);
