@@ -155,6 +155,7 @@ class StaffQuerier {
         useCoordinate, coordinateLong, coordinateLat
     }) {
         let attributes = [
+            "id",
             "name",
             "userId",
             "age",
