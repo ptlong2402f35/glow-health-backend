@@ -185,7 +185,7 @@ class StaffController {
                 include: [
                     {
                         model: StaffService,
-                        as: "staffService",
+                        as: "staffServices",
                         include: [
                             {
                                 model: StaffServicePrice,
