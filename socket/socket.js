@@ -1,5 +1,6 @@
 const {Server} = require("socket.io");
-
+const ChannelPassword = process.env.CHANNEL_PASSWORD || "12345678";
+const auth = require("../services/auth/auth");
 function initSocket(server) {
 	const io = new Server(server, {
 		cors: {
@@ -10,41 +11,38 @@ function initSocket(server) {
 	global._io = io;
 	global._socketUsers = [];
 	
-	// io.use((socket, next) => {
-	// 	const userId = socket.handshake.auth?.userId;
-	// 	const token = socket.handshake.auth?.token;
-	// 	const channelPassword = socket.handshake.auth?.channelPassword;
+	io.use((socket, next) => {
+		const userId = socket.handshake.auth?.userId;
+		const token = socket.handshake.auth?.token;
+		const channelPassword = socket.handshake.auth?.channelPassword;
 	
-	// 	if(channelPassword === ChannelPassword) {
-	// 		socket.userId = 0;
-	// 		socket.isAuthen = true;
-	// 	}
-	// 	else {
-	// 		const isAuthen = Auth.checkAuthen(userId, token);
-	// 		console.log(userId, token, isAuthen);
-	// 		if (!userId || !isAuthen) {
-	// 			return next(new Error("invalid userId"));
-	// 		}
-	// 		socket.userId = userId;
-	// 		socket.isAuthen = isAuthen;
-	// 	}
+		if(channelPassword === ChannelPassword) {
+			socket.userId = 0;
+			socket.isAuthen = true;
+		}
+		else {
+			const isAuthen = auth.checkAuthen(userId, token);
+			if (!userId || !isAuthen) {
+				return next(new Error("invalid userId"));
+			}
+			socket.userId = userId;
+			socket.isAuthen = isAuthen;
+		}
 	
-	// 	next();
-	// });
+		next();
+	});
 	
 	io.on("connection", socket => {
 		for (let [id, socket] of io.of("/").sockets) {
-			// if (socket.isAuthen) {
-			// 	_socketUsers.push({
-			// 		socketId: id,
-			// 		userId: socket.userId,
-			// 	});
-			// }
-			_socketUsers.push({
-				socketId: id,
-				userId: socket.userId,
-			});
+			if (socket.isAuthen) {
+				_socketUsers.push({
+					socketId: id,
+					userId: socket.userId,
+				});
+			}
 		}
+		//join room
+		socket.join(socket.userId);
 		console.log(`==== [Socket] User ${socket.userId} connected with socketId ${socket.id}`);
 	
 		socket.on("disconnect", function () {

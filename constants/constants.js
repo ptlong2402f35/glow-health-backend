@@ -9,7 +9,12 @@ const PaymentMethod = {
 
 }
 
+const PaymentItegrateMethod = {
+    Paypal: 1
+}
+
 module.exports = {
     VoucherScope,
-    PaymentMethod
+    PaymentMethod,
+    PaymentItegrateMethod
 }

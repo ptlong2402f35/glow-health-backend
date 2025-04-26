@@ -44,6 +44,7 @@ router.delete("/customer-address/remove-address", auth.auth, CustomerAddressCont
 /* Payment */
 router.get("/payment/payment-method", PaymentController.getPaymentMethod);
 router.post("/payment/recharge", auth.auth, PaymentController.userRecharge);
+router.post("/payment/recharge-success", auth.auth, PaymentController.userRechargeSuccess);
 
 /* Notification */
 router.get("/notification/my-noti", auth.auth, NotificationController.getMyNoti);
