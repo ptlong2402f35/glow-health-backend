@@ -19,6 +19,7 @@ const User = require("../model").User;
 const OrderForwarder = require("../model").OrderForwarder;
 const StaffService = require("../model").StaffService;
 const StaffServicePrice = require("../model").StaffServicePrice;
+const ServiceGroup = require("../model").ServiceGroup;
 
 class OrderController {
     adminGetOrder = async () => {
@@ -250,6 +251,14 @@ class OrderController {
                         {
                             model: Staff,
                             as: "staff",
+                            attributes: ["id", "userId", "name", "images"],
+                            include: [
+                                {
+                                    model: User,
+                                    as: "user",
+                                    attributes: ["id", "phone", "urlImage"]
+                                }
+                            ]
                         }
                     ]
                 }
@@ -387,13 +396,27 @@ class OrderController {
                                 {
                                     model: StaffServicePrice,
                                     as: "prices",
+                                    attributes: ["id", "price", "unit"],
                                     include: [
                                         {
                                             model: StaffService,
-                                            as: "staffService"
-                                        }
-                                    ]
-                                }
+                                            as: "staffService",
+                                            attributes: ["id", "name"],
+                                            include: [
+                                                {
+                                                    model: Service,
+                                                    as: "service",
+                                                    attributes: ["id", "name"],
+                                                },
+                                                {
+                                                    model: ServiceGroup,
+                                                    as: "serviceGroup",
+                                                    attributes: ["id", "name"],
+                                                }
+                                            ]
+                                        },
+                                    ],
+                                },
                             ]
                         },
                         {
@@ -664,6 +687,41 @@ class OrderController {
                     where: {
                         id
                     },
+                    include: [
+                        {
+                            model: Staff,
+                            as: "staff",
+                        },
+                        {
+                            model: User,
+                            as: "customerUser",
+                            attributes: ["id", "userName", "phone"]
+                        },
+                        {
+							model: StaffServicePrice,
+							as: "prices",
+                            attributes: ["id", "price", "unit"],
+							include: [
+								{
+									model: StaffService,
+									as: "staffService",
+                                    attributes: ["id", "name"],
+                                    include: [
+                                        {
+                                            model: Service,
+                                            as: "service",
+                                            attributes: ["id", "name"],
+                                        },
+                                        {
+                                            model: ServiceGroup,
+                                            as: "serviceGroup",
+                                            attributes: ["id", "name"],
+                                        }
+                                    ]
+								},
+							],
+						},
+                    ]
                 }
             );
 

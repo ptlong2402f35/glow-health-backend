@@ -1,8 +1,9 @@
 const { Op } = require("sequelize");
 const { OrderStatusInvalid } = require("../../constants/message");
 const { OrderForwarderStatus, OrderStatus } = require("../../constants/status");
-const { OrderType } = require("../../constants/type");
+const { OrderType, NotificationType, NotificationActionType } = require("../../constants/type");
 const { QuickForwardHandler } = require("./quickForward/quickForwardHandler");
+const { CommunicationService } = require("../communication/communicationService");
 
 let Order = require("../../model").Order;
 let OrderForwarder = require("../../model").OrderForwarder;
@@ -11,8 +12,10 @@ let User = require("../../model").User;
 
 class OrderReadyService {
     quickForwardHandler;
+    communicationService;
     constructor() {
         this.quickForwardHandler = new QuickForwardHandler();
+        this.communicationService = new CommunicationService();
     }
 
     async ownerReady(orderId, staff, chosenStaffIds) {
@@ -24,6 +27,7 @@ class OrderReadyService {
             await this.approveOrder(orderId);
             await this.cancelOrderForwarder(orderId, null, staff.storeId);
             //noti approve
+            this.noti(order, staff);
 
             return {
                 isApproved: true,
@@ -41,6 +45,7 @@ class OrderReadyService {
             await this.approveOrder(orderId);
             await this.cancelOrderForwarder(orderId, null, staff.storeId);
             //noti apply
+            this.noti(order, staff);
 
             return {
                 isApproved: false,
@@ -68,6 +73,7 @@ class OrderReadyService {
             await this.approveOrder(orderId);
             await this.cancelOrderForwarder(orderId, staff.id);
             //noti approve
+            this.noti(order, staff);
 
             return {
                 isApproved: true,
@@ -82,6 +88,7 @@ class OrderReadyService {
             await this.approveOrder(orderId);
             await this.cancelOrderForwarder(orderId, staff.id);
             //noti apply
+            this.noti(order, staff);
 
             return {
                 isApproved: false,
@@ -198,6 +205,40 @@ class OrderReadyService {
         if(![OrderStatus.Denied, OrderStatus.Pending].includes(order.status)) throw OrderStatusInvalid;
 
         return true;
+    }
+
+    async noti(order, staff) {
+        try {
+            await this.communicationService.sendNotificationToUserId(
+                staff.userId,
+                "Kết nối thành công",
+                `Vui lòng liên hệ với khách`,
+                NotificationType.OrderDetail,
+                {
+                    actionType: NotificationActionType.OrderDetail
+                },
+                order.id
+            );
+        }
+        catch (err) {
+            console.error(err);
+        }
+
+        try {
+            await this.communicationService.sendNotificationToUserId(
+                order.customerUserId,
+                "Đơn hàng đã được kết nối",
+                `Đơn hàng của bạn đã được Kỹ thuật viên chấp nhận, vui lòng kiểm tra`,
+                NotificationType.OrderCustomerDetail,
+                {
+                    actionType: NotificationActionType.OrderCustomerDetail
+                },
+                order.id
+            );
+        }
+        catch (err) {
+            console.error(err);
+        }
     }
 }
 

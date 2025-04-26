@@ -1,8 +1,10 @@
 const { Op } = require("sequelize");
 const { OrderForwarderStatus, OrderStatus } = require("../../../constants/status");
-const { OrderStatusInvalid } = require("../../../constants/message");
+const { OrderStatusInvalid, StaffBusy } = require("../../../constants/message");
 const { sequelize } = require("../../../model");
 const { OrderCreateService } = require("../orderCreate/orderCreateService");
+const { NotificationType, NotificationActionType } = require("../../../constants/type");
+const { CommunicationService } = require("../../communication/communicationService");
 
 const Order = require("../../../model").Order;
 const OrderForwarder = require("../../../model").OrderForwarder;
@@ -10,22 +12,24 @@ const Staff = require("../../../model").Staff;
 
 class OrderSwitch {
     orderCreateService;
+    communicationService;
     constructor() {
         this.orderCreateService = new OrderCreateService();
+        this.communicationService = new CommunicationService();
     }
 
     async switchOrderToForwarder(baseOrderId, forwardOrderId) {
         console.log("baseOrderId", baseOrderId);
         console.log("forwardOrderId", forwardOrderId);
         let {baseOrder, anotherFOrder, forwardOrder, forwardStaff} = await this.prepare(baseOrderId, forwardOrderId);
-        if(!await this.validate(baseOrder)) return;
-        console.log("ano", anotherFOrder)
+        if(!await this.validate(baseOrder, forwardStaff)) return;
         await this.cancelBaseOrder(baseOrder);
         await this.cancelAnotherForwardOrder(anotherFOrder);
-        await this.updateAndCreateForwardOrder(baseOrder, forwardOrder, forwardStaff);
+        let switchedOrder = await this.updateAndCreateForwardOrder(baseOrder, forwardOrder, forwardStaff);
         await this.updateForwardStaff(forwardStaff);
 
         //noti
+        this.noti(switchedOrder, forwardStaff);
     }
 
     async cancelBaseOrder(baseOrder) {
@@ -59,7 +63,7 @@ class OrderSwitch {
             }
         );
 
-        await this.orderCreateService.createSwitchOrderFromBaseOrder(baseOrder, forwardStaff);
+        return await this.orderCreateService.createSwitchOrderFromBaseOrder(baseOrder, forwardStaff);
     }
 
     async updateForwardStaff(forwardStaff) {
@@ -104,9 +108,44 @@ class OrderSwitch {
         }
     }
 
-    async validate(baseOrder) {
+    async validate(baseOrder, staff) {
         if(![OrderStatus.Pending, OrderStatus.Denied].includes(baseOrder.status)) throw OrderStatusInvalid;
+        if(staff.busy) throw StaffBusy;
         return true;
+    }
+
+    async noti(order, staff) {
+        try {
+            await this.communicationService.sendNotificationToUserId(
+                staff.userId,
+                "Kết nối thành công",
+                `Vui lòng liên hệ với khách`,
+                NotificationType.OrderDetail,
+                {
+                    actionType: NotificationActionType.OrderDetail
+                },
+                order.id
+            );
+        }
+        catch (err) {
+            console.error(err);
+        }
+
+        try {
+            await this.communicationService.sendNotificationToUserId(
+                order.customerUserId,
+                "Đơn hàng đã được kết nối",
+                `Đơn hàng của bạn đã được đổi KTV thành công, vui lòng kiểm tra`,
+                NotificationType.OrderCustomerDetail,
+                {
+                    actionType: NotificationActionType.OrderCustomerDetail
+                },
+                order.id
+            );
+        }
+        catch (err) {
+            console.error(err);
+        }
     }
 }
 

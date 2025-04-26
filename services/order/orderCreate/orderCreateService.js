@@ -1,6 +1,9 @@
 const { PaymentMethod } = require("../../../constants/constants");
+const { StaffRole } = require("../../../constants/roles");
 const { OrderStatus } = require("../../../constants/status");
+const { NotificationType, NotificationActionType } = require("../../../constants/type");
 const { sequelize } = require("../../../model");
+const { CommunicationService } = require("../../communication/communicationService");
 const { OrderForwarderService } = require("../orderForwarderService");
 const { OrderCreateBuilder } = require("./orderCreateBuilder");
 const Order = require("../../../model").Order;
@@ -12,13 +15,14 @@ const UserMoneyNotEnoughException = "UserMoneyNotEnoughException";
 class OrderCreateService {
     orderCreateBuilder;
     transactionService;
+    communicationService;
     constructor() {
         this.orderCreateBuilder = new OrderCreateBuilder();
-
+        this.communicationService = new CommunicationService();
     }
 
     async createSwitchOrderFromBaseOrder(baseOrder, forwardStaff) {
-        await Order.create(
+        return await Order.create(
             {
                 total: baseOrder.total,
                 totalPay: baseOrder.totalPay,
@@ -90,7 +94,7 @@ class OrderCreateService {
                         throw err1;
                     }
                     await this.createTransaction(order, userCustomer);
-
+                    this.notiCustomerPrePaid(order);
                     break;
                 }
                 default: {
@@ -98,9 +102,9 @@ class OrderCreateService {
                 }
             }
             await this.createOrderPrices(order.id, data.staffServicePriceIds);
-            await this.createOrderForwarder(order);
+            await this.createOrderForwarder(order, staff);
             //noti
-
+            this.noti(order);
             return order;
         }
         catch (err) {
@@ -152,12 +156,59 @@ class OrderCreateService {
         }
     }
 
-    async noti(order, userCustomer, baseStaff) {
+    async noti(order, staff) {
         try {
-            //noti
+            if(order.storeId) {
+                let storeOwner = await Staff.findOne({
+                    where: {
+                        storeId: order.storeId,
+                        staffRole: StaffRole.OwnerStation
+                    }
+                });
+                await this.communicationService.sendNotificationToUserId(
+                    storeOwner.userId,
+                    "Khách đặt bạn",
+                    `Có khách ở ${order.address}.Vui lòng kiểm tra thông tin`,
+                    NotificationType.OrderDetail,
+                    {
+                        actionType: NotificationActionType.OrderDetail
+                    },
+                    order.id
+                );
+            }
+            else {
+                await this.communicationService.sendNotificationToUserId(
+                    staff.userId,
+                    "Khách đặt bạn",
+                    `Có khách ở ${order.address}.Vui lòng kiểm tra thông tin`,
+                    NotificationType.OrderDetail,
+                    {
+                        actionType: NotificationActionType.OrderDetail
+                    },
+                    order.id
+                );
+
+            }
         }
         catch (err) {
-            throw err;
+            console.error(err);
+        }
+    }
+
+    async notiCustomerPrePaid(order) {
+        try {
+            await this.communicationService.sendNotificationToUserId(
+                order.customerUserId,
+                "Thông báo",
+                `Thanh toán cho đơn hàng ${order.code} qua ví Glow Healthy thành công`,
+                NotificationType.Transaction,
+                {
+                    actionType: NotificationActionType.Wallet
+                }
+            );
+        }
+        catch (err) {
+            console.error(err);
         }
     }
 

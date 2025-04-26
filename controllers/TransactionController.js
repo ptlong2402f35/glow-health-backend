@@ -3,6 +3,8 @@ const { TransactionNotFound } = require("../constants/message");
 const { ErrorService } = require("../services/errorService");
 const { TransactionService } = require("../services/transaction/transactionService");
 const { sequelize } = require("../model");
+const { CommunicationService } = require("../services/communication/communicationService");
+const { NotificationType, NotificationActionType } = require("../constants/type");
 const AdminUserId = process.env.ADMIN_USER_ID ? parseInt(process.env.ADMIN_USER_ID) : 1;
 const Transaction = require("../model").Transaction;
 const User = require("../model").User;
@@ -70,6 +72,15 @@ class TransactionController {
                     );
 
                     //noti
+                    await new CommunicationService().sendNotificationToUserId(
+                        data.userId,
+                        "Admin nạp tiền",
+                        `Bạn được cộng ${data.amount}đ vào ví Glow`,
+                        NotificationType.Transaction,
+                        {
+                            actionType: NotificationActionType.Wallet
+                        }
+                    );
 
                     break;
                 }
@@ -83,6 +94,15 @@ class TransactionController {
                             add: false
                         },
                         t
+                    );
+                    await new CommunicationService().sendNotificationToUserId(
+                        data.userId,
+                        "Admin trừ tiền",
+                        `Bạn bị trừ ${data.amount}đ trong ví Glow`,
+                        NotificationType.Transaction,
+                        {
+                            actionType: NotificationActionType.Wallet
+                        }
                     );
 
                     break;

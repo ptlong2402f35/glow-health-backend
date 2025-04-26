@@ -14,7 +14,7 @@ class CommunicationService {
         this.firebaseConfig = new FirebaseConfig().getInstance();
     }
 
-    async sendNotificationToUserId(userId, title, content, type, {actionType} = {}) {
+    async sendNotificationToUserId(userId, title, content, type, {actionType} = {}, referenceId) {
         try {
             await Notification.create({
                 toUserId: userId,
@@ -23,7 +23,8 @@ class CommunicationService {
                 content,
                 ...(actionType ? {actionType: actionType} : {}),
                 seen: false,
-                seenAt: null
+                seenAt: null,
+                referenceId: referenceId,
             });
         }
         catch (err) {
@@ -31,7 +32,7 @@ class CommunicationService {
         }
     }
 
-    async sendBulkNotificationToUserId(userIds, title, content, type, {actionType} = {}) {
+    async sendBulkNotificationToUserId(userIds, title, content, type, {actionType} = {}, referenceId) {
         try {
             await Notification.bulkCreate(userIds.map(item => (
                 {
@@ -41,7 +42,8 @@ class CommunicationService {
                     content,
                     ...(actionType ? {actionType: actionType} : {}),
                     seen: false,
-                    seenAt: null
+                    seenAt: null,
+                    referenceId
                 }
             )));
         }

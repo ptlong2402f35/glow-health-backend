@@ -1,5 +1,7 @@
 const { OrderStatusInvalid } = require("../../constants/message");
 const { OrderStatus } = require("../../constants/status");
+const { NotificationType, NotificationActionType } = require("../../constants/type");
+const { CommunicationService } = require("../communication/communicationService");
 
 const Order = require("../../model").Order;
 const User = require("../../model").User;
@@ -7,7 +9,10 @@ const Staff = require("../../model").Staff;
 const Review = require("../../model").Review;
 
 class OrderReviewService {
-    constructor() {}
+    communicationService;
+    constructor() {
+        this.communicationService = new CommunicationService();
+    }
 
     async review(data, orderId) {
         let {order, customerUser, staff} = await this.prepare(orderId);
@@ -17,6 +22,7 @@ class OrderReviewService {
         await this.updateStaff(data, staff);
 
         //noti
+        this.noti(order, staff);
     }
 
     async updateStaff(data, staff) {
@@ -77,6 +83,24 @@ class OrderReviewService {
         if(![OrderStatus.Finished].includes(order.status)) throw OrderStatusInvalid;
 
         return true;
+    }
+
+    async noti(order, staff) {
+        try {
+            await this.communicationService.sendNotificationToUserId(
+                staff.userId,
+                "Thông báo",
+                `Khách hàng đánh giá dịch vụ của bạn.`,
+                NotificationType.OrderDetail,
+                {
+                    actionType: NotificationActionType.OrderDetail
+                },
+                order.id
+            );
+        }
+        catch (err) {
+            console.error(err);
+        }
     }
 }
 

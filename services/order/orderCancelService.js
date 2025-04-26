@@ -1,7 +1,9 @@
 const { PaymentMethod } = require("../../constants/constants");
 const { OrderStatusInvalid, NotOwnerOrder } = require("../../constants/message")
 const { OrderStatus, OrderForwarderStatus } = require("../../constants/status");
+const { NotificationType, NotificationActionType } = require("../../constants/type");
 const { sequelize } = require("../../model");
+const { CommunicationService } = require("../communication/communicationService");
 const { TransactionService } = require("../transaction/transactionService");
 const Order = require("../../model").Order;
 const Staff = require("../../model").Staff;
@@ -9,7 +11,9 @@ const User = require("../../model").User;
 const OrderForwarder = require("../../model").OrderForwarder;
 
 class OrderCancelService {
+    communicationService;
     constructor() {
+        this.communicationService = new CommunicationService();
     }
 
     async customerCancel(data, id) {
@@ -19,9 +23,6 @@ class OrderCancelService {
 
         await this.updateOrder(order, data);
         await this.updateOrderForwarder(order.id);
-        //noti
-        await this.customerNoti(customerUser);
-        await this.staffNoti(staff);
     }
 
     async cancel(data, id) {
@@ -31,8 +32,7 @@ class OrderCancelService {
         await this.updateOrder(order, data, true);
         await this.updateStaff(staff);
         //noti
-        await this.customerNoti(customerUser);
-        await this.staffNoti(staff);
+        await this.customerNoti({userId: customerUser.id, orderId: data.orderId});
     }
 
     async updateOrder(order, data, isStaffCancel) {
@@ -92,8 +92,22 @@ class OrderCancelService {
         }
     }
 
-    async customerNoti() {
-
+    async customerNoti(data) {
+        try {
+            await this.communicationService.sendNotificationToUserId(
+                data.userId,
+                "Đơn hàng của bạn đã bị hủy",
+                `Đơn hàng của bạn đã được Kỹ thuật viên hủy, vui lòng kiểm tra`,
+                NotificationType.OrderCustomerDetail,
+                {
+                    actionType: NotificationActionType.OrderCustomerDetail
+                },
+                data.orderId
+            );
+        }
+        catch (err) {
+            console.error(err);
+        }
     }
 
     async staffNoti() {

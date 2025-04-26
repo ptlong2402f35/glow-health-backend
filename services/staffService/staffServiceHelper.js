@@ -18,7 +18,13 @@ class StaffServiceHelper {
             for(let service of services) {
                 let exist = staffServices.find(item => item?.serviceId === service.id);
                 if(exist) {
-                    res.push(exist);
+                    res.push(
+                        {
+                            ...service,
+                            ...exist,
+                            prices: exist.prices
+                        }
+                    );
                     continue;
                 }
                 res.push(

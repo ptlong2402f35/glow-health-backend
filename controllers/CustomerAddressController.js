@@ -1,97 +1,158 @@
 const { UserNotFound, InputInfoEmpty } = require("../constants/message");
 const { ErrorService } = require("../services/errorService");
+const { LocationService } = require("../services/locationService");
 const User = require("../model").User;
 const CustomerAddress = require("../model").CustomerAddress;
 
 class CustomerAddressControler {
-    userGetAddress = async (req, res, next) => {
-        try {
-            let userId = req.user.userId;
+  userGetAddress = async (req, res, next) => {
+    try {
+      let userId = req.user.userId;
 
-            console.log("userId", userId);
-            
-            let resp = await CustomerAddress.findAll({
-                where: {
-                    customerUserId: userId
-                }
-            });
+      console.log("userId", userId);
 
-            return res.status(200).json(resp);
-        }
-        catch (err) {
-            console.error(err);
-            let {code, message} = new ErrorService(req).getErrorResponse(err);
-            return res.status(code).json({message});
-        }
+      let resp = await CustomerAddress.findAll({
+        where: {
+          customerUserId: userId,
+        },
+      });
+
+      return res.status(200).json(resp);
+    } catch (err) {
+      console.error(err);
+      let { code, message } = new ErrorService(req).getErrorResponse(err);
+      return res.status(code).json({ message });
     }
+  };
 
-    userCreateAddress = async (req, res, next) => {
-        try {
-            let userId = req.user.userId;
-            let data = req.body;
-            if(!data.phone || !data.customerName) throw InputInfoEmpty;
-            let resp = await CustomerAddress.create({
-                ...data,
-                active: true,
-                default: data.isSetDefault ? true : false,
-                customerUserId: userId,
-            });
+  userCreateAddress = async (req, res, next) => {
+    try {
+      let userId = req.user.userId;
+      let data = req.body;
+      if (!data.phone || !data.customerName) throw InputInfoEmpty;
+      let resp = await CustomerAddress.create({
+        ...data,
+        active: true,
+        default: data.isSetDefault ? true : false,
+        customerUserId: userId,
+      });
 
-            return res.status(200).json({message: "DONE", resp});
-        }
-        catch (err) {
-            console.error(err);
-            let {code, message} = new ErrorService(req).getErrorResponse(err);
-            return res.status(code).json({message});
-        }
+      return res.status(200).json({ message: "DONE", resp });
+    } catch (err) {
+      console.error(err);
+      let { code, message } = new ErrorService(req).getErrorResponse(err);
+      return res.status(code).json({ message });
     }
+  };
 
-    userUpdateAddress = async (req, res, next) => {
-        try {
-            let userId = req.user.userId;
-            let data = req.body;
-            let id = req.params.id ? parseInt(req.params.id) : null;
-            if(!id) throw InputInfoEmpty;
-            
-            let resp = await CustomerAddress.update({
-                ...data,
-                default: data.isSetDefault ? true : false,
-            }, {
-                where: {
-                    customerUserId: userId,
-                    id
-                }
-            });
+  userUpdateAddress = async (req, res, next) => {
+    try {
+      let userId = req.user.userId;
+      let data = req.body;
+      let id = req.params.id ? parseInt(req.params.id) : null;
+      if (!id) throw InputInfoEmpty;
 
-            return res.status(200).json({message: "DONE"});
+      let resp = await CustomerAddress.update(
+        {
+          ...data,
+          default: data.isSetDefault ? true : false,
+        },
+        {
+          where: {
+            customerUserId: userId,
+            id,
+          },
         }
-        catch (err) {
-            console.error(err);
-            let {code, message} = new ErrorService(req).getErrorResponse(err);
-            return res.status(code).json({message});
-        }
+      );
+
+      return res.status(200).json({ message: "DONE" });
+    } catch (err) {
+      console.error(err);
+      let { code, message } = new ErrorService(req).getErrorResponse(err);
+      return res.status(code).json({ message });
     }
+  };
 
-    userRemoveAddress = async (req, res, next) => {
-        try {
-            let id = req.params.id ? parseInt(req.params.id) : null;
-            if(!id) throw InputInfoEmpty;
-            let userId = req.user.userId;
-            await CustomerAddress.destroy({
-                where: {
-                    id,
-                    customerUserId: userId
-                }
-            });
+  userRemoveAddress = async (req, res, next) => {
+    try {
+      let id = req.params.id ? parseInt(req.params.id) : null;
+      if (!id) throw InputInfoEmpty;
+      let userId = req.user.userId;
+      await CustomerAddress.destroy({
+        where: {
+          id,
+          customerUserId: userId,
+        },
+      });
 
-            return res.status(200).json({message: "DONE"});
-        }
-        catch (err) {
-            console.error(err);
-            let {code, message} = new ErrorService(req).getErrorResponse(err);
-            return res.status(code).json({message});
-        }
+      return res.status(200).json({ message: "DONE" });
+    } catch (err) {
+      console.error(err);
+      let { code, message } = new ErrorService(req).getErrorResponse(err);
+      return res.status(code).json({ message });
     }
+  };
+
+  getProvinceList = async (req, res, next) => {
+    try {
+      let search = req.query.search
+        ? req.query.search?.trim()?.toLowerCase()
+        : "";
+
+      let data = new LocationService().getProvinces(search);
+
+      return res.status(200).json(data);
+    } catch (err) {
+      console.error(err);
+      let { code, message } = new ErrorService(req).getErrorResponse(err);
+      return res.status(code).json({ message });
+    }
+  };
+
+  getDistrictList = async (req, res, next) => {
+    try {
+      let search = req.query.search
+        ? req.query.search?.trim()?.toLowerCase()
+        : "";
+      let provinceId = req.query.provinceId
+        ? parseInt(req.query.provinceId)
+        : null;
+
+      let data = new LocationService().getDistricts(search, provinceId);
+
+      return res.status(200).json(data);
+    } catch (err) {
+      console.error(err);
+      let { code, message } = new ErrorService(req).getErrorResponse(err);
+      return res.status(code).json({ message });
+    }
+  };
+
+  getCommuneList = async (req, res, next) => {
+    try {
+      let search = req.query.search
+        ? req.query.search?.trim()?.toLowerCase()
+        : "";
+      let provinceId = req.query.provinceId
+        ? parseInt(req.query.provinceId)
+        : null;
+      let districtId = req.query.districtId
+        ? parseInt(req.query.districtId)
+        : null;
+
+      let data = new LocationService().getCommunes(
+        search,
+        provinceId,
+        districtId
+      );
+
+      return res.status(200).json(data);
+    } catch (err) {
+      console.error(err);
+      let { code, message } = new ErrorService(req).getErrorResponse(err);
+      return res.status(code).json({ message });
+    }
+  };
 }
 
 module.exports = new CustomerAddressControler();

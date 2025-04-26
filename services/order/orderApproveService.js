@@ -1,14 +1,18 @@
 const { PaymentMethod } = require("../../constants/constants");
 const { OrderStatusInvalid } = require("../../constants/message")
 const { OrderStatus } = require("../../constants/status");
+const { NotificationType, NotificationActionType } = require("../../constants/type");
 const { sequelize } = require("../../model");
+const { CommunicationService } = require("../communication/communicationService");
 const { TransactionService } = require("../transaction/transactionService");
 const Order = require("../../model").Order;
 const Staff = require("../../model").Staff;
 const User = require("../../model").User;
 
 class OrderApproveService {
+    communicationService;
     constructor() {
+        this.communicationService = new CommunicationService();
     }
 
     async approve(id) {
@@ -18,8 +22,8 @@ class OrderApproveService {
         await this.updateOrder(order, data);
         await this.updateStaff(staff);
         //noti
-        await this.customerNoti(customerUser);
-        await this.staffNoti(staff);
+        this.customerNoti({userId: customerUser.id, orderId: order.id});
+        this.staffNoti({userId: staff.userId, orderId: order.id});
         //create chatbox
     }
 
@@ -66,12 +70,40 @@ class OrderApproveService {
         }
     }
 
-    async customerNoti() {
-
+    async customerNoti(data) {
+        try {
+            await this.communicationService.sendNotificationToUserId(
+                data.userId,
+                "Đơn hàng đã được kết nối",
+                `Đơn hàng của bạn đã được Kỹ thuật viên chấp nhận, vui lòng kiểm tra`,
+                NotificationType.OrderCustomerDetail,
+                {
+                    actionType: NotificationActionType.OrderCustomerDetail
+                },
+                data.orderId
+            );
+        }
+        catch (err) {
+            console.error(err);
+        }
     }
 
-    async staffNoti() {
-        
+    async staffNoti(data) {
+        try {
+            await this.communicationService.sendNotificationToUserId(
+                data.userId,
+                "Kết nối thành công",
+                `Vui lòng liên hệ với khách`,
+                NotificationType.OrderDetail,
+                {
+                    actionType: NotificationActionType.OrderDetail
+                },
+                data.orderId
+            );
+        }
+        catch (err) {
+            console.error(err);
+        }
     }
 }
 

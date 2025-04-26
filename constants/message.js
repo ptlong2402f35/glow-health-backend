@@ -32,7 +32,7 @@ const PhoneFormatNotValid = "PhoneFormatNotValid";
 const AdminOrderCannotPaid = "AdminOrderCannotPaid";
 const TimeExpiredAction = "TimeExpiredAction";
 const ExpiredResetKey = "ExpiredResetKey";
-
+const StaffBusy = "StaffBusy";
 
 const NotConnectParent = "NotConnectParent";
 
@@ -84,5 +84,6 @@ module.exports = {
     TransactionNotFound,
     TotalMoneyIsOver,
     ProgramNotFound,
-    PaymentMethodNotValid
+    PaymentMethodNotValid,
+    StaffBusy
 }

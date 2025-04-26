@@ -1,8 +1,9 @@
 const { Op } = require("sequelize");
 const { sequelize } = require("../../model");
 const { OrderForwarderStatus } = require("../../constants/status");
-const { OrderForwarderType } = require("../../constants/type");
+const { OrderForwarderType, NotificationType, NotificationActionType } = require("../../constants/type");
 const util = require("util");
+const { CommunicationService } = require("../communication/communicationService");
 
 const Staff = require("../../model").Staff;
 const OrderForwarder = require("../../model").OrderForwarder;
@@ -16,7 +17,10 @@ const ForwardStaffDistanceApply = process.env.FORWARD_STAFF_DISTANCE_APPLY ? par
 const ForwardStaffDuration = process.env.FORWARD_STAFF_DURATION ? parseInt(process.env.FORWARD_STAFF_DURATION) : 40 * 60 * 1000;
 
 class OrderForwarderService {
-    constructor() {}
+    communicationService;
+    constructor() {
+        this.communicationService = new CommunicationService();
+    }
 
     async startOrderForwardingFromId(orderId) {
         let order = await Order.findOne({
@@ -73,8 +77,7 @@ class OrderForwarderService {
 		console.log(`==== [OrderForwardStarter] done create order forwarders`);
 
 		if (recommendStaffs?.length) {
-			// await this.notiOrderForwardStaffs(order, records, stores, customerUser);
-			console.log(`==== [OrderForwardStarter] done notify forwarders`);
+			this.notiOrderForwardStaffs(order, records, stores, customerUser);
 		}
 
 		return records;
@@ -92,7 +95,7 @@ class OrderForwarderService {
         let serviceIds = order.prices.map(item => item.staffServiceId);
         let serviceGroups = order.prices.map(item => item.staffService.serviceGroupId);
         let baseUserId = order.customerUserId;
-        let distanceConds = order.lat && order.log;
+        let distanceConds = order.lat && order.long;
         let baseStaffId = order.staffId;
         
         //OR where
@@ -146,6 +149,11 @@ class OrderForwarderService {
             {
                 busy: {
                     [Op.not]: true
+                }
+            },
+            {
+                storeId: {
+                    [Op.not]: order.storeId
                 }
             }
         ];
@@ -206,7 +214,7 @@ class OrderForwarderService {
 
 		let cur = new Date();
 		let expiredAt = new Date(cur.getTime() + ForwardStaffDuration);
-		let forwarders = (recommendStaffs || []).map(item => ({
+		let forwarders = (recommendStaffs || [])?.filter(staff => !staff.storeId).map(item => ({
 			status: OrderForwarderStatus.Begin,
 			isAccepted: false,
 			orderId: order.id,
@@ -214,7 +222,7 @@ class OrderForwarderService {
 			expiredAt: expiredAt,
 			createdAt: cur,
 			updatedAt: cur,
-			storeId: item.storeId || 0,
+			storeId: 0,
 			type: OrderForwarderType.Normal,
 			timerTime: order.timerTime,
 		}));
@@ -240,9 +248,14 @@ class OrderForwarderService {
 		return records;
     }
 
-    async notiStaff() {
+    async notiOrderForwardStaffs(staffs, order) {
         //noti 
-        
+        let userIds = new Set([...staffs.map(item => item.userId).filter(val => val)]);
+        let content = `Có đơn mới ở ${order.address}. Bạn có thể ứng tuyển`;
+
+        await this.communicationService.sendBulkNotificationToUserId(userIds, "Thông báo", content, NotificationType.OrderDetail, {actionType: NotificationActionType.OrderDetail}, order.id);
+
+        console.log(`==== [OrderForwardStarter] done notify forwarders`);
     }
 }
 

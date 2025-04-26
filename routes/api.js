@@ -131,4 +131,9 @@ router.get("/store-owner/order/:id", auth.auth, OrderController.ownerGetStaffOrd
 router.put("/store-owner/order-forwarder-ready/:id", auth.auth, OrderController.ownerReadyOrder);
 router.put("/store-owner/order-forwarder-reject/:id", auth.auth, OrderController.ownerRejectOrderForwarder);
 
+/* Location Controllers */
+router.get("/provinces", CustomerAddressController.getProvinceList);
+router.get("/districts", CustomerAddressController.getDistrictList);
+router.get("/communes", CustomerAddressController.getCommuneList);
+
 module.exports = router;

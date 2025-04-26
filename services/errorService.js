@@ -39,7 +39,8 @@ const {
     NotConnectParent,
     OpenClassCreateStartAtNotValid,
     ClassHasOpened,
-    ClassHasEnoughStudent
+    ClassHasEnoughStudent,
+    StaffBusy
 } = require("../constants/message");
 const ErrorMessage = require("../resources/translation.json").message.error;
 
@@ -84,6 +85,7 @@ const ErrorCodeMap = new Map([
     [ClassHasOpened, 403],
     [ClassHasEnoughStudent, 403],
     [OpenClassCreateStartAtNotValid, 403],
+    [StaffBusy, 403]
 ])
 
 class ErrorService {

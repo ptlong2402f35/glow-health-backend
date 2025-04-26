@@ -130,6 +130,13 @@ class OrderQuerier {
 			{
 				model: Staff,
 				as: "staff",
+                include: [
+                    {
+                        model: User,
+                        as: "user",
+                        attributes: ["id", "userName", "phone"]
+                    }
+                ]
 			},
             {
 				model: User,
@@ -141,18 +148,22 @@ class OrderQuerier {
 						{
 							model: StaffServicePrice,
 							as: "prices",
+                            attributes: ["id", "price", "unit"],
 							include: [
 								{
 									model: StaffService,
 									as: "staffService",
+                                    attributes: ["id", "name"],
                                     include: [
                                         {
                                             model: Service,
-                                            as: "service"
+                                            as: "service",
+                                            attributes: ["id", "name"],
                                         },
                                         {
                                             model: ServiceGroup,
-                                            as: "serviceGroup"
+                                            as: "serviceGroup",
+                                            attributes: ["id", "name"],
                                         }
                                     ]
 								},

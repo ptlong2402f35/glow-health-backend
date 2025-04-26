@@ -1,7 +1,9 @@
 const { PaymentMethod } = require("../../constants/constants");
 const { OrderStatusInvalid, NotEnoughPermission, PaymentMethodNotValid } = require("../../constants/message")
 const { OrderStatus } = require("../../constants/status");
+const { NotificationType, NotificationActionType } = require("../../constants/type");
 const { sequelize } = require("../../model");
+const { CommunicationService } = require("../communication/communicationService");
 const { TransactionService } = require("../transaction/transactionService");
 const Order = require("../../model").Order;
 const Staff = require("../../model").Staff;
@@ -9,8 +11,10 @@ const User = require("../../model").User;
 
 class OrderFinishService {
     transactionService;
+    communicationService;
     constructor() {
         this.transactionService = new TransactionService();
+        this.communicationService = new CommunicationService();
     }
 
     async adminFinish(id) {
@@ -29,8 +33,7 @@ class OrderFinishService {
         await this.updateStaff(staff);
         await this.updateStaffWallet(staff, order);
         //noti
-        await this.customerNoti(customerUser);
-        await this.staffNoti(staff);
+        await this.customerNoti({userId: customerUser.id, orderId: order.id});
     }
 
     async updateOrder(order) {
@@ -82,6 +85,10 @@ class OrderFinishService {
                 catch (err1) {
                     await t.rollback();
                 }
+                this.staffNotiChargeFee({
+                    userId: walletUser.id,
+                    orderId: order.id
+                });
 
                 return trans;
             }
@@ -109,7 +116,10 @@ class OrderFinishService {
                 catch (err1) {
                     await t.rollback();
                 }
-
+                this.staffNotiChargeFee({
+                    userId: walletUser.id,
+                    orderId: order.id
+                });
                 return trans;
             }
             default: {
@@ -142,12 +152,40 @@ class OrderFinishService {
         }
     }
 
-    async customerNoti() {
-
+    async customerNoti(data) {
+        try {
+            await this.communicationService.sendNotificationToUserId(
+                data.userId,
+                "Đơn hàng của bạn đã hoàn thành",
+                `Cảm ơn bạn đã sử dụng dịch vụ của Glow Healthy`,
+                NotificationType.Transaction,
+                {
+                    actionType: NotificationActionType.Wallet
+                },
+                data.orderId
+            );
+        }
+        catch (err) {
+            console.error(err);
+        }
     }
 
-    async staffNoti() {
-        
+    async staffNotiChargeFee(data) {
+        try {
+            await this.communicationService.sendNotificationToUserId(
+                data.userId,
+                "Thông báo",
+                `Cảm ơn bạn đã gửi phí về Glow Healthy`,
+                NotificationType.Transaction,
+                {
+                    actionType: NotificationActionType.Wallet
+                },
+                data.orderId
+            );
+        }
+        catch (err) {
+            console.error(err);
+        }
     }
 }
 
