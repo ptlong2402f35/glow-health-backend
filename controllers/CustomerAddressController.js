@@ -93,6 +93,27 @@ class CustomerAddressControler {
     }
   };
 
+  userGetAddressDefault = async (req, res, next) => {
+    try {
+      let userId = req.user.userId;
+
+      console.log("userId", userId);
+
+      let resp = await CustomerAddress.findOne({
+        where: {
+          customerUserId: userId,
+          default: true
+        },
+      });
+
+      return res.status(200).json(resp);
+    } catch (err) {
+      console.error(err);
+      let { code, message } = new ErrorService(req).getErrorResponse(err);
+      return res.status(code).json({ message });
+    }
+  };
+
   getProvinceList = async (req, res, next) => {
     try {
       let search = req.query.search
