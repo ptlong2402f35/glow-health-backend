@@ -40,7 +40,7 @@ router.get("/customer-address/my-address", auth.auth, CustomerAddressController.
 router.post("/customer-address/add-address", auth.auth, CustomerAddressController.userCreateAddress);
 router.put("/customer-address/update-address/:id", auth.auth, CustomerAddressController.userUpdateAddress);
 router.delete("/customer-address/remove-address", auth.auth, CustomerAddressController.userRemoveAddress);
-router.get("/customer-address/my-address-default", auth.auth, CustomerAddressController.userGetAddress);
+router.get("/customer-address/my-address-default", auth.auth, CustomerAddressController.userGetAddressDefault);
 
 /* Payment */
 router.get("/payment/payment-method", PaymentController.getPaymentMethod);
