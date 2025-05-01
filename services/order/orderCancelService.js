@@ -100,7 +100,7 @@ class OrderCancelService {
                 `Đơn hàng của bạn đã được Kỹ thuật viên hủy, vui lòng kiểm tra`,
                 NotificationType.OrderCustomerDetail,
                 {
-                    actionType: NotificationActionType.OrderCustomerDetail
+                    actionType: NotificationActionType.OrderCustomerDetail.type
                 },
                 data.orderId
             );

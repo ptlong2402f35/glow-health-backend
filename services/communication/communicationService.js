@@ -15,6 +15,7 @@ class CommunicationService {
     }
 
     async sendNotificationToUserId(userId, title, content, type, {actionType} = {}, referenceId) {
+        console.log("userId", userId);
         try {
             await Notification.create({
                 toUserId: userId,

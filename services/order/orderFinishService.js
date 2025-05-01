@@ -160,7 +160,7 @@ class OrderFinishService {
                 `Cảm ơn bạn đã sử dụng dịch vụ của Glow Healthy`,
                 NotificationType.Transaction,
                 {
-                    actionType: NotificationActionType.Wallet
+                    actionType: NotificationActionType.Wallet.type
                 },
                 data.orderId
             );
@@ -178,7 +178,7 @@ class OrderFinishService {
                 `Cảm ơn bạn đã gửi phí về Glow Healthy`,
                 NotificationType.Transaction,
                 {
-                    actionType: NotificationActionType.Wallet
+                    actionType: NotificationActionType.Wallet.type
                 },
                 data.orderId
             );

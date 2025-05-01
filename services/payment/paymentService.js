@@ -86,7 +86,7 @@ class PaymentService {
                 `Nạp tiền vào ví glow thành công. Số dư: ${nAmount}`,
                 NotificationType.Transaction,
                 {
-                    actionType: NotificationActionType.Wallet
+                    actionType: NotificationActionType.Wallet.type
                 },
             );
         }

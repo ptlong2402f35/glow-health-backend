@@ -77,7 +77,7 @@ class OrderForwarderService {
 		console.log(`==== [OrderForwardStarter] done create order forwarders`);
 
 		if (recommendStaffs?.length) {
-			this.notiOrderForwardStaffs(order, records, stores, customerUser);
+			this.notiOrderForwardStaffs(recommendStaffs, order);
 		}
 
 		return records;
@@ -103,7 +103,7 @@ class OrderForwarderService {
             ...(distanceConds ? [sequelize.where(
                 sequelize.fn(
                     "ST_DWithin",
-                    sequelize.literal(`"coordinatet"::geography`),
+                    sequelize.literal(`"coordinate"::geography`),
                     sequelize.fn("ST_MakePoint", order.long || 0, order.lat || 0),
 					ForwardStaffDistanceApply,
                 ),
@@ -151,11 +151,11 @@ class OrderForwarderService {
                     [Op.not]: true
                 }
             },
-            {
+            ...(order.storeId ? [{
                 storeId: {
-                    [Op.not]: order.storeId
+                    [Op.ne]: order.storeId
                 }
-            }
+            }] : []),
         ];
 
         console.log("where", util.inspect(where, false, null, true));
@@ -183,12 +183,12 @@ class OrderForwarderService {
                     "serviceGroupIds",
                     ...(distanceConds ?
                         [
-                        sequelize.fn(
+                        [sequelize.fn(
                             "ST_DistanceSphere",
                             sequelize.col("coordinate"),
                             sequelize.fn("ST_MakePoint", order.long || 0, order.lat || 0),
                         ),
-                        "distance",
+                        "distance"],
                     ] : []),
                 ]
             }
@@ -249,13 +249,20 @@ class OrderForwarderService {
     }
 
     async notiOrderForwardStaffs(staffs, order) {
-        //noti 
-        let userIds = new Set([...staffs.map(item => item.userId).filter(val => val)]);
-        let content = `Có đơn mới ở ${order.address}. Bạn có thể ứng tuyển`;
-
-        await this.communicationService.sendBulkNotificationToUserId(userIds, "Thông báo", content, NotificationType.OrderDetail, {actionType: NotificationActionType.OrderDetail}, order.id);
-
-        console.log(`==== [OrderForwardStarter] done notify forwarders`);
+        try {
+            //noti 
+            console.log("staffs", staffs);
+            let userIds = [...new Set([...staffs.map(item => item.userId).filter(val => val)])];
+            let content = `Có đơn mới ở ${order.address}. Bạn có thể ứng tuyển`;
+            console.log("usrIds ===", userIds);
+    
+            await this.communicationService.sendBulkNotificationToUserId(userIds, "Thông báo", content, NotificationType.OrderDetail, {actionType: NotificationActionType.OrderDetail.type}, order.id);
+    
+            console.log(`==== [OrderForwardStarter] done notify forwarders`);
+        }
+        catch (err) {
+            console.error(err);
+        }
     }
 }
 

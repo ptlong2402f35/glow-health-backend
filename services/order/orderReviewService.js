@@ -93,7 +93,7 @@ class OrderReviewService {
                 `Khách hàng đánh giá dịch vụ của bạn.`,
                 NotificationType.OrderDetail,
                 {
-                    actionType: NotificationActionType.OrderDetail
+                    actionType: NotificationActionType.OrderDetail.type
                 },
                 order.id
             );

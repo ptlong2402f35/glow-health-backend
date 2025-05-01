@@ -171,24 +171,22 @@ class OrderCreateService {
                     `Có khách ở ${order.address}.Vui lòng kiểm tra thông tin`,
                     NotificationType.OrderDetail,
                     {
-                        actionType: NotificationActionType.OrderDetail
+                        actionType: NotificationActionType.OrderDetail.type
                     },
                     order.id
                 );
             }
-            else {
+            
                 await this.communicationService.sendNotificationToUserId(
                     staff.userId,
                     "Khách đặt bạn",
                     `Có khách ở ${order.address}.Vui lòng kiểm tra thông tin`,
                     NotificationType.OrderDetail,
                     {
-                        actionType: NotificationActionType.OrderDetail
+                        actionType: NotificationActionType.OrderDetail.type
                     },
                     order.id
                 );
-
-            }
         }
         catch (err) {
             console.error(err);
@@ -203,7 +201,7 @@ class OrderCreateService {
                 `Thanh toán cho đơn hàng ${order.code} qua ví Glow Healthy thành công`,
                 NotificationType.Transaction,
                 {
-                    actionType: NotificationActionType.Wallet
+                    actionType: NotificationActionType.Wallet.type
                 }
             );
         }

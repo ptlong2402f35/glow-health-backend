@@ -78,7 +78,7 @@ class TransactionController {
                         `Bạn được cộng ${data.amount}đ vào ví Glow`,
                         NotificationType.Transaction,
                         {
-                            actionType: NotificationActionType.Wallet
+                            actionType: NotificationActionType.Wallet.type
                         }
                     );
 
@@ -101,7 +101,7 @@ class TransactionController {
                         `Bạn bị trừ ${data.amount}đ trong ví Glow`,
                         NotificationType.Transaction,
                         {
-                            actionType: NotificationActionType.Wallet
+                            actionType: NotificationActionType.Wallet.type
                         }
                     );
 

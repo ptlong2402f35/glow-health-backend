@@ -215,7 +215,7 @@ class OrderReadyService {
                 `Vui lòng liên hệ với khách`,
                 NotificationType.OrderDetail,
                 {
-                    actionType: NotificationActionType.OrderDetail
+                    actionType: NotificationActionType.OrderDetail.type
                 },
                 order.id
             );
@@ -231,7 +231,7 @@ class OrderReadyService {
                 `Đơn hàng của bạn đã được Kỹ thuật viên chấp nhận, vui lòng kiểm tra`,
                 NotificationType.OrderCustomerDetail,
                 {
-                    actionType: NotificationActionType.OrderCustomerDetail
+                    actionType: NotificationActionType.OrderCustomerDetail.type
                 },
                 order.id
             );
