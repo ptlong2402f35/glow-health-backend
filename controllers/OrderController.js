@@ -20,6 +20,7 @@ const OrderForwarder = require("../model").OrderForwarder;
 const StaffService = require("../model").StaffService;
 const StaffServicePrice = require("../model").StaffServicePrice;
 const ServiceGroup = require("../model").ServiceGroup;
+const Service = require("../model").Service;
 
 class OrderController {
     adminGetOrder = async () => {
