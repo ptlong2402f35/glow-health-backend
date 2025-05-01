@@ -221,7 +221,8 @@ class OrderController {
                         customerUserId: userId,
                         id
                     },
-                    include: includes
+                    include: includes,
+                    logging: true
                 }
             );
 

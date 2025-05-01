@@ -1,3 +1,4 @@
+const { Op } = require("sequelize");
 const { UserNotFound, InputInfoEmpty } = require("../constants/message");
 const { ErrorService } = require("../services/errorService");
 const { LocationService } = require("../services/locationService");
@@ -36,6 +37,21 @@ class CustomerAddressControler {
         default: data.isSetDefault ? true : false,
         customerUserId: userId,
       });
+
+      if(data.isSetDefault) {
+        await CustomerAddress.update(
+          {
+            default: false
+          }, {
+            where: {
+              customerUserId: userId,
+              id: {
+                [Op.ne]: resp.id,
+              }
+            }
+          }
+        )
+      }
 
       return res.status(200).json({ message: "DONE", resp });
     } catch (err) {

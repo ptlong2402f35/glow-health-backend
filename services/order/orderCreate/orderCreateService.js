@@ -104,7 +104,7 @@ class OrderCreateService {
             await this.createOrderPrices(order.id, data.staffServicePriceIds);
             await this.createOrderForwarder(order, staff);
             //noti
-            this.noti(order);
+            this.noti(order, staff);
             return order;
         }
         catch (err) {
