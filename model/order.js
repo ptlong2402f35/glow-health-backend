@@ -65,6 +65,7 @@ module.exports = (sequelize, DataTypes) => {
             createdAt: DataTypes.DATE,
             updatedAt: DataTypes.DATE,
             voucherId: DataTypes.INTEGER,
+            customerAddress: DataTypes.JSON
         },
         {
             sequelize,

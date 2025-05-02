@@ -462,6 +462,32 @@ class OrderController {
                     where: {
                         id
                     },
+                    include: [
+                        {
+                            model: StaffServicePrice,
+                            as: "prices",
+                            attributes: ["id", "price", "unit"],
+                            include: [
+                                {
+                                    model: StaffService,
+                                    as: "staffService",
+                                    attributes: ["id", "name"],
+                                    include: [
+                                        {
+                                            model: Service,
+                                            as: "service",
+                                            attributes: ["id", "name"],
+                                        },
+                                        {
+                                            model: ServiceGroup,
+                                            as: "serviceGroup",
+                                            attributes: ["id", "name"],
+                                        }
+                                    ]
+                                },
+                            ],
+                        },
+                    ]
                 }
             );
 
@@ -483,21 +509,20 @@ class OrderController {
             let id = req.params.id ? parseInt(req.params.id) : null;
             if(!id) throw InputInfoEmpty;
             let userId = req.user.userId;
-            console.log("userId", userId);
             let staff = await Staff.findOne({where: {userId}});
 
             let {isApproved, isReady, isQuickForward} = await new OrderReadyService().ready(id, staff);
 
             if(isApproved) {
-                return res.status(200).json({message: "Approve order successfully"})
+                return res.status(200).json({message: "Approve order successfully", isApproved});
             }
 
             if(isReady) {
-                return res.status(200).json({message: "ready forward order successfully"})
+                return res.status(200).json({message: "ready forward order successfully", isReady});
             }
 
             if(isQuickForward) {
-                return res.status(200).json({message: "Approve quick order successfully"})
+                return res.status(200).json({message: "Approve quick order successfully", isQuickForward});
             }
             
             return res.status(200).json({message: "DONE"});

@@ -180,6 +180,7 @@ class OrderCreateBuilder {
             forwardFromOrderId: data.forwardFromOrderId,
             staffServicePriceIds: data.staffServicePriceIds,
             voucherId: voucher?.id,
+            customerAddres: address
         }
     }
 }

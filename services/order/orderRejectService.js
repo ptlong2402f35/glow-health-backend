@@ -36,7 +36,7 @@ class OrderRejectService {
                 await this.rejectOrder(orderId);
                 isOwner = true;
             }
-            await this.rejectForwarder(orderForwarder.id);
+            if(!isOwner) await this.rejectForwarder(orderForwarder.id);
             if(isOwner) {
 
             }
