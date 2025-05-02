@@ -324,9 +324,9 @@ class OrderController {
             let data = req.body;
             let userId = req.user.userId;
 
-            await new OrderSwitch().switchOrderToForwarder(data.baseOrderId, data.forwardOrderId);
+            let order = await new OrderSwitch().switchOrderToForwarder(data.baseOrderId, data.forwardOrderId);
 
-            return res.status(200).json({message: "Done switch order to forwarder"});
+            return res.status(200).json({message: "Done switch order to forwarder", orderId: order.id});
         }
         catch (err) {
             console.error(err);
@@ -433,10 +433,16 @@ class OrderController {
                             ]
                         }
                     ],
-                    order: [ ["status", "asc"], ["id", "desc"]],
+                    order: [ ["status", "asc"], ["isAccept", "desc"], ["id", "desc"]],
                 }
             );
 
+            // console.log("forwarder", orderForwarders.map(item => ({
+            //     id: item.id,
+            //     staffId: item.staffId,
+            //     status: item.status,
+            //     isAccept: item.isAccept
+            // })));
             let data = await new OrderHelper().orderStaffProcessDisplay(orders, orderForwarders, {orderOffset, forwardOffset, limit});
 
             return res.status(200).json(data);

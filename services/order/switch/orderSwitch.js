@@ -30,6 +30,8 @@ class OrderSwitch {
 
         //noti
         this.noti(switchedOrder, forwardStaff);
+
+        return switchedOrder;
     }
 
     async cancelBaseOrder(baseOrder) {
