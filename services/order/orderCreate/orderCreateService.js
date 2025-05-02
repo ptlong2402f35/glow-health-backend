@@ -22,36 +22,45 @@ class OrderCreateService {
     }
 
     async createSwitchOrderFromBaseOrder(baseOrder, forwardStaff) {
-        return await Order.create(
-            {
-                total: baseOrder.total,
-                totalPay: baseOrder.totalPay,
-                address: baseOrder.address,
-                provinceId: baseOrder.provinceId,
-                districtId: baseOrder.districtId,
-                communeId: baseOrder.communeId,
-                lat: baseOrder.lat,
-                long: baseOrder.long,
-                customerUserId: baseOrder.customerUserId,
-                paymentMethodId: baseOrder.paymentMethodId,
-                fee: baseOrder.fee,
-                note: baseOrder.note,
-                earningRate: baseOrder.earningRate,
-                reasonCancel: baseOrder.reasonCancel,
-                totalReceive: baseOrder.totalReceive,
-                expiredAt: baseOrder.expiredAt,
-                autoFinishAt: baseOrder.autoFinishAt,
-                chatBoxId: baseOrder.chatBoxId,
-                timerTime: baseOrder.timerTime,
-                additionalFee: baseOrder.additionalFee,
-                type: baseOrder.type,
-                staffId: forwardStaff.id,
-                storeId: forwardStaff.storeId || 0,
-                code: this.orderCreateBuilder.generateCode(),
-                forwardFromOrderId: baseOrder.id,
-                status: OrderStatus.Approved
-            }
-        );
+        try {
+
+            let order = await Order.create(
+                {
+                    total: baseOrder.total,
+                    totalPay: baseOrder.totalPay,
+                    address: baseOrder.address,
+                    provinceId: baseOrder.provinceId,
+                    districtId: baseOrder.districtId,
+                    communeId: baseOrder.communeId,
+                    lat: baseOrder.lat,
+                    long: baseOrder.long,
+                    customerUserId: baseOrder.customerUserId,
+                    paymentMethodId: baseOrder.paymentMethodId,
+                    fee: baseOrder.fee,
+                    note: baseOrder.note,
+                    earningRate: baseOrder.earningRate,
+                    reasonCancel: baseOrder.reasonCancel,
+                    totalReceive: baseOrder.totalReceive,
+                    expiredAt: baseOrder.expiredAt,
+                    autoFinishAt: baseOrder.autoFinishAt,
+                    chatBoxId: baseOrder.chatBoxId,
+                    timerTime: baseOrder.timerTime,
+                    additionalFee: baseOrder.additionalFee,
+                    type: baseOrder.type,
+                    staffId: forwardStaff.id,
+                    storeId: forwardStaff.storeId || 0,
+                    code: this.orderCreateBuilder.generateCode(),
+                    forwardFromOrderId: baseOrder.id,
+                    status: OrderStatus.Approved
+                }
+            );
+            let orderPrices = await OrderPrice.findAll({where: {orderId: baseOrder.id}});
+            let priceIds = orderPrices.map(item => item.staffServicePriceId).filter(val => val);
+            await this.createOrderPrices(order.id, priceIds);
+        }
+        catch (err) {
+            throw err;
+        }
     }
 
     async createDefaultOrder(data, staff, userCustomer, { isQuickForward} = {}) {
