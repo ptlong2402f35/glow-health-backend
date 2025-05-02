@@ -16,8 +16,10 @@ class OrderHelper {
             approvedOrders.sort((a,b) => a.createdAt < b.createdAt ? 1 : -1);
             let pendingOrders = orders.filter(order => [OrderStatus.Pending].includes(order.status));
             pendingOrders.sort((a,b) => a.createdAt < b.createdAt ? 1 : -1);
-            let beginForwardOrder = orderForwarders.filter(order => order.status === OrderForwarderStatus.Begin);
+            let beginForwardOrder = orderForwarders.filter(order => order.status === OrderForwarderStatus.Begin && !order.isAccept);
             beginForwardOrder.sort((a,b) => a.createdAt < b.createdAt ? 1 : -1);
+            let acceptedForwardOrder = orderForwarders.filter(order => order.status === OrderForwarderStatus.Begin && order.isAccept);
+            acceptedForwardOrder.sort((a,b) => a.createdAt < b.createdAt ? 1 : -1);
             let otherOrder = orders.filter(order => ![OrderStatus.Approved, OrderStatus.Pending].includes(order.status));
             otherOrder.sort((a,b) => a.createdAt < b.createdAt ? 1 : -1);
             let otherForwarderOrder = orderForwarders.filter(order => ![OrderForwarderStatus.Begin].includes(order.status));
@@ -38,6 +40,12 @@ class OrderHelper {
                 } 
             }
             for(let item of beginForwardOrder) {
+                if(resp.length < limit) {
+                    resp.push(await this.convertForwardDataToOrder(item.baseOrder, item, item.staff));
+                    forwardOffset++;
+                } 
+            }
+            for(let item of acceptedForwardOrder) {
                 if(resp.length < limit) {
                     resp.push(await this.convertForwardDataToOrder(item.baseOrder, item, item.staff));
                     forwardOffset++;

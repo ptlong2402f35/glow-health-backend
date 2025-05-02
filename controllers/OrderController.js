@@ -493,6 +493,16 @@ class OrderController {
 
             if(order.staffId != staff.id) {
                 //forwarder 
+                let forwardOrder = await OrderForwarder.findOne({
+                    where: {
+                        orderId: order.id,
+                        staffId: staff.id
+                    }
+                });
+
+                if(forwardOrder) {
+                    order = await new OrderHelper().convertForwardDataToOrder(order, forwardOrder, staff);
+                }
             }
 
             return res.status(200).json(order);
