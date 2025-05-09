@@ -32,7 +32,7 @@ class PaymentService {
                 case PaymentMethodId.Vnpay: {
                     let transData = {
                         ...data,
-                        content: "Test giao dich",
+                        content: "Test",
                     }
                     return {data: await this.vnpayPaymentService.createPaymentUrl(transData, userId)};
                 }
