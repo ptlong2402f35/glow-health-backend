@@ -64,7 +64,6 @@ class PaymentService {
             switch(data.paymentMethodId) {
                 case PaymentMethodId.Vnpay: {
                     let tData = data.data;
-                    let signed = await this.vnpayPaymentService.checkSignedPayment(tData);
                     if(tData.vnp_TransactionStatus != VnpayTransStatus.Success) return ({success: false, code: tData.vnp_TxnRef});
                     let txnRef = tData.vnp_TxnRef;
                     let transData = {
