@@ -16,8 +16,8 @@ const VnpayTransStatus = {
 class VnpayPaymentService {
     constructor() {}
 
-    async createPaymentUrl(data, userId) {
-        if(!data || !userId) return null;
+    async createPaymentUrl(data) {
+        if(!data) return null;
         const createDate = moment().format('YYYYMMDDHHmmss');
         const orderId = moment().format('HHmmss');
         const expireDate = moment().add(1, 'day').format('YYYYMMDDHHmmss');
@@ -35,7 +35,7 @@ class VnpayPaymentService {
             {k: "vnp_OrderType", v: "other"},
             {k: "vnp_ReturnUrl", v: "https://www.google.com"},
             {k: "vnp_ExpireDate", v: expireDate},
-            {k: "vnp_TxnRef", v: `${this.generateCode()}-${userId}`},
+            {k: "vnp_TxnRef", v: `${this.generateCode()}`},
         ];
 
         let sortParams = params.sort((a, b) => a.k.localeCompare(b.k));

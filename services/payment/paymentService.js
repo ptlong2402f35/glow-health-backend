@@ -34,7 +34,7 @@ class PaymentService {
                         ...data,
                         content: "Test",
                     }
-                    return {data: await this.vnpayPaymentService.createPaymentUrl(transData, userId)};
+                    return {data: await this.vnpayPaymentService.createPaymentUrl(transData)};
                 }
                 case PaymentMethodId.Paypal: {
                     let token = await this.paypalPaymentService.getAccessToken();
@@ -63,17 +63,18 @@ class PaymentService {
         try {
             switch(data.paymentMethodId) {
                 case PaymentMethodId.Vnpay: {
-                    let signed = await this.vnpayPaymentService.checkSignedPayment(data);
-                    if(data.vnp_TransactionStatus != VnpayTransStatus.Success) return ({success: false, code: data.TxnRef});
-                    let txnRef = data.txnRef.split("-");
+                    let tData = data.data;
+                    let signed = await this.vnpayPaymentService.checkSignedPayment(tData);
+                    if(tData.vnp_TransactionStatus != VnpayTransStatus.Success) return ({success: false, code: tData.vnp_TxnRef});
+                    let txnRef = tData.vnp_TxnRef;
                     let transData = {
-                        code: txnRef[0],
-                        userId: txnRef[1],
+                        code: txnRef,
+                        userId: data.userId,
                         amount: data.vnp_Amount
                     }
                     let trans = await this.createVnpayTransaction({...transData}, transData.amount);
 
-                    return {success: true, code: data.TxnRef}
+                    return {success: true, code: tData.vnp_TxnRef}
                 }
                 case PaymentMethodId.Paypal: {
                     let token = await this.paypalPaymentService.getAccessToken();

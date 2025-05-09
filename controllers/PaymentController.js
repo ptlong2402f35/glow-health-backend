@@ -43,8 +43,9 @@ class PaymentController {
             let data = req.body;
             let resp = await new PaymentService().paymentSuccess(
                 {
-                    paypalTransactionId: data.paypalTransactionId,
+                    data: data.data,
                     userId,
+                    paymentMethodId: data.paymentMethodId,
                 }
             );
             
