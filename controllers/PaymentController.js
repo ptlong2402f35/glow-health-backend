@@ -21,10 +21,12 @@ class PaymentController {
             let userId = req.user.userId;
 
             let amount = req.body.amount;
+            let paymentMethodId = req.body.paymentMethodId;
 
             let resp = await new PaymentService().createPaymentRequest({
-                amount
-            });
+                amount,
+                paymentMethodId
+            }, userId);
 
             return res.status(200).json(resp);
         }

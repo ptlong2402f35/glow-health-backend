@@ -45,6 +45,8 @@ var http = require("http");
 const { initSocket } = require("./socket/socket");
 const { FirebaseConfig } = require("./firebase/firebaseConfig");
 const { GeneralRedisClient } = require("./services/generalRedisClient");
+const { LocationConfig } = require("./services/configService/locationConfig");
+const { PusherConfig } = require("./pusher/pusherConfig");
 const HOST = "0.0.0.0";
 // const ChannelPassword = "ccyT7JeiJ2";
 require("events").EventEmitter.prototype._maxListeners = 50;
@@ -121,3 +123,5 @@ function onListening() {
 // 		.getClient();
 //connect socket
 setTimeout(()=>initSocket(server), 5000);
+new LocationConfig().getInstance().init();
+new PusherConfig().getInstance().init();

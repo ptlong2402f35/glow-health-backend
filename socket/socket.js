@@ -7,7 +7,7 @@ function initSocket(server) {
 			origin: "*",
 		},
 	});
-	io.setMaxListeners(20);
+
 	global._io = io;
 	global._socketUsers = [];
 	

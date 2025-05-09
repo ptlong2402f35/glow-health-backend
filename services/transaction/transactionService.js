@@ -84,7 +84,7 @@ class TransactionService {
 
     build(data) {
         return {
-            code: uuid.v4(),
+            code: data.code || uuid.v4(),
             forUserId: data.forUserId,
             content: data.content,
             orderId: data.orderId,

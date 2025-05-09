@@ -11,10 +11,12 @@ const SuccessRespMessage = require("../resources/translation.json").message.done
 const config = require("../config/config");
 const { FirebaseConfig } = require("../firebase/firebaseConfig");
 const { UserRole } = require("../constants/roles");
+const { PusherConfig } = require("../pusher/pusherConfig");
 
 class AuthController {
     login = async (req, res, next) => {
         try {
+            const pusherConfig = new PusherConfig().getInstance();
             let data = req.body;
             data.phone = data.phone?.trim()?.toLowerCase();
             if(!data.phone) {
@@ -25,6 +27,13 @@ class AuthController {
             }
             let {action, accessToken, refreshToken, expiredIn, userId} = await new AuthLogin().handleLogin(data);
             if(action) {
+                //pusher trigger
+                // try {
+                //     pusherConfig.trigger({login: true, userId: userId}, `pusher-channel-${userId}`, "login-success");
+                // }
+                // catch (err) {
+                //     console.error(err);
+                // }
                 return res.status(200).json({
                     message: "Đăng nhập thành công",
                     accessToken,

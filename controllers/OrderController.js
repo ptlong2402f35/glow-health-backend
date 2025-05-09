@@ -12,6 +12,7 @@ const { OrderReadyService } = require("../services/order/orderReadyService");
 const { OrderRejectService } = require("../services/order/orderRejectService");
 const { OrderReviewService } = require("../services/order/orderReviewService");
 const staff = require("../model/staff");
+const { PusherConfig } = require("../pusher/pusherConfig");
 
 const Order = require("../model").Order;
 const Staff = require("../model").Staff;
@@ -277,6 +278,7 @@ class OrderController {
 
     createOrder = async (req, res, next) => {
         try {
+            const pusherConfig = new PusherConfig().getInstance();
             let data = req.body;
             let userId = req.user.userId;
             let isQuickForward = data.isQuickForward;
@@ -287,6 +289,14 @@ class OrderController {
             if(!staff) throw StaffNotFound;
 
             let order = await new OrderCreateService().createDefaultOrder(data, staff, userCustomer, {isQuickForward});
+
+            //pusher trigger
+            try {
+                pusherConfig.trigger({reload: true}, `pusher-channel-${staff.userId}`, "order-create-to-staff");
+            }
+            catch (err) {
+                console.error(err);
+            }
 
             return res.status(200).json(order);
         }
