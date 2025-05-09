@@ -45,7 +45,7 @@ class PaymentController {
                 {
                     data: data.data,
                     userId,
-                    paymentMethodId: data.paymentMethodId,
+                    paymentMethodId: data.paymentMethodId || 1,
                 }
             );
             
