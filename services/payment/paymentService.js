@@ -1,3 +1,4 @@
+const { Op } = require("sequelize");
 const { PaymentItegrateMethod } = require("../../constants/constants");
 const { PaymentMethodNotValid } = require("../../constants/message");
 const { NotificationType, NotificationActionType } = require("../../constants/type");
@@ -8,6 +9,7 @@ const { PaypalAuthenticationFailed, Currency } = require("./paymentConstants");
 const { PaypalPaymentService } = require("./paypalPaymentService");
 const { VnpayPaymentService, VnpayTransStatus } = require("./vnpayPaymentService");
 const ExchangeValue = 23000;
+const Transaction = require("../../model").Transaction;
 
 const PaymentMethodId = {
     Vnpay: 1,
@@ -69,8 +71,10 @@ class PaymentService {
                     let transData = {
                         code: txnRef,
                         userId: data.userId,
-                        amount: data.vnp_Amount
+                        amount: Math.round(parseFloat(tData.vnp_Amount) /100)
                     }
+                    let valid = await this.checkValidTrans(txnRef);
+                    if(valid) return {success: true, code: tData.vnp_TxnRef}
                     let trans = await this.createVnpayTransaction({...transData}, transData.amount);
 
                     return {success: true, code: tData.vnp_TxnRef}
@@ -136,6 +140,21 @@ class PaymentService {
         }
         catch (err) {
             await transaction?.rollback();
+        }
+    }
+
+    async checkValidTrans(code) {
+        try {
+            return await Transaction.findOne({
+                where: {
+                    code: {
+                        [Op.iLike]: `${code}`
+                    }
+                }
+            });
+        }
+        catch (err) {
+            return null;
         }
     }
 
