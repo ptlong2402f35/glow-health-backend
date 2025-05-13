@@ -64,6 +64,7 @@ module.exports = (sequelize, DataTypes) => {
             resetKeyExpiredAt: DataTypes.DATE,
             createdAt: DataTypes.DATE,
 			updatedAt: DataTypes.DATE,
+			expoToken: DataTypes.TEXT
 		},
 		{
 			sequelize,

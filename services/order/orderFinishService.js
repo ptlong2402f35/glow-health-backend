@@ -21,13 +21,20 @@ class OrderFinishService {
         return await this.finish(id, true);
     }
 
-    async finish(id, isAdmin) {
+    async ownerFinish(id, ownerStaff) {
         let {order, staff, customerUser} = await this.prepare(id);
         if(!await this.validate(order)) return;
 
-        if(!isAdmin) {
-            if(order.staffId !== staff.id) throw NotEnoughPermission;
-        }
+        await this.updateOrder(order);
+        await this.updateStaff(staff);
+        await this.updateStaffWallet(ownerStaff, order);
+        //noti
+        await this.customerNoti({userId: customerUser.id, orderId: order.id});
+    }
+
+    async finish(id, isAdmin) {
+        let {order, staff, customerUser} = await this.prepare(id);
+        if(!await this.validate(order)) return;
 
         await this.updateOrder(order);
         await this.updateStaff(staff);
@@ -62,7 +69,7 @@ class OrderFinishService {
                 const t = await sequelize.transaction();
                 try {
                     let walletUser = await this.transactionService.getWalletUser(staff.userId);
-                    console.log("walletUser", walletUser)
+                    console.log("walletUser", walletUser);
                     trans = await this.transactionService.chargeWallet(
                         walletUser,
                         {
@@ -168,6 +175,16 @@ class OrderFinishService {
         catch (err) {
             console.error(err);
         }
+        try {
+            await this.communicationService.sendMobileNotification(
+                data.userId,
+                "Đơn hàng của bạn đã hoàn thành",
+                `Cảm ơn bạn đã sử dụng dịch vụ của Glow Healthy`,
+            );
+        }
+        catch (err) {
+            console.error(err);
+        }
     }
 
     async staffNotiChargeFee(data) {
@@ -181,6 +198,16 @@ class OrderFinishService {
                     actionType: NotificationActionType.Wallet.type
                 },
                 data.orderId
+            );
+        }
+        catch (err) {
+            console.error(err);
+        }
+        try {
+            await this.communicationService.sendMobileNotification(
+                data.userId,
+                "Thông báo",
+                `Cảm ơn bạn đã gửi phí về Glow Healthy`,
             );
         }
         catch (err) {

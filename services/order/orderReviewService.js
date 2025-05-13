@@ -101,6 +101,16 @@ class OrderReviewService {
         catch (err) {
             console.error(err);
         }
+        try {
+            await this.communicationService.sendMobileNotification(
+                staff.userId,
+                "Thông báo",
+                `Khách hàng đánh giá dịch vụ của bạn.`,
+            );
+        }
+        catch (err) {
+            console.error(err);
+        }
     }
 }
 

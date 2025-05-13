@@ -8,6 +8,7 @@ const { StaffRegisterService } = require("../services/staff/staffRegisterService
 const { StaffUpdateService } = require("../services/staff/staffUpdateService");
 const { OwnerService } = require("../services/staff/owner/ownerService");
 const { StaffRole } = require("../constants/roles");
+const { QuickForwardConfig } = require("../services/order/quickForward/quickForwardConfig");
 
 const Transaction = require("../model").Transaction;
 const User = require("../model").User;
@@ -396,6 +397,27 @@ class StaffController {
             )
 
             return res.status(200).json(staffs);
+        }
+        catch (err) {
+            console.error(err);
+            let {code, message} = new ErrorService(req).getErrorResponse(err);
+            return res.status(code).json({message});
+        }
+    }
+
+    getPinnedStaff = async (req, res, next) => {
+        const quickForwardConfig = new QuickForwardConfig().getInstance();
+        try {
+            let id = req.params.id ? req.params.id?.trim() : null;
+            if(!id) throw InputInfoEmpty;
+
+            let config = await quickForwardConfig.getConfigById(id);
+
+            let pinnedStaff = [...config.pinnedStaff];
+
+            console.log("pinned staff ===", pinnedStaff);
+
+            return res.status(200).json(pinnedStaff);
         }
         catch (err) {
             console.error(err);

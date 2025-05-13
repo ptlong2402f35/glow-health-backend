@@ -71,8 +71,10 @@ router.get("/store-owner/staff", auth.auth, StaffController.ownerGetStaffs);
 router.get("/store-owner/staff/:id", auth.auth, StaffController.ownerGetDetailStaff);
 router.post("/store-owner/staff", auth.auth, StaffController.ownerCreateStaff);
 router.put("/store-owner/staff/:id", auth.auth, StaffController.ownerUpdateStaffDetail);
+router.put("/store-owner/staff-service/:id", auth.auth, StaffController.ownerUpdateStaffDetail);
 router.delete("/store-owner/remove-staff/:id", auth.auth, StaffController.ownerRemoveStaff);
 router.get("/store-owner/staff-forward-ready", auth.auth, StaffController.ownerGetStaffReady);
+router.get("/pinned-staff/:id", StaffController.getPinnedStaff);
 
 /* Store Controllers */
 router.get("/store-by-admin", auth.onlyAdmin, StoreController.adminGetStore);
@@ -89,6 +91,9 @@ router.delete("/staff-service-by-admin/:id", auth.onlyAdmin, StaffServiceControl
 router.get("/staff-service-batch", auth.auth, StaffServiceController.getMyStaffService );
 router.put("/staff-service-batch/:id", auth.auth, StaffServiceController.updateMyStaffService);
 router.delete("/staff-service/:id", auth.auth , StaffServiceController.deleteMyStaffService);
+router.get("/store-owner/staff-service-batch/:id", auth.auth, StaffServiceController.getMyStaffServiceByOwner);
+router.put("/store-owner/staff-service-batch/:id", auth.auth, StaffServiceController.updateMyStaffServiceByOwner);
+router.delete("/store-owner/staff-service/:id", auth.auth , StaffServiceController.deleteMyStaffServiceByOwner);
 
 /* Service Group Controller */
 router.get("/service-group", ServiceGroupController.getServiceGroup);
@@ -132,10 +137,18 @@ router.get("/store-owner/order", auth.auth, OrderController.ownerGetStaffOrders)
 router.get("/store-owner/order/:id", auth.auth, OrderController.ownerGetStaffOrderDetail);
 router.put("/store-owner/order-forwarder-ready/:id", auth.auth, OrderController.ownerReadyOrder);
 router.put("/store-owner/order-forwarder-reject/:id", auth.auth, OrderController.ownerRejectOrderForwarder);
+router.put("/store-owner/order-forwarder-cancel/:id", auth.auth, OrderController.ownerCancelOrder);
+router.put("/store-owner/order-forwarder-finish/:id", auth.auth, OrderController.ownerFinishOrder);
 
 /* Location Controllers */
 router.get("/provinces", CustomerAddressController.getProvinceList);
 router.get("/districts", CustomerAddressController.getDistrictList);
 router.get("/communes", CustomerAddressController.getCommuneList);
+router.post("/update-my-location", auth.auth, UserController.updateMyLocation);
+router.post("/update-my-expo-token", auth.auth, UserController.updateExpoToken);
+
+/* Test pusher*/
+router.post("/test-pusher-noti/:id", UserController.testPusherNoti);
+router.post("/test-mobie-noti/:id", UserController.testPusherNotiMobile);
 
 module.exports = router;

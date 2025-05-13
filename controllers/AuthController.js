@@ -34,6 +34,18 @@ class AuthController {
                 // catch (err) {
                 //     console.error(err);
                 // }
+                //store expo token
+                if(data.expoToken) {
+                    await User.update(
+                        {
+                            expoToken: data.expoToken
+                        },{
+                            where: {
+                                id: userId
+                            }
+                        }
+                    );
+                }
                 return res.status(200).json({
                     message: "Đăng nhập thành công",
                     accessToken,

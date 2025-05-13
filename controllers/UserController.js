@@ -4,8 +4,12 @@ const { UserRole } = require("../constants/roles");
 const { AuthService } = require("../services/auth/authService");
 const { ErrorService } = require("../services/errorService");
 const User = require("../model").User;
+const Staff = require("../model").Staff;
 const DefaultUserPassword = process.env.DEFAULT_USER_PASSWORD?.trim() || "";
 var bcrypt = require("bcryptjs");
+const { sequelize } = require("../model");
+const { PusherConfig } = require("../pusher/pusherConfig");
+const { CommunicationService } = require("../services/communication/communicationService");
 
 class UserController {
 
@@ -179,6 +183,105 @@ class UserController {
                     active
                 }
             );
+
+            return res.status(200).json({message: "Done"});
+        }
+        catch (err) {
+            console.error(err);
+            let {code, message} = new ErrorService(req).getErrorResponse(err);
+            return res.status(code).json({message});
+        }
+    }
+
+    updateMyLocation = async (req, res, next) => {
+        try {
+            let userId = req.user.userId;
+            let lat = req.body.lat;
+            let long = req.body.long;
+            if(!lat || !long) return res.status(200).json({message: "Done"}); 
+
+            let user = await User.findByPk(userId);
+            if(!user) throw UserNotFound;
+            await user.update(
+                {
+                    userCoordinate: sequelize.fn("ST_MakePoint", long, lat)
+                }
+            );
+
+            if(user.role === UserRole.Staff) {
+                await Staff.update(
+                    {
+                        lat: lat,
+                        long,
+                        coordinate: sequelize.fn("ST_MakePoint", long, lat),
+                    },
+                    {
+                        where: {
+                            userId: userId
+                        }
+                    }
+                );
+            }
+
+            return res.status(200).json({message: "Done"});
+        }
+        catch (err) {
+            console.error(err);
+            let {code, message} = new ErrorService(req).getErrorResponse(err);
+            return res.status(code).json({message});
+        }
+    }
+
+    updateExpoToken = async (req, res, next) => {
+        try {
+            let userId = req.user.userId;
+            let token = req.body.token;
+
+            await User.update(
+                {
+                    expoToken: token
+                },
+                {
+                    where: {
+                        id: userId
+                    }
+                }
+            );
+
+            return res.status(200).json({message: "Done"});
+        }
+        catch (err) {
+            console.error(err);
+            let {code, message} = new ErrorService(req).getErrorResponse(err);
+            return res.status(code).json({message});
+        }
+    }
+
+    testPusherNoti = async (req, res, next) => {
+        try {
+            let id = req.params.id ? parseInt(req.params.id): 3;
+            const pusherConfig = new PusherConfig().getInstance();
+            try {
+                pusherConfig.trigger({title: "Hello", content: "1234567", type: "success"}, `pusher-channel-${id}`, "notification");
+            }
+            catch (err) {
+                console.error(err);
+            }
+
+            return res.status(200).json({message: "Done"});
+        }
+        catch (err) {
+            console.error(err);
+            let {code, message} = new ErrorService(req).getErrorResponse(err);
+            return res.status(code).json({message});
+        }
+    }
+
+    testPusherNotiMobile = async (req, res, next) => {
+        try {
+            let id = req.params.id ? parseInt(req.params.id): 3;
+            const pusherConfig = new PusherConfig().getInstance();
+            await new CommunicationService().sendMobileNotification(id, "Test Noti", "Test thành công");
 
             return res.status(200).json({message: "Done"});
         }

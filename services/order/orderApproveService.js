@@ -86,6 +86,16 @@ class OrderApproveService {
         catch (err) {
             console.error(err);
         }
+        try {
+            await this.communicationService.sendMobileNotification(
+                data.userId,
+                "Đơn hàng đã được kết nối",
+                `Đơn hàng của bạn đã được Kỹ thuật viên chấp nhận, vui lòng kiểm tra`,
+            );
+        }
+        catch (err) {
+            console.error(err);
+        }
     }
 
     async staffNoti(data) {
@@ -99,6 +109,16 @@ class OrderApproveService {
                     actionType: NotificationActionType.OrderDetail.type
                 },
                 data.orderId
+            );
+        }
+        catch (err) {
+            console.error(err);
+        }
+        try {
+            await this.communicationService.sendMobileNotification(
+                data.userId,
+                "Kết nối thành công",
+                `Vui lòng liên hệ với khách`,
             );
         }
         catch (err) {

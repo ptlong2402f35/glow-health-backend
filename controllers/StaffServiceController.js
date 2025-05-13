@@ -252,6 +252,109 @@ class StaffServiceController {
             return res.status(code).json({message});
         }
     }
+
+    getMyStaffServiceByOwner = async (req, res, next) => {
+        try {
+            let staffId = req.params.id ? parseInt(req.params.id) : null;
+            let staff = await Staff.findByPk(staffId);
+            if(!staff) throw StaffNotFound;
+            let staffServices = await StaffService.findAll(
+                {
+                    where: {
+                        staffId: staff.id
+                    },
+                    include: [
+                        {
+                            model: StaffServicePrice,
+                            as: "prices"
+                        }
+                    ]
+                }
+            );
+            let data = await new StaffServiceHelper().getDefaultFormat(staffServices);
+
+            return res.status(200).json(data);
+        }
+        catch (err) {
+            console.error(err);
+            let {code, message} = new ErrorService(req).getErrorResponse(err);
+            return res.status(code).json({message});
+        }
+    }
+
+    updateMyStaffServiceByOwner = async (req, res, next) => {
+        let staffServiceHelper = new StaffServiceHelper();
+        try {
+            let staffId = req.params.id ? parseInt(req.params.id) : null;
+            let staff = await Staff.findByPk(staffId);
+            if(!staff) throw StaffNotFound;
+            await StaffServicePrice.destroy(
+                {
+                    where: {
+                        staffServiceId: id
+                    }
+                }
+            );
+            let ssData = staffServiceHelper.buildStaffServiceData(data);
+            await StaffService.update(
+                {
+                    ...ssData
+                },
+                {
+                    where: {
+                        id
+                    }
+                }
+            );
+            let staffService = await StaffService.findByPk(id);
+            let sspData = data.prices.map(item => staffServiceHelper.buildStaffServicePriceData({
+                ...item,
+                staffServiceId: staffService.id,
+                serviceGroupId: staffService.serviceGroupId
+            })).filter(val => val);
+            await StaffServicePrice.bulkCreate(sspData);
+
+            return res.status(200).json(staffService);
+        }
+        catch (err) {
+            console.error(err);
+            let {code, message} = new ErrorService(req).getErrorResponse(err);
+            return res.status(code).json({message});
+        }
+    }
+
+    deleteMyStaffServiceByOwner = async (req, res, next) => {
+        let staffServiceHelper = new StaffServiceHelper();
+        try {
+            let id = req.params.id ? parseInt(req.params.id) : null;
+            if(!id) throw InputInfoEmpty;
+            let userId = req.user.userId;
+            let staff = await Staff.findOne({where: {userId}});
+            if(!staff) throw StaffNotFound;
+            await StaffServicePrice.destroy(
+                {
+                    where: {
+                        staffServiceId: id
+                    }
+                }
+            );
+            let staffService = await StaffService.destroy(
+                {
+                    where: {
+                        id
+                    }
+                }
+            );
+            await new StaffServiceHelper().staffUpdateHandler(staff.id);
+
+            return res.status(200).json(staffService);
+        }
+        catch (err) {
+            console.error(err);
+            let {code, message} = new ErrorService(req).getErrorResponse(err);
+            return res.status(code).json({message});
+        }
+    }
 }
 
 module.exports = new StaffServiceController();

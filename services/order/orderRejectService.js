@@ -14,6 +14,7 @@ class OrderRejectService {
         try {
             if(!orderId || !staff) throw InputInfoEmpty;
             let {order, orderForwarder} = await this.prepare(orderId, staff.id, staff.storeId);
+            if(!await this.validate(order)) return;
 
             if(order.storeId === staff.storeId) {
                 await this.rejectOrder(orderId);
@@ -32,6 +33,7 @@ class OrderRejectService {
             let isOwner;
             if(!orderId || !staff) throw InputInfoEmpty;
             let {order, orderForwarder} = await this.prepare(orderId, staff.id, staff.storeId);
+            if(!await this.validate(order)) return;
             if(order.staffId === staff.id) {
                 await this.rejectOrder(orderId);
                 isOwner = true;

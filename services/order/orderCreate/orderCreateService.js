@@ -184,6 +184,11 @@ class OrderCreateService {
                     },
                     order.id
                 );
+                await this.communicationService.sendMobileNotification(
+                    storeOwner.userId,
+                    "Khách đặt bạn",
+                    `Có khách ở ${order.address}.Vui lòng kiểm tra thông tin`,
+                );
             }
             
                 await this.communicationService.sendNotificationToUserId(
@@ -195,6 +200,11 @@ class OrderCreateService {
                         actionType: NotificationActionType.OrderDetail.type
                     },
                     order.id
+                );
+                await this.communicationService.sendMobileNotification(
+                    staff.userId,
+                    "Khách đặt bạn",
+                    `Có khách ở ${order.address}.Vui lòng kiểm tra thông tin`,
                 );
         }
         catch (err) {
@@ -212,6 +222,17 @@ class OrderCreateService {
                 {
                     actionType: NotificationActionType.Wallet.type
                 }
+            );
+        }
+        catch (err) {
+            console.error(err);
+        }
+
+        try {
+            await this.communicationService.sendMobileNotification(
+                order.customerUserId,
+                "Thông báo",
+                `Thanh toán cho đơn hàng ${order.code} qua ví Glow Healthy thành công`,
             );
         }
         catch (err) {

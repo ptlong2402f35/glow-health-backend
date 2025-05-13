@@ -13,6 +13,7 @@ const { OrderRejectService } = require("../services/order/orderRejectService");
 const { OrderReviewService } = require("../services/order/orderReviewService");
 const staff = require("../model/staff");
 const { PusherConfig } = require("../pusher/pusherConfig");
+const { QuickForwardConfig } = require("../services/order/quickForward/quickForwardConfig");
 
 const Order = require("../model").Order;
 const Staff = require("../model").Staff;
@@ -279,9 +280,12 @@ class OrderController {
     createOrder = async (req, res, next) => {
         try {
             const pusherConfig = new PusherConfig().getInstance();
+            const quickForwardConfig = new QuickForwardConfig().getInstance();
             let data = req.body;
             let userId = req.user.userId;
-            let isQuickForward = data.isQuickForward;
+            let pinnedStaffs = await quickForwardConfig.getPinnedStaff();
+            let pinnedStaffIds = pinnedStaffs.map(item => item.id).filter(val => val);
+            let isQuickForward = pinnedStaffIds.includes(data.staffId);
             
             let userCustomer = await User.findByPk(userId);
             let staff = await Staff.findByPk(data.staffId);
@@ -820,8 +824,6 @@ class OrderController {
         try {
             let orderId = req.params.id ? parseInt(req.params.id) : null;
             if(!orderId) throw InputInfoEmpty;
-            let staffIds = req.body.staffIds;
-            if(!staffIds.length) throw InputInfoEmpty;
             let userId = req.user.userId;
 
             let staff = await Staff.findOne({
@@ -831,6 +833,52 @@ class OrderController {
             });
 
             await new OrderRejectService().ownerReject(orderId, staff);
+
+            return res.status(200).json({message: "DONE"})
+        }
+        catch (err) {
+            console.error(err);
+            let {code, message} = new ErrorService(req).getErrorResponse(err);
+            return res.status(code).json({message});
+        }
+    }
+
+    ownerCancelOrder = async (req, res, next) => {
+        try {
+            let orderId = req.params.id ? parseInt(req.params.id) : null;
+            if(!orderId) throw InputInfoEmpty;
+            let userId = req.user.userId;
+
+            let staff = await Staff.findOne({
+                where: {
+                    userId
+                }
+            });
+
+            await new OrderCancelService().cancel(orderId, staff);
+
+            return res.status(200).json({message: "DONE"})
+        }
+        catch (err) {
+            console.error(err);
+            let {code, message} = new ErrorService(req).getErrorResponse(err);
+            return res.status(code).json({message});
+        }
+    }
+
+    ownerFinishOrder = async (req, res, next) => {
+        try {
+            let orderId = req.params.id ? parseInt(req.params.id) : null;
+            if(!orderId) throw InputInfoEmpty;
+            let userId = req.user.userId;
+
+            let staff = await Staff.findOne({
+                where: {
+                    userId
+                }
+            });
+
+            await new OrderFinishService().ownerFinish(orderId, staff);
 
             return res.status(200).json({message: "DONE"})
         }

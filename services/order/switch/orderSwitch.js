@@ -148,6 +148,28 @@ class OrderSwitch {
         catch (err) {
             console.error(err);
         }
+
+        try {
+            await this.communicationService.sendMobileNotification(
+                staff.userId,
+                "Kết nối thành công",
+                `Vui lòng liên hệ với khách`,
+            );
+        }
+        catch (err) {
+            console.error(err);
+        }
+
+        try {
+            await this.communicationService.sendMobileNotification(
+                order.customerUserId,
+                "Đơn hàng đã được kết nối",
+                `Đơn hàng của bạn đã được đổi KTV thành công, vui lòng kiểm tra`,
+            );
+        }
+        catch (err) {
+            console.error(err);
+        }
     }
 }
 

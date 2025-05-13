@@ -1,17 +1,16 @@
 const { Op } = require("sequelize");
 const { FirebaseConfig } = require("../../firebase/firebaseConfig");
 const { EmailService } = require("./emailService");
+const { ExpoCommunicationConfig } = require("./expoCommunication");
 const Notification = require("../../model").Notification;
-let FireBaseProjectId = process.env.FIREBASE_PROJECT_ID || "english-center-1e883";
-let FCMPushNotiUrl = `https://fcm.googleapis.com/v1/projects/${FireBaseProjectId}/messages:send`
 const User = require("../../model").User;
 
 class CommunicationService {
     emailService;
-    firebaseConfig;
+    expoCommunicationConfig;
     constructor() {
         this.emailService = new EmailService();
-        this.firebaseConfig = new FirebaseConfig().getInstance();
+        this.expoCommunicationConfig = new ExpoCommunicationConfig().getInstance();
     }
 
     async sendNotificationToUserId(userId, title, content, type, {actionType} = {}, referenceId) {
@@ -53,15 +52,18 @@ class CommunicationService {
         }
     }
     
-    //fire base noti
+    //expo noti
     async sendMobileNotification(userId, title = "", body = "") {
         try {
             let user = await User.findByPk(userId);
-            if(!user || !user.messageToken) return;
-            await this.firebaseConfig.createMessage(user.messageToken, {
-                title,
-                body
-            });
+            if(!user || !user.expoToken) return;
+            await this.expoCommunicationConfig.sendExpoNotification(
+                {
+                    token: user.expoToken,
+                    title,
+                    body
+                }
+            );
         }
         catch (err) {
             console.error(err);
@@ -78,12 +80,15 @@ class CommunicationService {
                     }
                 }
             });
-            let deviceUserIds = users.map(item => item.messageToken).filter(val => val);
+            let deviceUserIds = users.map(item => item.expoToken).filter(val => val);
             if(!deviceUserIds || !deviceUserIds.length) return;
-            await this.firebaseConfig.createMessage(deviceUserIds, {
-                title,
-                body
-            });
+            await this.expoCommunicationConfig.bulkSendNotification(
+                {
+                    tokens: deviceUserIds,
+                    title,
+                    body
+                }
+            );
         }
         catch (err) {
             console.error(err);

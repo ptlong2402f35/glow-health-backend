@@ -1,62 +1,70 @@
 [
     {
+        "id": "massage-at-home",
         "label": "Massage tại nhà",
         "image": "",
         "serviceGroup": "Massage",
-        "quickStaffService": [
+        "pinnedStaff": [
             {
+                "id": 1,
                 "image": "",
                 "label": "",
                 "description": "",
                 "name": "Vé 200k",
-                "detailStaff": {},
+                "staff": {},
                 "staffServiceIds": []
             },
             {
+                "id": 2,
                 "image": "",
                 "label": "",
                 "description": "",
                 "name": "Vé 400K",
-                "detailStaff": {},
+                "staff": {},
                 "staffServiceIds": []
             },
             {
+                "id": 3,
                 "image": "",
                 "label": "",
                 "description": "",
                 "name": "Vé 600k",
-                "detailStaff": {},
+                "staff": {},
                 "staffServiceIds": []
             }
         ]
     },
     {
+        "id": "training-at-home",
         "label": "Training tại nhà",
         "image": "",
         "serviceGroup": "Training",
-        "quickStaffService": [
+        "pinnedStaff": [
             {
+                "id": 1,
                 "image": "",
                 "label": "",
                 "description": "",
                 "name": "",
-                "detailStaff": {},
+                "staff": {},
                 "staffServiceIds": []
             },
             {
+                "id": 2,
                 "image": "",
                 "label": "",
                 "description": "",
                 "name": "",
-                "detailStaff": {},
+                "staff": {},
                 "staffServiceIds": []
             },
             {
+                "id": 3,
                 "image": "",
                 "label": "",
                 "description": "",
                 "name": "",
-                "detailStaff": {},
+                "staff": {},
                 "staffServiceIds": []
             }
         ]

@@ -80,6 +80,7 @@ class PaymentService {
                     return {success: true, code: tData.vnp_TxnRef}
                 }
                 case PaymentMethodId.Paypal: {
+                    
                     let token = await this.paypalPaymentService.getAccessToken();
                     let resp = await this.paypalPaymentService.capturePaymentInfo(token, data.paypalTransactionId);
                     let user = await this.createTransaction(data, resp.vndAmount || 0);
@@ -168,6 +169,16 @@ class PaymentService {
                 {
                     actionType: NotificationActionType.Wallet.type
                 },
+            );
+        }
+        catch (err) {
+            console.error(err);
+        }
+        try {
+            await this.communicationService.sendMobileNotification(
+                userId,
+                "Thông báo",
+                `Nạp tiền vào ví glow thành công. Số dư: ${nAmount}`,
             );
         }
         catch (err) {

@@ -72,15 +72,30 @@ class TransactionController {
                     );
 
                     //noti
-                    await new CommunicationService().sendNotificationToUserId(
-                        data.userId,
-                        "Admin nạp tiền",
-                        `Bạn được cộng ${data.amount}đ vào ví Glow`,
-                        NotificationType.Transaction,
-                        {
-                            actionType: NotificationActionType.Wallet.type
-                        }
-                    );
+                    try {
+                        await new CommunicationService().sendNotificationToUserId(
+                            data.userId,
+                            "Admin nạp tiền",
+                            `Bạn được cộng ${data.amount}đ vào ví Glow`,
+                            NotificationType.Transaction,
+                            {
+                                actionType: NotificationActionType.Wallet.type
+                            }
+                        );
+                    }
+                    catch (err) {
+                        console.error(err);
+                    }
+                    try {
+                        await new CommunicationService().sendMobileNotification(
+                            data.userId,
+                            "Admin nạp tiền",
+                            `Bạn được cộng ${data.amount}đ vào ví Glow`,
+                        );
+                    }
+                    catch (err) {
+                        console.error(err);
+                    }
 
                     break;
                 }
@@ -95,15 +110,31 @@ class TransactionController {
                         },
                         t
                     );
-                    await new CommunicationService().sendNotificationToUserId(
-                        data.userId,
-                        "Admin trừ tiền",
-                        `Bạn bị trừ ${data.amount}đ trong ví Glow`,
-                        NotificationType.Transaction,
-                        {
-                            actionType: NotificationActionType.Wallet.type
-                        }
-                    );
+                    try {
+                        await new CommunicationService().sendNotificationToUserId(
+                            data.userId,
+                            "Admin trừ tiền",
+                            `Bạn bị trừ ${data.amount}đ trong ví Glow`,
+                            NotificationType.Transaction,
+                            {
+                                actionType: NotificationActionType.Wallet.type
+                            }
+                        );
+                    }
+                    catch (err) {
+                        console.error(err);
+                    }
+
+                    try {
+                        await new CommunicationService().sendMobileNotification(
+                            data.userId,
+                            "Admin trừ tiền",
+                            `Bạn bị trừ ${data.amount}đ vào ví Glow`,
+                        );
+                    }
+                    catch (err) {
+                        console.error(err);
+                    }
 
                     break;
                 }

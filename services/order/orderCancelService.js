@@ -108,6 +108,16 @@ class OrderCancelService {
         catch (err) {
             console.error(err);
         }
+        try {
+            await this.communicationService.sendMobileNotification(
+                data.userId,
+                "Đơn hàng của bạn đã bị hủy",
+                `Đơn hàng của bạn đã được Kỹ thuật viên hủy, vui lòng kiểm tra`,
+            );
+        }
+        catch (err) {
+            console.error(err);
+        }
     }
 
     async staffNoti() {

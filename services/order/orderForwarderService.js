@@ -257,6 +257,7 @@ class OrderForwarderService {
             console.log("usrIds ===", userIds);
     
             await this.communicationService.sendBulkNotificationToUserId(userIds, "Thông báo", content, NotificationType.OrderDetail, {actionType: NotificationActionType.OrderDetail.type}, order.id);
+            await this.communicationService.sendBulkMobileNotification(userIds, "Thông báo", content);
     
             console.log(`==== [OrderForwardStarter] done notify forwarders`);
         }
