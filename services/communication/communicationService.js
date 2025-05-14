@@ -57,6 +57,7 @@ class CommunicationService {
         try {
             let user = await User.findByPk(userId);
             if(!user || !user.expoToken) return;
+            console.log("user token", user.expoToken);
             await this.expoCommunicationConfig.sendExpoNotification(
                 {
                     token: user.expoToken,

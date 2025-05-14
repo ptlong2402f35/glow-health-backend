@@ -39,6 +39,12 @@ class StaffController {
                 where: {
                     [Op.and]: searchConds
                 },
+                include: [
+                    {
+                        model: User,
+                        as: "user"
+                    }
+                ],
                 order: orderBy,
                 attributes
             });
@@ -62,8 +68,13 @@ class StaffController {
             let staff = await Staff.findOne({
                 where: {
                     id,
-
-                }
+                },
+                include: [
+                    {
+                        model: User,
+                        as: "user"
+                    }
+                ],
             });
 
             return res.status(200).json(staff);

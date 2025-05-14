@@ -171,6 +171,31 @@ class UserController {
         }
     }
 
+    adminUpdateUserInfo = async (req, res, next) => {
+        try {
+            let userId = req.params.id ? parseInt(req.params.id) : null;
+            let data = req.body;
+            
+            let [count] = await User.update(
+                {
+                    ...data      
+                },
+                {
+                    where: {
+                        id: userId
+                    }
+                }
+            );
+
+            return res.status(200).json({message: "Done"});
+        }
+        catch (err) {
+            console.error(err);
+            let {code, message} = new ErrorService(req).getErrorResponse(err);
+            return res.status(code).json({message});
+        }
+    }
+
     unactiveAccount = async (req, res, next) => {
         try {
             let userId = req.user.userId;
@@ -199,6 +224,9 @@ class UserController {
             let lat = req.body.lat;
             let long = req.body.long;
             if(!lat || !long) return res.status(200).json({message: "Done"}); 
+
+            console.log("lat", lat);
+            console.log("long", long);
 
             let user = await User.findByPk(userId);
             if(!user) throw UserNotFound;

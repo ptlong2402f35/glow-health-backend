@@ -25,7 +25,7 @@ const ServiceGroup = require("../model").ServiceGroup;
 const Service = require("../model").Service;
 
 class OrderController {
-    adminGetOrder = async () => {
+    adminGetOrder = async (req, res, next) => {
         const orderQuerier = new OrderQuerier();
         try {
             let page = req.query.page ? parseInt(req.query.page) : 1;

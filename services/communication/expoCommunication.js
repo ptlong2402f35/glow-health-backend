@@ -24,8 +24,9 @@ class ExpoCommunicationConfig {
         }
 
         let message = this.build(data.token, data);
+        console.log("message ====", message);
 
-        const chunks = this.client.chunkPushNotifications(message);
+        const chunks = this.client.chunkPushNotifications([message]);
         const tickets = [];
         console.log("chunks ====", chunks);
         for (let chunk of chunks) {

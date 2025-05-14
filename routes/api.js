@@ -34,6 +34,7 @@ router.post("/user/admin-unactive/:id", auth.onlyAdmin, UserController.adminUnac
 router.put("/user/update-password", auth.auth, UserController.updatePassword);
 router.put("/user/update", auth.auth, UserController.updateUserInfo);
 router.post("/user/unactive", auth.auth, UserController.unactiveAccount);
+router.put("/user/admin-update-user/:id", auth.onlyAdmin, UserController.adminUpdateUserInfo)
 
 /* CustomerAddress */
 router.get("/customer-address/my-address", auth.auth, CustomerAddressController.userGetAddress);
@@ -103,6 +104,7 @@ router.delete("/service-group/:id", auth.onlyAdmin, ServiceGroupController.remov
 
 /* Service Controllers */
 router.get("/service", ServiceController.getService);
+router.get("/service/:id", ServiceController.getServiceDetail);
 router.post("/service", auth.onlyAdmin, ServiceController.createService);
 router.put("/service/:id", auth.onlyAdmin, ServiceController.updateService);
 router.delete("/service/:id", auth.onlyAdmin, ServiceController.removeService);
@@ -149,6 +151,6 @@ router.post("/update-my-expo-token", auth.auth, UserController.updateExpoToken);
 
 /* Test pusher*/
 router.post("/test-pusher-noti/:id", UserController.testPusherNoti);
-router.post("/test-mobie-noti/:id", UserController.testPusherNotiMobile);
+router.post("/test-mobile-noti/:id", UserController.testPusherNotiMobile);
 
 module.exports = router;
