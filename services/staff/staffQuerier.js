@@ -209,13 +209,13 @@ class StaffQuerier {
 				? [
 						{
 							model: StaffService,
-							as: "staffService",
+							as: "staffServices",
 							attributes: ["id", "name"],
 							include: [
 								{
 									model: Service,
 									as: "service",
-									attributes: ["id", "price", "unit", "name", "imageUrl"],
+									attributes: ["id","name"],
 								},
 							],
 						},
