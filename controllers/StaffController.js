@@ -177,7 +177,8 @@ class StaffController {
                     [Op.and]: searchConds
                 },
                 order: orderBy,
-                attributes
+                attributes,
+                include
             });
 
             data.currentPage = page;
