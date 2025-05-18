@@ -155,6 +155,9 @@ class StaffController {
         try {
             let page = req.query.page ? parseInt(req.query.page) : 1;
             let perPage = req.query.perPage ? parseInt(req.query.perPage) : 50;
+            let useCoordinate = req.query.useCoordinate ? req.query.useCoordinate : false;
+            let coordinateLat = req.query.coordinateLat ? parseFloat(req.query.coordinateLat) : 0;
+            let coordinateLong = req.query.coordinateLong ? parseFloat(req.query.coordinateLong) : 0;
 
             let whereQuerier = staffQuerier.buildQuerier(req.query);
             let searchConds = await staffQuerier.buildWhere(whereQuerier);
@@ -163,6 +166,9 @@ class StaffController {
                 sortDistance: whereQuerier.useCoordinate && whereQuerier.coordinateDistance
             });
             let attributes = staffQuerier.buildAttributes(whereQuerier);
+            let include = staffQuerier.buildIncludes({
+                // includeStaffServices: true
+            });
 
             let data = await Staff.paginate({
                 page,

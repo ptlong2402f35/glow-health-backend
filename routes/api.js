@@ -107,6 +107,7 @@ router.get("/service", ServiceController.getService);
 router.get("/service/:id", ServiceController.getServiceDetail);
 router.post("/service", auth.onlyAdmin, ServiceController.createService);
 router.put("/service/:id", auth.onlyAdmin, ServiceController.updateService);
+router.put("/service-status/:id", auth.onlyAdmin, ServiceController.updateServiceStatus);
 router.delete("/service/:id", auth.onlyAdmin, ServiceController.removeService);
 
 /* Voucher Controllers */

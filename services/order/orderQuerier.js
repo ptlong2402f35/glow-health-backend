@@ -143,6 +143,10 @@ class OrderQuerier {
 				as: "customerUser",
                 attributes: ["id", "userName", "phone"]
 			},
+            {
+                model: Voucher,
+                as: "voucher",
+            },
 			...(includeStaffServicesPrice
 				? [
 						{

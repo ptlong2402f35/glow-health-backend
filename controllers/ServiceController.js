@@ -90,6 +90,35 @@ class ServiceController {
         }
     }
 
+    updateServiceStatus = async (req, res, next) => {
+        try {
+            let id = req.params.id ? parseInt(req.params.id) : null;
+            if(!id) throw InputInfoEmpty;
+            let data = req.body;
+            let bData = {
+                status: data.status
+            }
+            let resp = await Service.update(
+                {
+                    ...bData
+                },
+                {
+                    where: {
+                        id
+                    }
+                }
+            );
+
+
+            return res.status(200).json({message: "DONE"});
+        }
+        catch (err) {
+            console.error(err);
+            let {code, message} = new ErrorService(req).getErrorResponse(err);
+            return res.status(code).json({message});
+        }
+    }
+
     removeService = async (req, res, next) => {
         try {
             let id = req.params.id ? parseInt(req.params.id) : null;
