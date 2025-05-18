@@ -166,7 +166,7 @@ class StaffController {
                 sortDistance: whereQuerier.useCoordinate && whereQuerier.coordinateDistance
             });
             let attributes = staffQuerier.buildAttributes(whereQuerier);
-            let include = staffQuerier.buildIncludes({
+            let include = await staffQuerier.buildIncludes({
                 // includeStaffServices: true
             });
 
@@ -197,7 +197,7 @@ class StaffController {
             let id = req.params.id ? parseInt(req.params.id) :null;
             if(!id) throw UserNotFound;
 
-            let include = new StaffQuerier().buildIncludes({includeStaffServices: true});
+            let include = await new StaffQuerier().buildIncludes({includeStaffServices: true});
 
             let staff = await Staff.findOne({
                 where: {

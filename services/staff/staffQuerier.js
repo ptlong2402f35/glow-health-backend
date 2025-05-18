@@ -224,7 +224,7 @@ class StaffQuerier {
 			{
 				model: Store,
 				as: "store",
-				attributes:["id", "name", "storeStation"],
+				attributes:["id", "name"],
 			},
 		];
 	}
