@@ -196,22 +196,13 @@ class StaffController {
             let id = req.params.id ? parseInt(req.params.id) :null;
             if(!id) throw UserNotFound;
 
+            let include = new StaffQuerier().buildIncludes({includeStaffServices: true});
+
             let staff = await Staff.findOne({
                 where: {
                     id,
                 },
-                include: [
-                    {
-                        model: StaffService,
-                        as: "staffServices",
-                        include: [
-                            {
-                                model: StaffServicePrice,
-                                as: "prices"
-                            }
-                        ]
-                    }
-                ]
+                include: include
             });
 
             return res.status(200).json(staff);

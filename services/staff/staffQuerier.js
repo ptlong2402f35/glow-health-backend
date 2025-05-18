@@ -203,6 +203,7 @@ class StaffQuerier {
 			{
 				model: User,
 				as: "user",
+                attributes: ["id", "urlImage", "phone", "email"]
 			},
 			...(includeStaffServices
 				? [
