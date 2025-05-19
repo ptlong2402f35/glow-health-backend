@@ -168,6 +168,8 @@ class StaffServiceController {
             );
             let data = await new StaffServiceHelper().getDefaultFormat(staffServices);
 
+            console.log("data", data);
+
             return res.status(200).json(data);
         }
         catch (err) {
