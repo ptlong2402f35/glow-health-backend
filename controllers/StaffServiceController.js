@@ -215,7 +215,7 @@ class StaffServiceController {
             let data = req.body;
             let staff = await Staff.findOne({where: {userId}});
             if(!staff) throw StaffNotFound;
-            let staffServiceIds = data.map(item => item.id);
+            let staffServiceIds = data.map(item => item.staffServiceId);
             await StaffServicePrice.destroy(
                 {
                     where: {
