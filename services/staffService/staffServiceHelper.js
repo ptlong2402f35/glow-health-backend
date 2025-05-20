@@ -3,6 +3,7 @@ const StaffServicePrice = require("../../model").StaffServicePrice;
 const Staff = require("../../model").Staff;
 const StaffService = require("../../model").StaffService;
 const ServiceGroup = require("../../model").ServiceGroup;
+const util = require("util");
 
 class StaffServiceHelper {
     constructor() {}
@@ -25,6 +26,7 @@ class StaffServiceHelper {
                 ...item.serviceGroup?.dataValues || {}
             }
         }));
+        console.log("services", nservices);
         let res = [];
         if(staffServices?.length) {
             for(let service of nservices) {
@@ -56,6 +58,7 @@ class StaffServiceHelper {
                 prices: []
             }));
         }
+        console.log("services", util.inspect(res, false, null, true));
 
         return this.groupAndSortWithServiceGroup(res);
     }
@@ -69,14 +72,16 @@ class StaffServiceHelper {
                 continue;
             }
 
-            resp.push(
-                {
-                    ...item.serviceGroup,
-                    services: [
-                        {...item}
-                    ]
-                }
-            )
+            if(item.serviceGroup.id) {
+                resp.push(
+                    {
+                        ...item.serviceGroup,
+                        services: [
+                            {...item}
+                        ]
+                    }
+                );
+            }
         }
 
         return resp;
