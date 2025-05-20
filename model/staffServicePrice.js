@@ -28,6 +28,7 @@ module.exports = (sequelize, DataTypes) => {
             price: DataTypes.DOUBLE,
             unit: DataTypes.TEXT,
             serviceGroupId: DataTypes.INTEGER,
+            staffId: DataTypes.INTEGER,
             createdAt: DataTypes.DATE,
             updatedAt: DataTypes.DATE,
         },

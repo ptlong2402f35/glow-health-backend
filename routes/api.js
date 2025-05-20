@@ -90,7 +90,8 @@ router.post("/staff-service-batch-by-admin", auth.onlyAdmin, StaffServiceControl
 router.put("/staff-service-batch-by-admin/:id", auth.onlyAdmin, StaffServiceController.adminUpdateStaffService);
 router.delete("/staff-service-by-admin/:id", auth.onlyAdmin, StaffServiceController.adminRemoveStaffService);
 router.get("/staff-service-batch", auth.auth, StaffServiceController.getMyStaffService );
-router.put("/staff-service-batch/:id", auth.auth, StaffServiceController.updateMyStaffService);
+router.put("/staff-service-batch", auth.auth, StaffServiceController.updateMyStaffService);
+router.post("/staff-service-batch", auth.auth, StaffServiceController.createMyStaffService);
 router.delete("/staff-service/:id", auth.auth , StaffServiceController.deleteMyStaffService);
 router.get("/store-owner/staff-service-batch/:id", auth.auth, StaffServiceController.getMyStaffServiceByOwner);
 router.put("/store-owner/staff-service-batch/:id", auth.auth, StaffServiceController.updateMyStaffServiceByOwner);

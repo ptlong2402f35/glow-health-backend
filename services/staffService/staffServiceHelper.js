@@ -105,6 +105,7 @@ class StaffServiceHelper {
             price: data.price,
             unit: data.unit,
             serviceGroupId: data.serviceGroupId,
+            staffId: data.staffId,
         }
     }
 
