@@ -5,6 +5,17 @@ const StaffService = require("../../model").StaffService;
 const ServiceGroup = require("../../model").ServiceGroup;
 const util = require("util");
 
+const defaultPrice = [
+    {
+        price: 0,
+        unit: "60 phút",
+    },
+    {
+        price: 0,
+        unit: "120 phút",
+    }
+]
+
 class StaffServiceHelper {
     constructor() {}
 
@@ -38,7 +49,7 @@ class StaffServiceHelper {
                             name: exist.name,
                             description: exist.description,
                             code: exist.code,
-                            price: exist.prices.map(item => item.dataValues).filter(val => val)
+                            price: exist.prices.length ? exist.prices.map(item => item.dataValues).filter(val => val) : defaultPrice
                         }
                     );
                     
@@ -47,7 +58,9 @@ class StaffServiceHelper {
                 res.push(
                     {
                         ...service,
-                        prices: []
+                        price: [
+                            
+                        ]
                     }
                 );
             }
