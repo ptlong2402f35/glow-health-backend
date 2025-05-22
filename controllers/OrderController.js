@@ -189,7 +189,7 @@ class OrderController {
                 paginate: perPage,
                 where: conds,
                 attributes,
-                includes,
+                include: includes,
                 order: sort
             });
 
