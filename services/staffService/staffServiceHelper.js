@@ -49,7 +49,7 @@ class StaffServiceHelper {
                             name: exist.name,
                             description: exist.description,
                             code: exist.code,
-                            price: exist.prices.length ? exist.prices.map(item => item.dataValues).filter(val => val) : defaultPrice
+                            price: exist.prices.length ? exist.prices.map(item => item.dataValues).filter(val => val) : defaultPrice.map(item => ({...item, staffServiceId: exist.id, serviceGroupId: exist.serviceGroupId}))
                         }
                     );
                     

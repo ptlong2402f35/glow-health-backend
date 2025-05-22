@@ -6,6 +6,7 @@ const StaffService = require("../../model").StaffService;
 const Service = require("../../model").Service;
 const StaffServicePrice = require("../../model").StaffServicePrice;
 const ServiceGroup = require("../../model").ServiceGroup;
+const Voucher = require("../../model").Voucher;
 
 class OrderQuerier {
     constructor() {}
