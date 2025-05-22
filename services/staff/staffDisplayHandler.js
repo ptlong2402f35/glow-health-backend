@@ -10,7 +10,7 @@ class StaffDisplayHandler {
     attachProvinceInfo(staff) {
         try {
             if(!staff) return;
-            let province = this.locationConfig.getProvinceInfo();
+            let province = this.locationConfig.getProvinceInfo(staff.provinceId);
 
             staff.province = province;
             staff?.setDataValue("province", province);
