@@ -29,6 +29,15 @@ class LocationConfig {
         this.config = LocationConfigData.map(val => ({...val}));
     }
 
+    getProvinceInfo(id) {
+        let province = this.config.find(val => val.id == id);
+
+        return {
+            ...province,
+            district: []
+        }
+    }
+
     getLocationSearchIds(ids, type) {
         switch(type) {
             case LocationType.Province:

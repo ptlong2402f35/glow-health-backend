@@ -9,6 +9,7 @@ const { StaffUpdateService } = require("../services/staff/staffUpdateService");
 const { OwnerService } = require("../services/staff/owner/ownerService");
 const { StaffRole } = require("../constants/roles");
 const { QuickForwardConfig } = require("../services/order/quickForward/quickForwardConfig");
+const { StaffDisplayHandler } = require("../services/staff/staffDisplayHandler");
 
 const Transaction = require("../model").Transaction;
 const User = require("../model").User;
@@ -196,15 +197,26 @@ class StaffController {
         try {
             let id = req.params.id ? parseInt(req.params.id) :null;
             if(!id) throw UserNotFound;
+            let useCoordinate = req.query.userCoordinate ? req.query.userCoordinate : false;
+            let lat = req.query.lat ? parseFloat(req.query.lat) : 0;
+            let long = req.query.long ? parseFloat(req.query.long) : 0;
 
             let include = await new StaffQuerier().buildIncludes({includeStaffServices: true});
+            let attributes = new StaffQuerier().buildAttributes({
+                useCoordinate,
+                coordinateLat: lat,
+                coordinateLong: long
+            })
 
             let staff = await Staff.findOne({
                 where: {
                     id,
                 },
-                include: include
+                include: include,
+                attributes
             });
+
+            new StaffDisplayHandler().attachProvinceInfo(staff);
 
             return res.status(200).json(staff);
         }
