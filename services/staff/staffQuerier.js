@@ -7,6 +7,7 @@ const Store = require("../../model").Store;
 const StaffService = require("../../model").StaffService;
 const Service = require("../../model").Service;
 const StaffServicePrice = require("../../model").StaffServicePrice;
+const ServiceGroup = require("../../model").ServiceGroup;
 
 class StaffQuerier {
     constructor() {}
@@ -222,6 +223,11 @@ class StaffQuerier {
 									model: StaffServicePrice,
 									as: "prices",
 									attributes: ["id","price", "unit"],
+								},
+                                {
+									model: ServiceGroup,
+									as: "serviceGroup",
+									attributes: ["id","name", "active"],
 								},
 							],
 						},

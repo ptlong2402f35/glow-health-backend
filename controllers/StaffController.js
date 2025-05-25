@@ -10,6 +10,7 @@ const { OwnerService } = require("../services/staff/owner/ownerService");
 const { StaffRole } = require("../constants/roles");
 const { QuickForwardConfig } = require("../services/order/quickForward/quickForwardConfig");
 const { StaffDisplayHandler } = require("../services/staff/staffDisplayHandler");
+const { StaffServiceHelper } = require("../services/staffService/staffServiceHelper");
 
 const Transaction = require("../model").Transaction;
 const User = require("../model").User;
@@ -221,6 +222,9 @@ class StaffController {
             });
 
             new StaffDisplayHandler().attachProvinceInfo(staff);
+            if(staff) {
+                new StaffDisplayHandler().sortAndGroupStaffService(staff, staff.staffServices)
+            }
 
             return res.status(200).json(staff);
         }
