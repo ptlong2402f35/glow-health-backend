@@ -183,7 +183,7 @@ class StaffController {
             });
 
             for(let item of data.docs) {
-                new StaffDisplayHandler().attachProvinceInfo(staff);
+                new StaffDisplayHandler().attachProvinceInfo(item);
             }
 
             data.currentPage = page;
