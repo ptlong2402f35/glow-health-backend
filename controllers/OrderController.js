@@ -291,7 +291,7 @@ class OrderController {
             let staff = await Staff.findByPk(data.staffId);
             if(!userCustomer) throw UserNotFound;
             if(!staff) throw StaffNotFound;
-
+            console.log("isQuickForward", isQuickForward)
             let order = await new OrderCreateService().createDefaultOrder(data, staff, userCustomer, {isQuickForward});
 
             //pusher trigger

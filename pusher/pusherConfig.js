@@ -28,7 +28,7 @@ class PusherConfig {
 
     async trigger(data = {}, channel = "", event = "") {
         if(!channel && !event) return;
-        console.log("trigger pusher", this.pusher);
+        // console.log("trigger pusher", this.pusher);
         this.pusher.trigger(channel, event, data);
         console.log(`trigger data ${data} to channel ${channel} for event ${event} successfully!!!`);
     }

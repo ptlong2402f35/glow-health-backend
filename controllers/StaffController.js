@@ -182,6 +182,10 @@ class StaffController {
                 include
             });
 
+            for(let item of data.docs) {
+                new StaffDisplayHandler().attachProvinceInfo(staff);
+            }
+
             data.currentPage = page;
 
             return res.status(200).json(data);

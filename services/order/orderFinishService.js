@@ -63,12 +63,13 @@ class OrderFinishService {
         let amount = order.totalPay - order.totalReceive;
         console.log("order", order.paymentMethodId);
         console.log("amount", amount);
+        let walletUser;
         switch(order.paymentMethodId) {
             case PaymentMethod.Cash: {
                 let trans;
                 const t = await sequelize.transaction();
                 try {
-                    let walletUser = await this.transactionService.getWalletUser(staff.userId);
+                    walletUser = await this.transactionService.getWalletUser(staff.userId);
                     console.log("walletUser", walletUser);
                     trans = await this.transactionService.chargeWallet(
                         walletUser,
@@ -103,7 +104,7 @@ class OrderFinishService {
                 let trans;
                 const t = await sequelize.transaction();
                 try {
-                    let walletUser = await this.transactionService.getWalletUser(staff.userId);
+                    walletUser = await this.transactionService.getWalletUser(staff.userId);
                     trans = await this.transactionService.topupWallet(
                         walletUser,
                         {

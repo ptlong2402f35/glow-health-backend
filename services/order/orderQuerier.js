@@ -135,7 +135,7 @@ class OrderQuerier {
                     {
                         model: User,
                         as: "user",
-                        attributes: ["id", "userName", "phone"]
+                        attributes: ["id", "userName", "phone", "urlImage"]
                     }
                 ]
 			},
