@@ -212,7 +212,7 @@ class StaffQuerier {
 						{
 							model: StaffService,
 							as: "staffServices",
-							attributes: ["id", "name"],
+							attributes: ["id", "name", "serviceGroupId"],
 							include: [
 								{
 									model: Service,
