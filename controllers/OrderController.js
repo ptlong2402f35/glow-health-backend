@@ -14,6 +14,8 @@ const { OrderReviewService } = require("../services/order/orderReviewService");
 const staff = require("../model/staff");
 const { PusherConfig } = require("../pusher/pusherConfig");
 const { QuickForwardConfig } = require("../services/order/quickForward/quickForwardConfig");
+const { sequelize } = require("../model");
+const { StaffDisplayHandler } = require("../services/staff/staffDisplayHandler");
 
 const Order = require("../model").Order;
 const Staff = require("../model").Staff;
@@ -242,8 +244,27 @@ class OrderController {
         const orderQuerier = new OrderQuerier();
         try {
             let orderId = req.params.orderId ? parseInt(req.params.orderId) : null;
+            let useCoordinate = req.query.userCoordinate?.trim() === "true";
+            let lat = req.query.lat ? parseFloat(req.query.lat) : null;
+            let long = req.query.long ? parseFloat(req.query.long) : null;
             if(!orderId) throw InputInfoEmpty;
             let userId = req.user.userId;
+
+            let staffAttr = ["id", "userId", "name", "images", "lat", "long", "provinceId"];
+
+            if(useCoordinate) {
+                attributes = [
+                    ...attributes,
+                    [
+                        sequelize.fn(
+                            "ST_DistanceSphere",
+                            sequelize.col("coordinate"),
+                            sequelize.fn("ST_MakePoint", long || 0, lat || 0),
+                        ),
+                        "distance"
+                    ],
+                ];
+            }
             
             let orders = await OrderForwarder.findAll(
                 {
@@ -255,7 +276,7 @@ class OrderController {
                         {
                             model: Staff,
                             as: "staff",
-                            attributes: ["id", "userId", "name", "images"],
+                            attributes: staffAttr,
                             include: [
                                 {
                                     model: User,
@@ -267,6 +288,10 @@ class OrderController {
                     ]
                 }
             );
+
+            for(let order of orders) {
+                new StaffDisplayHandler().attachProvinceInfo(order.staff);
+            }
 
             return res.status(200).json(orders);
         }
