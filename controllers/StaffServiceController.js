@@ -226,11 +226,10 @@ class StaffServiceController {
                 }
             );
             
-            let sspData = [];
-            for(let item of data) {
-                let prices = item.prices.map(price => staffServiceHelper.buildStaffServicePriceData({...price, staffId: staff.id}));
-                sspData.push(...prices);
-            }
+            let sspData = data.map(item => ({
+                ...staffServiceHelper.buildStaffServicePriceData(item),
+                staffId: staff.id
+            }));
             
             await StaffServicePrice.bulkCreate(sspData);
 

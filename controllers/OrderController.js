@@ -16,6 +16,7 @@ const { PusherConfig } = require("../pusher/pusherConfig");
 const { QuickForwardConfig } = require("../services/order/quickForward/quickForwardConfig");
 const { sequelize } = require("../model");
 const { StaffDisplayHandler } = require("../services/staff/staffDisplayHandler");
+const { StaffRole } = require("../constants/roles");
 
 const Order = require("../model").Order;
 const Staff = require("../model").Staff;
@@ -316,12 +317,27 @@ class OrderController {
             let staff = await Staff.findByPk(data.staffId);
             if(!userCustomer) throw UserNotFound;
             if(!staff) throw StaffNotFound;
-            console.log("isQuickForward", isQuickForward)
+            console.log("isQuickForward", isQuickForward);
+
             let order = await new OrderCreateService().createDefaultOrder(data, staff, userCustomer, {isQuickForward});
 
             //pusher trigger
             try {
-                pusherConfig.trigger({reload: true}, `pusher-channel-${staff.userId}`, "order-create-to-staff");
+                if(staff.storeId) {
+                    let storeOwner;
+                    if(!isQuickForward && staff.storeId) {
+                        storeOwner = await Staff.findOne({
+                            wher: {
+                                storeId: staff.storeId,
+                                staffRole: StaffRole.OwnerStation
+                            }
+                        });
+                    }
+                    pusherConfig.trigger({reload: true}, `pusher-channel-${storeOwner.userId}`, "order-create-to-staff");
+                }
+                else {
+                    pusherConfig.trigger({reload: true}, `pusher-channel-${staff.userId}`, "order-create-to-staff");
+                }
             }
             catch (err) {
                 console.error(err);
@@ -368,7 +384,21 @@ class OrderController {
 
             //pusher trigger
             try {
-                pusherConfig.trigger({screen: "StaffOrderDetail", params: {id: order.id}}, `pusher-channel-${forwardStaff.userId}`, "order-switch-to-staff");
+                if(forwardStaff.storeId) {
+                    let storeOwner;
+                    if(forwardStaff.storeId) {
+                        storeOwner = await Staff.findOne({
+                            wher: {
+                                storeId: forwardStaff.storeId,
+                                staffRole: StaffRole.OwnerStation
+                            }
+                        });
+                    }
+                    pusherConfig.trigger({screen: "StaffOrderDetail", params: {id: order.id}}, `pusher-channel-${storeOwner.userId}`, "order-switch-to-staff");
+                }
+                else {
+                    pusherConfig.trigger({screen: "StaffOrderDetail", params: {id: order.id}}, `pusher-channel-${forwardStaff.userId}`, "order-switch-to-staff");
+                }
             }
             catch (err) {
                 console.error(err);
