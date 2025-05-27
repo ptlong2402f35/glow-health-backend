@@ -33,6 +33,7 @@ class OrderReadyService {
                 isApproved: true,
                 isReady: false,
                 isQuickForward: false,
+                order: order,
             }
         }
 
@@ -51,6 +52,7 @@ class OrderReadyService {
                 isApproved: false,
                 isReady: false,
                 isQuickForward: true,
+                order,
             }
         }
 
@@ -61,6 +63,7 @@ class OrderReadyService {
             isApproved: false,
             isReady: true,
             isQuickForward: false,
+            order,
         }
     }
 
@@ -79,6 +82,7 @@ class OrderReadyService {
                 isApproved: true,
                 isReady: false,
                 isQuickForward: false,
+                order,
             }
         }
 
@@ -94,6 +98,7 @@ class OrderReadyService {
                 isApproved: false,
                 isReady: false,
                 isQuickForward: true,
+                order
             }
         }
 
@@ -104,6 +109,7 @@ class OrderReadyService {
             isApproved: false,
             isReady: true,
             isQuickForward: false,
+            order
         }
 
     }

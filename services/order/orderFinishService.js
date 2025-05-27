@@ -30,6 +30,8 @@ class OrderFinishService {
         await this.updateStaffWallet(ownerStaff, order);
         //noti
         await this.customerNoti({userId: customerUser.id, orderId: order.id});
+
+        return order;
     }
 
     async finish(id, isAdmin) {
@@ -41,6 +43,8 @@ class OrderFinishService {
         await this.updateStaffWallet(staff, order);
         //noti
         await this.customerNoti({userId: customerUser.id, orderId: order.id});
+
+        return order;
     }
 
     async updateOrder(order) {

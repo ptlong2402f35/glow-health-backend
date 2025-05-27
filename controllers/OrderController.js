@@ -359,11 +359,20 @@ class OrderController {
     }
 
     switchOrderToForwarder = async (req, res, next) => {
+        const pusherConfig = new PusherConfig().getInstance();
         try {
             let data = req.body;
             let userId = req.user.userId;
 
-            let order = await new OrderSwitch().switchOrderToForwarder(data.baseOrderId, data.forwardOrderId);
+            let {switchedOrder: order, forwardStaff} = await new OrderSwitch().switchOrderToForwarder(data.baseOrderId, data.forwardOrderId);
+
+            //pusher trigger
+            try {
+                pusherConfig.trigger({screen: "StaffOrderDetail", params: {id: order.id}}, `pusher-channel-${forwardStaff.userId}`, "order-switch-to-staff");
+            }
+            catch (err) {
+                console.error(err);
+            }
 
             return res.status(200).json({message: "Done switch order to forwarder", orderId: order.id});
         }
@@ -560,24 +569,44 @@ class OrderController {
     }
 
     readyOrder = async (req, res, next) => {
+        const pusherConfig = new PusherConfig().getInstance();
         try {
             let id = req.params.id ? parseInt(req.params.id) : null;
             if(!id) throw InputInfoEmpty;
             let userId = req.user.userId;
             let staff = await Staff.findOne({where: {userId}});
 
-            let {isApproved, isReady, isQuickForward} = await new OrderReadyService().ready(id, staff);
+            let {isApproved, isReady, isQuickForward, order} = await new OrderReadyService().ready(id, staff);
 
             if(isApproved) {
-                return res.status(200).json({message: "Approve order successfully", isApproved});
+                try {
+                    pusherConfig.trigger({screen: "MyOrderDetail", params: {id: order.id}}, `pusher-channel-${order.customerUserId}`, "redirect-screen-in-pending");
+                }
+                catch (err) {
+                    console.error(err);
+                }
+                return res.status(200).json({message: "Approve order successfully", isApproved, isReady, isQuickForward, orderId: order.id});
             }
 
             if(isReady) {
-                return res.status(200).json({message: "ready forward order successfully", isReady});
+                //pusher trigger
+                try {
+                    pusherConfig.trigger({reload: true}, `pusher-channel-${order.customerUserId}`, "order-ready-to-customer");
+                }
+                catch (err) {
+                    console.error(err);
+                }
+                return res.status(200).json({message: "ready forward order successfully", isApproved, isReady, isQuickForward});
             }
 
             if(isQuickForward) {
-                return res.status(200).json({message: "Approve quick order successfully", isQuickForward});
+                try {
+                    pusherConfig.trigger({screen: "MyOrderDetail", params: {id: order.id}}, `pusher-channel-${order.customerUserId}`, "redirect-screen-in-pending");
+                }
+                catch (err) {
+                    console.error(err);
+                }
+                return res.status(200).json({message: "Approve quick order successfully", isApproved: true, isReady, isQuickForward, orderId: order.id});
             }
             
             return res.status(200).json({message: "DONE"});
@@ -611,6 +640,7 @@ class OrderController {
     }
 
     cancelOrder = async (req, res, next) => {
+        const pusherConfig = new PusherConfig().getInstance();
         try {
             let id = req.params.id ? parseInt(req.params.id) : null;
             if(!id) throw InputInfoEmpty; 
@@ -618,7 +648,14 @@ class OrderController {
             let userId = req.user.userId;
             let staff = await Staff.findOne({where: {userId}});
 
-            await new OrderCancelService().cancel(data, id);
+            let order = await new OrderCancelService().cancel(data, id);
+
+            try {
+                pusherConfig.trigger({reload: true}, `pusher-channel-${order.customerUserId}`, "reload-detail-order");
+            }
+            catch (err) {
+                console.error(err);
+            }
             
             return res.status(200).json({message: "DONE"})
         }
@@ -630,11 +667,20 @@ class OrderController {
     }
 
     finishOrder = async (req, res, next) => {
+        const pusherConfig = new PusherConfig().getInstance();
+
         try {
             let id = req.params.id ? parseInt(req.params.id) : null;
             if(!id) throw InputInfoEmpty;
             
-            await new OrderFinishService().finish(id);
+            let order = await new OrderFinishService().finish(id);
+
+            try {
+                pusherConfig.trigger({reload: true}, `pusher-channel-${order.customerUserId}`, "reload-detail-order");
+            }
+            catch (err) {
+                console.error(err);
+            }
 
             return res.status(200).json({message: "DONE"});
         }
@@ -821,6 +867,7 @@ class OrderController {
     }
 
     ownerReadyOrder = async (req, res, next) => {
+        const pusherConfig = new PusherConfig().getInstance();
         try {
             let orderId = req.params.id ? parseInt(req.params.id) : null;
             if(!orderId) throw InputInfoEmpty;
@@ -832,9 +879,40 @@ class OrderController {
                 where: {
                     userId
                 }
-            })
+            });
 
-            await new OrderReadyService().ownerReady(orderId, staff, staffIds);
+            let {isApproved, isReady, isQuickForward, order} = await new OrderReadyService().ownerReady(orderId, staff, staffIds);
+
+            if(isApproved) {
+                try {
+                    pusherConfig.trigger({screen: "MyOrderDetail", params: {id: order.id}}, `pusher-channel-${order.customerUserId}`, "redirect-screen-in-pending");
+                }
+                catch (err) {
+                    console.error(err);
+                }
+                return res.status(200).json({message: "Approve order successfully", isApproved, isReady, isQuickForward, orderId: order.id});
+            }
+
+            if(isReady) {
+                //pusher trigger
+                try {
+                    pusherConfig.trigger({reload: true}, `pusher-channel-${order.customerUserId}`, "order-ready-to-customer");
+                }
+                catch (err) {
+                    console.error(err);
+                }
+                return res.status(200).json({message: "ready forward order successfully", isApproved, isReady, isQuickForward});
+            }
+
+            if(isQuickForward) {
+                try {
+                    pusherConfig.trigger({screen: "MyOrderDetail", params: {id: order.id}}, `pusher-channel-${order.customerUserId}`, "redirect-screen-in-pending");
+                }
+                catch (err) {
+                    console.error(err);
+                }
+                return res.status(200).json({message: "Approve quick order successfully", isApproved: true, isReady, isQuickForward, orderId: order.id});
+            }
 
             return res.status(200).json({message: "DONE"})
         }
@@ -869,6 +947,7 @@ class OrderController {
     }
 
     ownerCancelOrder = async (req, res, next) => {
+        const pusherConfig = new PusherConfig().getInstance();
         try {
             let orderId = req.params.id ? parseInt(req.params.id) : null;
             if(!orderId) throw InputInfoEmpty;
@@ -880,7 +959,14 @@ class OrderController {
                 }
             });
 
-            await new OrderCancelService().cancel(orderId, staff);
+            let order = await new OrderCancelService().cancel(orderId, staff);
+
+            try {
+                pusherConfig.trigger({reload: true}, `pusher-channel-${order.customerUserId}`, "reload-detail-order");
+            }
+            catch (err) {
+                console.error(err);
+            }
 
             return res.status(200).json({message: "DONE"})
         }
@@ -892,6 +978,7 @@ class OrderController {
     }
 
     ownerFinishOrder = async (req, res, next) => {
+        const pusherConfig = new PusherConfig().getInstance();
         try {
             let orderId = req.params.id ? parseInt(req.params.id) : null;
             if(!orderId) throw InputInfoEmpty;
@@ -903,7 +990,14 @@ class OrderController {
                 }
             });
 
-            await new OrderFinishService().ownerFinish(orderId, staff);
+            let order = await new OrderFinishService().ownerFinish(orderId, staff);
+
+            try {
+                pusherConfig.trigger({reload: true}, `pusher-channel-${order.customerUserId}`, "reload-detail-order");
+            }
+            catch (err) {
+                console.error(err);
+            }
 
             return res.status(200).json({message: "DONE"})
         }

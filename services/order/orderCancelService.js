@@ -33,6 +33,8 @@ class OrderCancelService {
         await this.updateStaff(staff);
         //noti
         await this.customerNoti({userId: customerUser.id, orderId: data.orderId});
+
+        return order;
     }
 
     async updateOrder(order, data, isStaffCancel) {
