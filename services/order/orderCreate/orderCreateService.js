@@ -139,7 +139,7 @@ class OrderCreateService {
             staffServicePriceId: item
         }));
 
-        console.log("=== orderPrices", util.inspect(dataOrder, false, null, true));
+        console.log("=== orderPrices", util.inspect(data, false, null, true));
 
         return await OrderPrice.bulkCreate(data);
     }
