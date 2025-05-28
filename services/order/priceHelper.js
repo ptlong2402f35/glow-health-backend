@@ -13,6 +13,10 @@ class PriceHelper {
         this.voucherFactory = new VoucherFactory();
     }
 
+    async getStaffServicePrices(ids) {
+        return this.servicePriceFactory.fetch(ids);
+    }
+
     async calcOrderFee(data) {
         let price = {
             total: 0,

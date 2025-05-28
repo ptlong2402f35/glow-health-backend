@@ -27,7 +27,7 @@ class OrderCreateBuilder {
             let orderLat = address.lat ? address.lat : null;
             let orderLong = address.long ? address.long : null;
             let orderCode = this.generateCode();
-            let {money, voucher} = await this.buildMoneyData(
+            let {money, voucher, ssprices} = await this.buildMoneyData(
                 data
             );
 
@@ -46,7 +46,8 @@ class OrderCreateBuilder {
                     orderCode,
                     money,
                     forwardExpiredAt,
-                    voucher
+                    voucher,
+                    ssprices
                 },
                 {isQuickForward}
             );
@@ -56,6 +57,7 @@ class OrderCreateBuilder {
                 address,
                 orderCode,
                 money,
+                ssprices
             };
         }
         catch (err) {
@@ -123,10 +125,12 @@ class OrderCreateBuilder {
                 staffServicePriceIds: data.staffServicePriceIds,
                 voucherId: voucherIds[0],
             });
+            let ssprices = await this.priceHelper.getStaffServicePrices(data.staffServicePriceIds);
 
             return {
                 money,
-                voucher
+                voucher,
+                ssprices
             }
         }
         catch (err) {
@@ -146,7 +150,8 @@ class OrderCreateBuilder {
             orderCode,
             money,
             forwardExpiredAt,
-            voucher
+            voucher,
+            ssprices
         } = {},
         {
             isQuickForward, 
@@ -180,7 +185,8 @@ class OrderCreateBuilder {
             forwardFromOrderId: data.forwardFromOrderId,
             staffServicePriceIds: data.staffServicePriceIds,
             voucherId: voucher?.id,
-            customerAddres: address
+            customerAddres: address,
+            serviceBooking: ssprices?.dataValues || []
         }
     }
 }
