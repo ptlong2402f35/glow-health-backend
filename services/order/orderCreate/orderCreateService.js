@@ -11,6 +11,7 @@ const OrderPrice = require("../../../model").OrderPrice;
 const Staff = require("../../../model").Staff;
 const Transaction = require("../../../model").Transaction;
 const UserMoneyNotEnoughException = "UserMoneyNotEnoughException";
+const util = require("util");
 
 class OrderCreateService {
     orderCreateBuilder;
@@ -66,6 +67,8 @@ class OrderCreateService {
     async createDefaultOrder(data, staff, userCustomer, { isQuickForward} = {}) {
         try {
             let {dataOrder, address, orderCode, money} = await this.orderCreateBuilder.defaultBuilder(data, staff, userCustomer, { isQuickForward});
+
+            console.log("=== dataOrder", util.inspect(dataOrder, false, null, true));
 
             let order;
             switch(data.paymentMethodId) {
@@ -135,6 +138,8 @@ class OrderCreateService {
             orderId: orderId,
             staffServicePriceId: item
         }));
+
+        console.log("=== orderPrices", util.inspect(dataOrder, false, null, true));
 
         return await OrderPrice.bulkCreate(data);
     }
