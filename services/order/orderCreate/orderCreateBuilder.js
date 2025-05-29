@@ -158,6 +158,13 @@ class OrderCreateBuilder {
         } = {}) {
         let isScheduleOrder = this.orderHelper.scheduleChecker(data.timerTime);
 
+        let booking = ssprices.map(item => (
+                {
+                ...item.dataValues,
+                staffService: {...item.staffService.dataValues}
+            }
+        ));
+
         return {
             staffId: data.staffId,
             voucherId: money.voucherId,
@@ -186,7 +193,7 @@ class OrderCreateBuilder {
             staffServicePriceIds: data.staffServicePriceIds,
             voucherId: voucher?.id,
             customerAddres: address,
-            serviceBooking: ssprices?.dataValues || []
+            serviceBooking: booking || []
         }
     }
 }

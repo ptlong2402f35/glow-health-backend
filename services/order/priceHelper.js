@@ -1,6 +1,7 @@
 const { Op } = require("sequelize");
 
 const StaffServicePrice = require("../../model").StaffServicePrice;
+const StaffService = require("../../model").StaffService;
 const Voucher = require("../../model").Voucher;
 
 class PriceHelper {
@@ -60,7 +61,13 @@ class ServicePriceFactory {
                     id:{
                         [Op.in]: ids
                     }
-                }
+                },
+                include: [
+                    {
+                        model: StaffService,
+                        as: "staffService"
+                    }
+                ]
             }
         );
         
