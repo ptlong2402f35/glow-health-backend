@@ -319,6 +319,10 @@ class OrderController {
             if(!staff) throw StaffNotFound;
             console.log("isQuickForward", isQuickForward);
 
+            if(staff.busy) {
+                return res.status(433).json({message: "KTV đang bận, vui lòng thử lại sau"});
+            }
+
             let order = await new OrderCreateService().createDefaultOrder(data, staff, userCustomer, {isQuickForward});
 
             //pusher trigger

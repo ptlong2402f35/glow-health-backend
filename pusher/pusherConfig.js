@@ -30,7 +30,7 @@ class PusherConfig {
         if(!channel && !event) return;
         // console.log("trigger pusher", this.pusher);
         this.pusher.trigger(channel, event, data);
-        console.log(`trigger data ${data} to channel ${channel} for event ${event} successfully!!!`);
+        console.log(`trigger data ${JSON.stringify(data)} to channel ${channel} for event ${event} successfully!!!`);
     }
 }
 
