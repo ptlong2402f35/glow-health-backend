@@ -22,6 +22,19 @@ class StaffUpdateService {
             }
         );
 
+        if(data.urlImage) {
+            await User.update(
+                {
+                    urlImage: data.urlImage
+                },
+                {
+                    where: {
+                        id: userId
+                    }
+                }
+            );
+        }
+
     }
 
     async ownerUpdateStaffDetail(data, id) {

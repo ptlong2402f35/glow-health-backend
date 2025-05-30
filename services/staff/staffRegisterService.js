@@ -13,7 +13,7 @@ class StaffRegisterService {
         try {
             let transaction = await sequelize.transaction();
             let staff = await this.createStaffInstance(data, transaction);
-            await this.updateUserRole(userId, transaction);
+            await this.updateUserRole(userId, data, transaction);
             await transaction?.commit();
 
             return staff;
@@ -28,11 +28,12 @@ class StaffRegisterService {
         return await this.staffCreateService.createStaff(data, t);
     }
 
-    async updateUserRole(userId, transaction) {
+    async updateUserRole(userId, data,  transaction) {
         try {
             await User.update(
                 {
                     role: UserRole.Staff,
+                    ...(data?.urlImage ? {urlImage: data.urlImage} : {}),
                 },
                 {
                     where: {
