@@ -52,12 +52,15 @@ class OrderCreateService {
                     storeId: forwardStaff.storeId || 0,
                     code: this.orderCreateBuilder.generateCode(),
                     forwardFromOrderId: baseOrder.id,
-                    status: OrderStatus.Approved
+                    status: OrderStatus.Approved,
+                    serviceBooking: baseOrder.serviceBooking
                 }
             );
             let orderPrices = await OrderPrice.findAll({where: {orderId: baseOrder.id}});
             let priceIds = orderPrices.map(item => item.staffServicePriceId).filter(val => val);
             await this.createOrderPrices(order.id, priceIds);
+
+            return order;
         }
         catch (err) {
             throw err;

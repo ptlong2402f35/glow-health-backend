@@ -240,6 +240,8 @@ class StaffController {
         try {
             let data = req.body;
             let userId = req.user.userId;
+
+            data.userId = userId;
             
             await staffRegisterService.registerStaffByCustomer(data, userId);
 

@@ -155,6 +155,7 @@ class StaffServiceController {
     getMyStaffService = async (req, res, next) => {
         try {
             let userId = req.user.userId;
+            console.log("userId", req.user);
             let staff = await Staff.findOne({where: {userId}});
             if(!staff) throw StaffNotFound;
             let staffServices = await StaffService.findAll(
