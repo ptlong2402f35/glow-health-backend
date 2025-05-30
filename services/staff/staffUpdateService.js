@@ -21,7 +21,7 @@ class StaffUpdateService {
                 }
             }
         );
-
+        console.log("data", data.urlImage);
         if(data.urlImage) {
             await User.update(
                 {
