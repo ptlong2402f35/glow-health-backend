@@ -299,7 +299,7 @@ class StaffController {
                         {
                             model: User,
                             as: "user",
-                            attributes: ["id", "phone", "url"]
+                            attributes: ["id", "phone", "urlImage"]
                         }
                     ],
                     order: [["id", "desc"]]
