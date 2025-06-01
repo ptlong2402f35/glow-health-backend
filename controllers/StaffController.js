@@ -295,6 +295,13 @@ class StaffController {
                         storeId: storeStaff.storeId,
                         staffRole: StaffRole.Individual,
                     },
+                    include: [
+                        {
+                            model: User,
+                            as: "user",
+                            attributes: ["id", "phone", "url"]
+                        }
+                    ],
                     order: [["id", "desc"]]
                 }
             );
@@ -377,7 +384,7 @@ class StaffController {
                 {
                     ...data,
                 },
-                data.
+                id
             );
 
             return res.status(200).json(staff);
