@@ -94,6 +94,7 @@ router.put("/staff-service-batch", auth.auth, StaffServiceController.updateMySta
 router.post("/staff-service-batch", auth.auth, StaffServiceController.createMyStaffService);
 router.delete("/staff-service/:id", auth.auth , StaffServiceController.deleteMyStaffService);
 router.get("/store-owner/staff-service-batch/:id", auth.auth, StaffServiceController.getMyStaffServiceByOwner);
+router.post("/store-owner/staff-service-batch/:id", auth.auth, StaffServiceController.createMemberStaffService);
 router.put("/store-owner/staff-service-batch/:id", auth.auth, StaffServiceController.updateMyStaffServiceByOwner);
 router.delete("/store-owner/staff-service/:id", auth.auth , StaffServiceController.deleteMyStaffServiceByOwner);
 

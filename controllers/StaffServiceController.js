@@ -305,40 +305,56 @@ class StaffServiceController {
         }
     }
 
+    createMemberStaffService = async (req, res, next) => {
+        let staffServiceHelper = new StaffServiceHelper();
+        try {
+            let data = req.body;
+            let staff = await Staff.findOne({where: {id: data.staffId}});
+            if(!staff) throw StaffNotFound;
+            
+            let ssData = staffServiceHelper.buildStaffServiceData({...data, staffId: staff.id});
+            let staffService = await StaffService.create(
+                {
+                    ...ssData,
+                }
+            );
+            await staffServiceHelper.staffUpdateHandler(staff.id);
+
+            return res.status(200).json(staffService);
+        }
+        catch (err) {
+            console.error(err);
+            let {code, message} = new ErrorService(req).getErrorResponse(err);
+            return res.status(code).json({message});
+        }
+    }
+
     updateMyStaffServiceByOwner = async (req, res, next) => {
         let staffServiceHelper = new StaffServiceHelper();
         try {
-            let staffId = req.params.id ? parseInt(req.params.id) : null;
-            let staff = await Staff.findByPk(staffId);
+            let id = req.params.id;
+            let data = req.body;
+            let staff = await Staff.findByPk(id);
             if(!staff) throw StaffNotFound;
+            let staffServiceIds = data.map(item => item.staffServiceId);
             await StaffServicePrice.destroy(
                 {
                     where: {
-                        staffServiceId: id
+                        staffServiceId: {
+                            [Op.in]: staffServiceIds
+                        }
                     }
                 }
             );
-            let ssData = staffServiceHelper.buildStaffServiceData({...data, staffId: staff.id});
-            await StaffService.update(
-                {
-                    ...ssData
-                },
-                {
-                    where: {
-                        id
-                    }
-                }
-            );
-            let staffService = await StaffService.findByPk(id);
-            let sspData = data.prices.map(item => staffServiceHelper.buildStaffServicePriceData({
-                ...item,
-                staffServiceId: staffService.id,
-                serviceGroupId: staffService.serviceGroupId,
-                staffId
-            })).filter(val => val);
+            
+            let sspData = data.map(item => ({
+                ...staffServiceHelper.buildStaffServicePriceData(item),
+                staffId: staff.id
+            }));
+            
             await StaffServicePrice.bulkCreate(sspData);
 
-            return res.status(200).json(staffService);
+            return res.status(200).json({message: "DONE"});
         }
         catch (err) {
             console.error(err);
