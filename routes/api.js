@@ -15,6 +15,7 @@ const StaffServiceController = require("../controllers/StaffServiceController");
 const ServiceGroupController = require("../controllers/ServiceGroupController");
 const VoucherController = require("../controllers/VoucherController");
 const OrderController = require("../controllers/OrderController");
+const ReviewController = require("../controllers/ReviewController");
 //test connect
 router.get("/test", AuthController.test);
 
@@ -153,7 +154,8 @@ router.post("/update-my-location", auth.auth, UserController.updateMyLocation);
 router.post("/update-my-expo-token", auth.auth, UserController.updateExpoToken);
 
 /* Review Controllers */
-router.get("/reviews", CustomerAddressController.getProvinceList);
+router.get("/reviews", ReviewController.getReviews);
+router.get("/reviews-staff/:staffId", ReviewController.getStaffReviews);
 
 /* Test pusher*/
 router.post("/test-pusher-noti/:id", UserController.testPusherNoti);
