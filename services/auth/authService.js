@@ -135,6 +135,7 @@ class AuthService {
                     email: data.email,
                     password: passHashed,
                     role: data.role,
+                    urlImage: data.urlImage,
                     active: true,
                     createdAt: new Date(),
                     updatedAt: new Date(),

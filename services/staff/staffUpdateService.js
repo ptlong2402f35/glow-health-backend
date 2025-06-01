@@ -50,8 +50,21 @@ class StaffUpdateService {
                 }
             }
         );
-    }
 
+        if(data.urlImage) {
+            let staff = await Staff.findByPk(id);
+            await User.update(
+                {
+                    urlImage: data.urlImage
+                },
+                {
+                    where: {
+                        id: staff.userId
+                    }
+                }
+            );
+        }
+    }
     
 }
 

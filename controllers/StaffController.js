@@ -396,6 +396,37 @@ class StaffController {
         }
     }
 
+    ownerUpdateStaffStatus = async (req, res, next) => {
+        const ownerService = new OwnerService();
+        try {
+            let data = req.body;
+            let id = req.params.id ? parseInt(req.params.id) : 0;
+            if(!id) return res.status(422).json({message: "Id không tồn tại"})
+            let userId = req.user.userId;
+            
+            let storeStaff = await ownerService.validatePermission(userId);
+
+            await Staff.update(
+                {
+                    active: data.active
+                },
+                {
+                    where: {
+                        id,
+                        storeId: storeStaff.storeId
+                    }
+                }
+            );
+
+            return res.status(200).json({message: "Done"});
+        }
+        catch (err) {
+            console.error(err);
+            let {code, message} = new ErrorService(req).getErrorResponse(err);
+            return res.status(code).json({message});
+        }
+    }
+
     ownerRemoveStaff = async (req, res, next) => {
         const ownerService = new OwnerService();
         try {

@@ -72,6 +72,7 @@ router.get("/store-owner/staff", auth.auth, StaffController.ownerGetStaffs);
 router.get("/store-owner/staff/:id", auth.auth, StaffController.ownerGetDetailStaff);
 router.post("/store-owner/staff", auth.auth, StaffController.ownerCreateStaff);
 router.put("/store-owner/staff/:id", auth.auth, StaffController.ownerUpdateStaffDetail);
+router.put("/store-owner/staff-status/:id", auth.auth, StaffController.ownerUpdateStaffStatus);
 router.delete("/store-owner/remove-staff/:id", auth.auth, StaffController.ownerRemoveStaff);
 router.get("/store-owner/staff-forward-ready", auth.auth, StaffController.ownerGetStaffReady);
 router.get("/pinned-staff/:id", StaffController.getPinnedStaff);
