@@ -367,6 +367,8 @@ class StaffController {
         const ownerService = new OwnerService();
         try {
             let data = req.body;
+            let id = req.params.id ? parseInt(req.params.id) : 0;
+            if(!id) return res.status(422).json({message: "Id không tồn tại"})
             let userId = req.user.userId;
             
             let storeStaff = await ownerService.validatePermission(userId);
@@ -374,7 +376,8 @@ class StaffController {
             await new StaffUpdateService().ownerUpdateStaffDetail(
                 {
                     ...data,
-                }
+                },
+                data.
             );
 
             return res.status(200).json(staff);

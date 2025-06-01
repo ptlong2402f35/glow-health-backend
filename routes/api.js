@@ -72,7 +72,6 @@ router.get("/store-owner/staff", auth.auth, StaffController.ownerGetStaffs);
 router.get("/store-owner/staff/:id", auth.auth, StaffController.ownerGetDetailStaff);
 router.post("/store-owner/staff", auth.auth, StaffController.ownerCreateStaff);
 router.put("/store-owner/staff/:id", auth.auth, StaffController.ownerUpdateStaffDetail);
-router.put("/store-owner/staff-service/:id", auth.auth, StaffController.ownerUpdateStaffDetail);
 router.delete("/store-owner/remove-staff/:id", auth.auth, StaffController.ownerRemoveStaff);
 router.get("/store-owner/staff-forward-ready", auth.auth, StaffController.ownerGetStaffReady);
 router.get("/pinned-staff/:id", StaffController.getPinnedStaff);
@@ -94,7 +93,7 @@ router.put("/staff-service-batch", auth.auth, StaffServiceController.updateMySta
 router.post("/staff-service-batch", auth.auth, StaffServiceController.createMyStaffService);
 router.delete("/staff-service/:id", auth.auth , StaffServiceController.deleteMyStaffService);
 router.get("/store-owner/staff-service-batch/:id", auth.auth, StaffServiceController.getMyStaffServiceByOwner);
-router.post("/store-owner/staff-service-batch/:id", auth.auth, StaffServiceController.createMemberStaffService);
+router.post("/store-owner/staff-service-batch", auth.auth, StaffServiceController.createMemberStaffService);
 router.put("/store-owner/staff-service-batch/:id", auth.auth, StaffServiceController.updateMyStaffServiceByOwner);
 router.delete("/store-owner/staff-service/:id", auth.auth , StaffServiceController.deleteMyStaffServiceByOwner);
 
