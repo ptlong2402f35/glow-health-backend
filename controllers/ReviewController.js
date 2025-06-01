@@ -36,6 +36,8 @@ class ReviewController {
 
     getStaffReviews = async (req, res, next) => {
         try {
+            let page = req.query.page ? parseInt(req.query.page) : 1;
+            let perPage = req.query.perPage ? parseInt(req.query.perPage) : 10;
             let staffId = req.params.staffId ? parseInt(req.params.staffId) : null;
             if(!staffId) return res.status(200).json([]);
 
