@@ -152,6 +152,9 @@ router.get("/communes", CustomerAddressController.getCommuneList);
 router.post("/update-my-location", auth.auth, UserController.updateMyLocation);
 router.post("/update-my-expo-token", auth.auth, UserController.updateExpoToken);
 
+/* Review Controllers */
+router.get("/reviews", CustomerAddressController.getProvinceList);
+
 /* Test pusher*/
 router.post("/test-pusher-noti/:id", UserController.testPusherNoti);
 router.post("/test-mobile-noti/:id", UserController.testPusherNotiMobile);

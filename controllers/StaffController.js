@@ -154,12 +154,14 @@ class StaffController {
 
     getStaff = async (req, res, next) => {
         const staffQuerier = new StaffQuerier();
+        const quickForwardConfig = new QuickForwardConfig().getInstance();
         try {
             let page = req.query.page ? parseInt(req.query.page) : 1;
             let perPage = req.query.perPage ? parseInt(req.query.perPage) : 50;
             let useCoordinate = req.query.useCoordinate ? req.query.useCoordinate : false;
             let coordinateLat = req.query.coordinateLat ? parseFloat(req.query.coordinateLat) : 0;
             let coordinateLong = req.query.coordinateLong ? parseFloat(req.query.coordinateLong) : 0;
+            let pinnedStaffIds = await quickForwardConfig.getPinnedStaffIds() || [];
 
             let whereQuerier = staffQuerier.buildQuerier(req.query);
             let searchConds = await staffQuerier.buildWhere(whereQuerier);
@@ -183,6 +185,11 @@ class StaffController {
                         {
                             busy: {
                                 [Op.ne]: true
+                            }
+                        },
+                        {
+                            id: {
+                                [Op.notIn]: pinnedStaffIds
                             }
                         },
                         ...searchConds

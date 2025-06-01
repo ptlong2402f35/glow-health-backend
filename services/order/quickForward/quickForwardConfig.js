@@ -77,6 +77,21 @@ class QuickForwardConfig {
             console.error(err);
         }
     }
+
+    async getPinnedStaffIds() {
+        try {
+            let resp = [];
+            for(let item of this.bannerConfig) {
+                if(!item.pinnedStaff) continue;
+                resp.push(...item.pinnedStaff);
+            }
+
+            return resp.map(item => item.id);
+        }
+        catch (err) {
+            console.error(err);
+        }
+    }
 }
 
 module.exports = {
