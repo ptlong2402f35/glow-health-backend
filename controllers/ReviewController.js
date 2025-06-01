@@ -6,6 +6,7 @@ const { VoucherStatus } = require("../constants/status");
 const { VoucherService } = require("../services/voucher/voucherService");
 
 const Voucher = require("../model").Voucher;
+const Review = require("../model").Review;
 
 class ReviewController {
     getReviews = async (req, res, next) => {
