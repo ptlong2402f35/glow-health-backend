@@ -176,7 +176,17 @@ class StaffController {
                 page,
                 paginate: perPage,
                 where: {
-                    [Op.and]: searchConds
+                    [Op.and]: [
+                        {
+                            active: true
+                        },
+                        {
+                            busy: {
+                                [Op.ne]: true
+                            }
+                        },
+                        ...searchConds
+                    ]
                 },
                 order: orderBy,
                 attributes,
@@ -293,7 +303,7 @@ class StaffController {
                     paginate: perPage,
                     where: {
                         storeId: storeStaff.storeId,
-                        staffRole: StaffRole.Individual,
+                        // staffRole: StaffRole.Individual,
                     },
                     include: [
                         {
@@ -463,7 +473,7 @@ class StaffController {
             let staffs = await ownerService.getStoreStaff(userId, 
                 {
                     busy: false,
-                    online: true,
+                    // online: true,
                     active: true
                 }
             )
