@@ -21,7 +21,14 @@ class OwnerService {
                         storeId: storeStaff.storeId,
                         staffRole: StaffRole.Individual,
                         ...(conds ? {...conds} : {})
-                    }
+                    },
+                    include: [
+                        {
+                            model: User,
+                            as: "user",
+                            attributes: ["id", "phone", "urlImage"]
+                        }
+                    ]
                 }
             );
 

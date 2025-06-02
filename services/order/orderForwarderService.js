@@ -4,6 +4,7 @@ const { OrderForwarderStatus } = require("../../constants/status");
 const { OrderForwarderType, NotificationType, NotificationActionType } = require("../../constants/type");
 const util = require("util");
 const { CommunicationService } = require("../communication/communicationService");
+const { QuickForwardConfig } = require("./quickForward/quickForwardConfig");
 
 const Staff = require("../../model").Staff;
 const OrderForwarder = require("../../model").OrderForwarder;
@@ -18,8 +19,10 @@ const ForwardStaffDuration = process.env.FORWARD_STAFF_DURATION ? parseInt(proce
 
 class OrderForwarderService {
     communicationService;
+    quickForwardConfig;
     constructor() {
         this.communicationService = new CommunicationService();
+        this.quickForwardConfig = new QuickForwardConfig().getInstance();
     }
 
     async startOrderForwardingFromId(orderId) {
@@ -92,6 +95,7 @@ class OrderForwarderService {
     }
 
     async buildListOrderForwardStaffs(order) {
+        let pinnedStaffIds = await this.quickForwardConfig.getPinnedStaffIds();
         let serviceIds = order.prices.map(item => item.staffServiceId);
         let serviceGroups = order.prices.map(item => item.staffService.serviceGroupId);
         let baseUserId = order.customerUserId;
@@ -140,7 +144,7 @@ class OrderForwarderService {
             },
             {
                 id: {
-                    [Op.ne]: baseStaffId
+                    [Op.notIn]: [baseStaffId, ...pinnedStaffIds]
                 }
             },
             {
