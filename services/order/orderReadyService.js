@@ -146,7 +146,7 @@ class OrderReadyService {
         let cur = new Date();
         let forwarders = (chosenStaffIds || [])?.map(item => ({
 			status: OrderForwarderStatus.Begin,
-			isAccepted: true,
+			isAccept: true,
 			orderId: orderForwarder.orderId,
 			staffId: item,
 			expiredAt: orderForwarder.expiredAt,

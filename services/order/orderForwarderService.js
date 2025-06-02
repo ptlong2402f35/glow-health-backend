@@ -234,7 +234,7 @@ class OrderForwarderService {
 			if(store.id !== order.storeId) {
 				forwarders.push({
 					status: OrderForwarderStatus.Begin,
-                    isAccepted: false,
+                    isAccept: false,
                     orderId: order.id,
                     staffId: 0,
                     expiredAt: expiredAt,
