@@ -143,6 +143,16 @@ class OrderReadyService {
     }
 
     async storeReadyOrder(orderForwarder, chosenStaffIds) {
+        await OrderForwarder.update(
+            {
+                isAccept: true
+            },
+            {
+                where: {
+                    id: orderForwarder.id
+                }
+            }
+        )
         let cur = new Date();
         let forwarders = (chosenStaffIds || [])?.map(item => ({
 			status: OrderForwarderStatus.Begin,
