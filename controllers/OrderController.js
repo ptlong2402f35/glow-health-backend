@@ -272,7 +272,10 @@ class OrderController {
                 {
                     where: {
                         orderId: orderId,
-                        isAccept: true
+                        isAccept: true,
+                        staffId: {
+                            [Op.ne]: 0
+                        }
                     },
                     include: [
                         {

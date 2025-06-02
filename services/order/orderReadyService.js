@@ -1,7 +1,7 @@
 const { Op } = require("sequelize");
 const { OrderStatusInvalid } = require("../../constants/message");
 const { OrderForwarderStatus, OrderStatus } = require("../../constants/status");
-const { OrderType, NotificationType, NotificationActionType } = require("../../constants/type");
+const { OrderType, NotificationType, NotificationActionType, OrderForwarderType } = require("../../constants/type");
 const { QuickForwardHandler } = require("./quickForward/quickForwardHandler");
 const { CommunicationService } = require("../communication/communicationService");
 
@@ -102,7 +102,7 @@ class OrderReadyService {
             }
         }
 
-        await this.readyOrder(orderForwarder);
+        await this.storeReadyOrder(orderForwarder);
         //noti ready
         //socket ready
         return {
@@ -139,6 +139,26 @@ class OrderReadyService {
                     id: orderForwarder.id
                 }
             }
+        )
+    }
+
+    async storeReadyOrder(orderForwarder, chosenStaffIds) {
+        let cur = new Date();
+        let forwarders = (chosenStaffIds || [])?.map(item => ({
+			status: OrderForwarderStatus.Begin,
+			isAccepted: true,
+			orderId: orderForwarder.orderId,
+			staffId: item,
+			expiredAt: orderForwarder.expiredAt,
+			createdAt: cur,
+			updatedAt: cur,
+			storeId: 0,
+			type: orderForwarder.type,
+			timerTime: orderForwarder.timerTime,
+		}));
+        await OrderForwarder.bulkCreate(
+            forwarders,
+            { ignoreDuplicates: true }
         )
     }
 
