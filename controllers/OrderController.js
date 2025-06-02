@@ -17,6 +17,7 @@ const { QuickForwardConfig } = require("../services/order/quickForward/quickForw
 const { sequelize } = require("../model");
 const { StaffDisplayHandler } = require("../services/staff/staffDisplayHandler");
 const { StaffRole } = require("../constants/roles");
+const { logging } = require("googleapis/build/src/apis/logging");
 
 const Order = require("../model").Order;
 const Staff = require("../model").Staff;
@@ -761,12 +762,13 @@ class OrderController {
             });
 
             let attributes = orderQuerier.buildAttributes();
-            let includes = orderQuerier.buildIncludes(
+            let includes = await orderQuerier.buildIncludes(
                 {
                     includeStaffServicesPrice: true,
                     includeStore : true
                 }
             );
+            // console.log("includes", includes);
             let sort = orderQuerier.buildSort({});
 
             let orders = await Order.findAll(
@@ -776,14 +778,15 @@ class OrderController {
                     offset: orderOffset,
                     attributes,
                     include: includes,
-                    order: sort
+                    order: sort,
+                    // logging: true
                 }
             );
 
             let orderForwarders = await OrderForwarder.findAll(
                 {
                     where: {
-                        storeId: store.id,
+                        storeId: staff.storeId,
                         staffId: 0,
                         status: {
                             [Op.notIn]: [OrderForwarderStatus.Switched, OrderForwarderStatus.Reject]
@@ -827,7 +830,6 @@ class OrderController {
             let data = await new OrderHelper().orderStaffProcessDisplay(orders, orderForwarders, {orderOffset, forwardOffset, limit: perPage});
 
             return res.status(200).json(data);
-
         }
         catch (err) {
             console.error(err);

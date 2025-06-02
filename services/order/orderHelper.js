@@ -79,10 +79,10 @@ class OrderHelper {
     async convertForwardDataToOrder(order, forwardOrder, staff) {
         order.staff = staff;
         order.setDataValue("staff", staff);
-        order.staffId = staff.id;
-        order.setDataValue("staffId", staff.id);
-        order.storeId = staff.storeId;
-        order.setDataValue("storeId", staff.storeId);
+        order.staffId = staff?.id;
+        order.setDataValue("staffId", staff?.id);
+        order.storeId = staff?.storeId;
+        order.setDataValue("storeId", staff?.storeId);
         order.isForwardOrder = true;
         order.setDataValue("isForwardOrder", true);
         order.baseOrderId = order.id;

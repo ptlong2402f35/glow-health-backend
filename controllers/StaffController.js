@@ -348,7 +348,14 @@ class StaffController {
                         id,
                         staffRole: StaffRole.Individual,
                         storeId: storeStaff.storeId
-                    }
+                    },
+                    include: [
+                        {
+                            model: User,
+                            as: "user",
+                            attributes: ["id", "phone", "urlImage"]
+                        }
+                    ]
                 }
             )
 
