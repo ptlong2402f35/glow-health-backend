@@ -56,7 +56,7 @@ class OrderReadyService {
             }
         }
 
-        await this.readyOrder(orderForwarder);
+        await this.storeReadyOrder(orderForwarder, chosenStaffIds);
         //noti ready
         //socket ready
         return {
@@ -102,7 +102,7 @@ class OrderReadyService {
             }
         }
 
-        await this.storeReadyOrder(orderForwarder);
+        await this.readyOrder(orderForwarder);
         //noti ready
         //socket ready
         return {
