@@ -1001,6 +1001,7 @@ class OrderController {
         try {
             let orderId = req.params.id ? parseInt(req.params.id) : null;
             if(!orderId) throw InputInfoEmpty;
+            let data = req.body;
             let userId = req.user.userId;
 
             let staff = await Staff.findOne({
@@ -1009,7 +1010,7 @@ class OrderController {
                 }
             });
 
-            let order = await new OrderCancelService().cancel(orderId, staff);
+            let order = await new OrderCancelService().cancel(data, orderId);
 
             try {
                 pusherConfig.trigger({reload: true}, `pusher-channel-${order.customerUserId}`, "reload-detail-order");
