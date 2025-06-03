@@ -4,6 +4,7 @@ const { OrderForwarderStatus, OrderStatus } = require("../../constants/status");
 const { OrderType, NotificationType, NotificationActionType, OrderForwarderType } = require("../../constants/type");
 const { QuickForwardHandler } = require("./quickForward/quickForwardHandler");
 const { CommunicationService } = require("../communication/communicationService");
+const ForwardStaffDuration = process.env.FORWARD_STAFF_DURATION ? parseInt(process.env.FORWARD_STAFF_DURATION) : 40 * 60 * 1000;
 
 let Order = require("../../model").Order;
 let OrderForwarder = require("../../model").OrderForwarder;
@@ -56,7 +57,7 @@ class OrderReadyService {
             }
         }
 
-        await this.storeReadyOrder(orderForwarder, chosenStaffIds);
+        await this.storeReadyOrder(orderForwarder, order, chosenStaffIds);
         //noti ready
         //socket ready
         return {
@@ -142,34 +143,42 @@ class OrderReadyService {
         )
     }
 
-    async storeReadyOrder(orderForwarder, chosenStaffIds) {
-        await OrderForwarder.update(
-            {
-                isAccept: true
-            },
-            {
-                where: {
-                    id: orderForwarder.id
+    async storeReadyOrder(orderForwarder, order, chosenStaffIds) {
+        console.log("orderForward", orderForwarder)
+        if(orderForwarder) {
+            await OrderForwarder.update(
+                {
+                    isAccept: true
+                },
+                {
+                    where: {
+                        id: orderForwarder.id
+                    }
                 }
-            }
-        )
+            )
+        }
         let cur = new Date();
+		let expiredAt = new Date(cur.getTime() + ForwardStaffDuration);
+
         let forwarders = (chosenStaffIds || [])?.map(item => ({
-			status: OrderForwarderStatus.Begin,
-			isAccept: true,
-			orderId: orderForwarder.orderId,
-			staffId: item,
-			expiredAt: orderForwarder.expiredAt,
-			createdAt: cur,
-			updatedAt: cur,
-			storeId: 0,
-			type: orderForwarder.type,
-			timerTime: orderForwarder.timerTime,
-		}));
+            status: OrderForwarderStatus.Begin,
+            isAccept: true,
+            orderId: orderForwarder?.orderId || order?.id,
+            staffId: item,
+            expiredAt: orderForwarder?.expiredAt || expiredAt,
+            createdAt: cur,
+            updatedAt: cur,
+            storeId: 0,
+            type: OrderForwarderType.Normal,
+            timerTime: orderForwarder?.timerTime || order?.timerTime || cur,
+        }));
         await OrderForwarder.bulkCreate(
             forwarders,
             { ignoreDuplicates: true }
-        )
+        );
+
+        return;
+
     }
 
     async cancelOrderForwarder(orderId, targetStaffId, targetStoreId) {
@@ -230,7 +239,8 @@ class OrderReadyService {
                             storeId: storeId
                         }
                     ]
-                }
+                },
+                logging: true
             }
         );
 
