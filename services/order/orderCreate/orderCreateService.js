@@ -4,6 +4,7 @@ const { OrderStatus } = require("../../../constants/status");
 const { NotificationType, NotificationActionType } = require("../../../constants/type");
 const { sequelize } = require("../../../model");
 const { CommunicationService } = require("../../communication/communicationService");
+const { TransactionService } = require("../../transaction/transactionService");
 const { OrderForwarderService } = require("../orderForwarderService");
 const { OrderCreateBuilder } = require("./orderCreateBuilder");
 const Order = require("../../../model").Order;
@@ -20,6 +21,7 @@ class OrderCreateService {
     constructor() {
         this.orderCreateBuilder = new OrderCreateBuilder();
         this.communicationService = new CommunicationService();
+        this.transactionService = new TransactionService();
     }
 
     async createSwitchOrderFromBaseOrder(baseOrder, forwardStaff) {
