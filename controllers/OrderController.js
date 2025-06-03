@@ -177,6 +177,7 @@ class OrderController {
 
             let conds = orderQuerier.buildWhere({
                 customerUserId: userId,
+                displayForCustomer: true
             });
 
             let attributes = orderQuerier.buildAttributes();

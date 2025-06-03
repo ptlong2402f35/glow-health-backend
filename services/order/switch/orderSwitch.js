@@ -40,7 +40,8 @@ class OrderSwitch {
     async cancelBaseOrder(baseOrder) {
         await baseOrder.update(
             {
-                status: OrderStatus.Canceled
+                status: OrderStatus.Canceled,
+                displayForCustomer: false
             }
         );
     }

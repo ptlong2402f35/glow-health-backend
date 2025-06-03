@@ -19,9 +19,18 @@ class OrderQuerier {
             customerUserId,
             storeId,
             type,
+            displayForCustomer
         }
     ) {
         let conds = [];
+        if(displayForCustomer) {
+            conds = [
+                ...conds,
+                {
+                    displayForCustomer: true
+                }
+            ]
+        }
         if(staffId) {
             conds = [
                 ...conds,
