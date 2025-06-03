@@ -894,7 +894,7 @@ class OrderController {
                 }
             );
 
-            if(order.staffId != staff.id || order.storeId != staff.storeId) {
+            if(order.staffId != staff.id && order.storeId != staff.storeId) {
                 //forwarder 
                 let forwarder = await OrderForwarder.findOne(
                     {
