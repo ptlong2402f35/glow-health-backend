@@ -843,6 +843,7 @@ class OrderController {
 
     ownerGetStaffOrderDetail = async (req, res, next) => {
         const orderQuerier = new OrderQuerier();
+        const orderHelper = new OrderHelper();
         try {
             let id = req.params.id ? parseInt(req.params.id) : null;
             if(!id) throw InputInfoEmpty;
@@ -892,8 +893,18 @@ class OrderController {
                 }
             );
 
-            if(order.staffId != staff.id) {
+            if(order.staffId != staff.id || order.storeId != staff.storeId) {
                 //forwarder 
+                let forwarder = await OrderForwarder.findOne(
+                    {
+                        where: {
+                            orderId: order.id,
+                            storeId: staff.storeId,
+                            staffId: 0
+                        }
+                    }
+                );
+                order = await orderHelper.convertForwardDataToOrder(order, forwarder, staff);
             }
 
             return res.status(200).json(order);
