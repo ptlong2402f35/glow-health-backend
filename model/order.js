@@ -67,7 +67,10 @@ module.exports = (sequelize, DataTypes) => {
             voucherId: DataTypes.INTEGER,
             customerAddress: DataTypes.JSON,
             serviceBooking: DataTypes.JSON,
-            displayForCustomer: DataTypes.BOOLEAN
+            displayForCustomer: {
+                type: DataTypes.BOOLEAN,
+                defaultValue: true
+            }
         },
         {
             sequelize,
