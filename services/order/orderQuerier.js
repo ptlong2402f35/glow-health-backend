@@ -130,6 +130,7 @@ class OrderQuerier {
             "forwardFromOrderId",
             "createdAt",
             "updatedAt",
+            "serviceBooking"
         ];
 
         return attributes;
