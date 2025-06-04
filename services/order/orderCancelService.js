@@ -77,7 +77,6 @@ class OrderCancelService {
         if(!order || !userCustomer || order.paymentMethodId != PaymentMethod.Wallet) return;
         let transaction = await sequelize.transaction();
         try {
-            if(userCustomer.totalMoney < money?.totalPay) throw UserMoneyNotEnoughException;
             await userCustomer.update(
                 {
                     totalMoney: userCustomer.totalMoney + order?.totalPay || 0
