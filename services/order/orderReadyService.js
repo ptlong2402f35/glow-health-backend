@@ -144,7 +144,7 @@ class OrderReadyService {
     }
 
     async storeReadyOrder(orderForwarder, order, chosenStaffIds) {
-        console.log("orderForward", orderForwarder.dataValues
+        console.log("orderForward", orderForwarder.dataValues)
         if(orderForwarder) {
             await OrderForwarder.update(
                 {
