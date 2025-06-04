@@ -832,7 +832,9 @@ class OrderController {
             );
 
             let data = await new OrderHelper().orderStaffProcessDisplay(orders, orderForwarders, {orderOffset, forwardOffset, limit: perPage});
-
+            for(let item of data) {
+                new OrderHelper().attachOrderReadyOwner(item, staff);
+            }
             return res.status(200).json(data);
         }
         catch (err) {
@@ -907,6 +909,8 @@ class OrderController {
                 );
                 order = await orderHelper.convertForwardDataToOrder(order, forwarder, staff);
             }
+            new OrderHelper().attachOrderReadyOwner(order, staff);
+
 
             return res.status(200).json(order);
         }

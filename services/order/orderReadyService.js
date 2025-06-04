@@ -1,6 +1,6 @@
 const { Op } = require("sequelize");
 const { OrderStatusInvalid } = require("../../constants/message");
-const { OrderForwarderStatus, OrderStatus } = require("../../constants/status");
+const { OrderForwarderStatus, OrderStatus, OrderSubStatus } = require("../../constants/status");
 const { OrderType, NotificationType, NotificationActionType, OrderForwarderType } = require("../../constants/type");
 const { QuickForwardHandler } = require("./quickForward/quickForwardHandler");
 const { CommunicationService } = require("../communication/communicationService");
@@ -156,6 +156,13 @@ class OrderReadyService {
                     }
                 }
             )
+        }
+        else {
+            await order.update(
+                {
+                    orderSubStatus: OrderSubStatus.StoreReady
+                }
+            );
         }
         let cur = new Date();
 		let expiredAt = new Date(cur.getTime() + ForwardStaffDuration);

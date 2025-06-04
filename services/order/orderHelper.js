@@ -1,4 +1,4 @@
-const { OrderStatus, OrderForwarderStatus } = require("../../constants/status");
+const { OrderStatus, OrderForwarderStatus, OrderSubStatus } = require("../../constants/status");
 
 const ScheduleOrderTimer = process.env.SCHEDULE_ORDER_TIMER || 1000 * 60 * 30; // 30 minutes
 
@@ -95,6 +95,15 @@ class OrderHelper {
         order.setDataValue("forwardAccept", forwardOrder.isAccept);
 
         return order;
+    }
+
+    attachOrderReadyOwner(order, staff) {
+        if(!order || !staff) return;
+        if(order?.isForwardOrder) return;
+        if(order?.orderSubStatus === OrderSubStatus.StoreReady && order?.storeId === staff.storeId) {
+            order.isOwnerReady = true;
+            order.setDataValue("isOwnerReady", true)
+        }
     }
 
     async scheduleChecker(timerTime) {
