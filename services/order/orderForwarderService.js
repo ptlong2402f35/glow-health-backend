@@ -5,6 +5,7 @@ const { OrderForwarderType, NotificationType, NotificationActionType } = require
 const util = require("util");
 const { CommunicationService } = require("../communication/communicationService");
 const { QuickForwardConfig } = require("./quickForward/quickForwardConfig");
+const { PusherConfig } = require("../../pusher/pusherConfig");
 
 const Staff = require("../../model").Staff;
 const OrderForwarder = require("../../model").OrderForwarder;
@@ -20,9 +21,11 @@ const ForwardStaffDuration = process.env.FORWARD_STAFF_DURATION ? parseInt(proce
 class OrderForwarderService {
     communicationService;
     quickForwardConfig;
+    pusherConfig;
     constructor() {
         this.communicationService = new CommunicationService();
         this.quickForwardConfig = new QuickForwardConfig().getInstance();
+        this.pusherConfig = new PusherConfig().getInstance();
     }
 
     async startOrderForwardingFromId(orderId) {
@@ -80,7 +83,7 @@ class OrderForwarderService {
 		console.log(`==== [OrderForwardStarter] done create order forwarders`);
 
 		if (recommendStaffs?.length) {
-			this.notiOrderForwardStaffs(recommendStaffs, order);
+			this.notiOrderForwardStaffs(recommendStaffs, order, stores);
 		}
 
 		return records;
@@ -259,11 +262,11 @@ class OrderForwarderService {
 		return records;
     }
 
-    async notiOrderForwardStaffs(staffs, order) {
+    async notiOrderForwardStaffs(staffs, order, stores) {
         try {
             //noti 
-            console.log("staffs", staffs);
-            let userIds = [...new Set([...staffs.map(item => item.userId).filter(val => val)])];
+            // console.log("staffs", staffs);
+            let userIds = [...new Set([...staffs.map(item => item.userId).filter(val => val)]), ...new Set([...stores?.map(item => item.ownUserId).filter(val => val)])];
             let content = `Có đơn mới ở ${order.address}. Bạn có thể ứng tuyển`;
             console.log("usrIds ===", userIds);
     
@@ -271,6 +274,13 @@ class OrderForwarderService {
             await this.communicationService.sendBulkMobileNotification(userIds, "Thông báo", content);
     
             console.log(`==== [OrderForwardStarter] done notify forwarders`);
+
+            for(let userId of userIds) {
+                pusherConfig.trigger({reload: true}, `pusher-channel-${userId}`, "order-create-to-staff");
+            }
+
+            console.log(`==== [OrderForwardStarter] done pusher push forwarders userIds === ${userIds.join(",")}`);
+
         }
         catch (err) {
             console.error(err);

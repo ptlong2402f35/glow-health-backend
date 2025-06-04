@@ -332,6 +332,7 @@ class OrderController {
 
             //pusher trigger
             try {
+                console.log("staff.storeId", staff.storeId);
                 if(staff.storeId) {
                     let storeOwner;
                     if(!isQuickForward && staff.storeId) {
@@ -342,6 +343,7 @@ class OrderController {
                             }
                         });
                     }
+                    console.log("storeOwnerUserId", storeOwner.userId);
                     pusherConfig.trigger({reload: true}, `pusher-channel-${storeOwner.userId}`, "order-create-to-staff");
                 }
                 else {
