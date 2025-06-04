@@ -17,6 +17,11 @@ const OrderStatus = {
     StaffCanceled: 6
 }
 
+const OrderSubStatus = {
+    Normal: 1,
+    StoreReady: 2
+}
+
 const OrderForwarderStatus = {
 	Unknown: -1,
 	Begin: 1,
@@ -29,5 +34,6 @@ module.exports = {
     StoreStatus,
     VoucherStatus,
     OrderStatus,
-    OrderForwarderStatus
+    OrderForwarderStatus,
+    OrderSubStatus
 }

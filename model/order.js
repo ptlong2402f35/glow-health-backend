@@ -70,7 +70,8 @@ module.exports = (sequelize, DataTypes) => {
             displayForCustomer: {
                 type: DataTypes.BOOLEAN,
                 defaultValue: true
-            }
+            },
+            orderSubStatus: DataTypes.INTEGER,
         },
         {
             sequelize,
