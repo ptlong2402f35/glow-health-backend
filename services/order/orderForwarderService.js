@@ -156,9 +156,16 @@ class OrderForwarderService {
                 }
             },
             ...(order.storeId ? [{
-                storeId: {
-                    [Op.ne]: order.storeId
-                }
+                [Op.or]: [
+                    {
+                        storeId: {
+                            [Op.ne]: order.storeId
+                        }
+                    },
+                    {
+                        storeId: null
+                    }
+                ]
             }] : []),
         ];
 
