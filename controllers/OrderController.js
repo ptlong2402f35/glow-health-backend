@@ -337,7 +337,7 @@ class OrderController {
                     let storeOwner;
                     if(!isQuickForward && staff.storeId) {
                         storeOwner = await Staff.findOne({
-                            wher: {
+                            where: {
                                 storeId: staff.storeId,
                                 staffRole: StaffRole.OwnerStation
                             }
@@ -399,7 +399,7 @@ class OrderController {
                     let storeOwner;
                     if(forwardStaff.storeId) {
                         storeOwner = await Staff.findOne({
-                            wher: {
+                            where: {
                                 storeId: forwardStaff.storeId,
                                 staffRole: StaffRole.OwnerStation
                             }

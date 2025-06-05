@@ -9,6 +9,7 @@ const { TransactionService } = require("../transaction/transactionService");
 const Order = require("../../model").Order;
 const Staff = require("../../model").Staff;
 const User = require("../../model").User;
+const Transaction = require("../../model").Transaction;
 const OrderForwarder = require("../../model").OrderForwarder;
 
 class OrderCancelService {
