@@ -152,12 +152,13 @@ class OrderCreateService {
     async createTransaction(order, userCustomer) {
         try {
             let amount = order.totalPay;
+            console.log("total pay", amount);
             let data = this.transactionService.build(
                 {
                     forUserId: userCustomer.id,
                     content: `Trả phí đơn hàng ${order.code}`,
                     orderId: order.id,
-                    money: amount,
+                    amount: amount,
                     totalMoney: userCustomer.totalMoney,
                     userCreate: userCustomer.id,
                     add: false,

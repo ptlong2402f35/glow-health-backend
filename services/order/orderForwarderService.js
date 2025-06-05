@@ -276,7 +276,7 @@ class OrderForwarderService {
             console.log(`==== [OrderForwardStarter] done notify forwarders`);
 
             for(let userId of userIds) {
-                pusherConfig.trigger({reload: true}, `pusher-channel-${userId}`, "order-create-to-staff");
+                this.pusherConfig.trigger({reload: true}, `pusher-channel-${userId}`, "order-create-to-staff");
             }
 
             console.log(`==== [OrderForwardStarter] done pusher push forwarders userIds === ${userIds.join(",")}`);

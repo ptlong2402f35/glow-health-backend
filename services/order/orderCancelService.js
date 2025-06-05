@@ -104,7 +104,7 @@ class OrderCancelService {
                     forUserId: userCustomer.id,
                     content: `Hoàn tiền đơn hàng ${order.code}`,
                     orderId: order.id,
-                    money: amount,
+                    amount: amount,
                     totalMoney: userCustomer.totalMoney,
                     userCreate: userCustomer.id,
                     add: true,
