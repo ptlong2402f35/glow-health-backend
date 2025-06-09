@@ -124,7 +124,7 @@ class OrderCancelService {
 
     async validate(order, isCustomerCancel) {
         if(!isCustomerCancel && ![OrderStatus.Approved].includes(order.status)) throw OrderStatusInvalid;
-        if(isCustomerCancel && ![ OrderStatus.Pending].includes(order.status)) throw OrderStatusInvalid;
+        if(isCustomerCancel && ![ OrderStatus.Pending, OrderStatus.Denied].includes(order.status)) throw OrderStatusInvalid;
 
         return true;
     }

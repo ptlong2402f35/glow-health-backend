@@ -38,6 +38,16 @@ class AuthController {
                 if(data.expoToken) {
                     await User.update(
                         {
+                            expoToken: null
+                        },
+                        {
+                            where: {
+                                expoToken: data.expoToken
+                            }
+                        }
+                    );
+                    await User.update(
+                        {
                             expoToken: data.expoToken
                         },{
                             where: {
