@@ -551,6 +551,7 @@ class OrderController {
 
     getStaffOrderDetail = async (req, res, next) => {
         const orderQuerier = new OrderQuerier();
+        const orderHelper = new OrderHelper();
         try {
             let id = req.params.id ? parseInt(req.params.id) : null;
             if(!id) throw InputInfoEmpty;
@@ -608,6 +609,15 @@ class OrderController {
                 if(forwardOrder) {
                     order = await new OrderHelper().convertForwardDataToOrder(order, forwardOrder, staff);
                 }
+            }
+
+            try {
+                orderHelper.attachOrderCustomerProvince(order);
+                orderHelper.attachCustomerProvinceAddress(order, order.province, order.status != OrderStatus.Approved);
+                orderHelper.attachHidenInfo(order);
+            }
+            catch (err) {
+                console.error(err);
             }
 
             return res.status(200).json(order);

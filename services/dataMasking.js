@@ -32,7 +32,7 @@ class DataMasking {
         for(let i = 0; i < Math.round(input.length * HideNumberPercent); i++) {
             hiddenStr += "*";
         }
-        console.log("input", input);
+        // console.log("input", input);
         return hiddenStr + input.slice(Math.round(input.length * (HideNumberPercent)), input.length);
     }
 }
