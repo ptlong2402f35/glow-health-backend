@@ -27,7 +27,7 @@ class OrderReviewService {
 
     async updateStaff(data, staff) {
         let rateAvg = staff.rateAvg || 0;
-        let newRate = (rateAvg + data.rate) / ((staff.countReview || 0) + 1);
+        let newRate = (rateAvg * (staff.countReview || 0) + data.rate) / ((staff.countReview || 0) + 1);
         await Staff.update(
             {
                 rateAvg: newRate,
