@@ -81,6 +81,21 @@ class CustomerAddressControler {
         }
       );
 
+      if(data.isSetDefault) {
+        await CustomerAddress.update(
+          {
+            default: false
+          }, {
+            where: {
+              customerUserId: userId,
+              id: {
+                [Op.ne]: id,
+              }
+            }
+          }
+        )
+      }
+
       return res.status(200).json({ message: "DONE" });
     } catch (err) {
       console.error(err);
@@ -94,12 +109,33 @@ class CustomerAddressControler {
       let id = req.params.id ? parseInt(req.params.id) : null;
       if (!id) throw InputInfoEmpty;
       let userId = req.user.userId;
+      let address = await CustomerAddress.findAll({
+        where: {
+          customerUserId: userId
+        }
+      });
+      let currentAddress = address.findOne(item => item.id === id);
       await CustomerAddress.destroy({
         where: {
           id,
           customerUserId: userId,
         },
       });
+
+      if(currentAddress.default) {
+        let randomIdx = address.filter(val => val.id != id)?.[0]?.id;
+        if(!randomIdx) return;
+        await CustomerAddress.update(
+          {
+            default: true
+          },
+          {
+          where: {
+            id: randomIdx,
+            customerUserId: userId,
+          },
+        });
+      }
 
       return res.status(200).json({ message: "DONE" });
     } catch (err) {

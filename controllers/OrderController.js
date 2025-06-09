@@ -426,6 +426,7 @@ class OrderController {
 
     getStaffOrders = async (req, res, next) => {
         const orderQuerier = new OrderQuerier();
+        const orderHelper = new OrderHelper();
         try {
             let limit = req.query.limit ? parseInt(req.query.limit) : 10;
             let orderOffset = req.query.orderOffset ? parseInt(req.query.orderOffset) : 0;
@@ -532,8 +533,12 @@ class OrderController {
             //     status: item.status,
             //     isAccept: item.isAccept
             // })));
-            let data = await new OrderHelper().orderStaffProcessDisplay(orders, orderForwarders, {orderOffset, forwardOffset, limit});
-
+            let data = await orderHelper.orderStaffProcessDisplay(orders, orderForwarders, {orderOffset, forwardOffset, limit});
+            for(let item of data?.docs) {
+                orderHelper.attachOrderCustomerProvince(item);
+                orderHelper.attachCustomerProvinceAddress(item, item.province, item.status != OrderStatus.Approved);
+                orderHelper.attachHidenInfo(item);
+            }
             return res.status(200).json(data);
 
         }
@@ -582,6 +587,11 @@ class OrderController {
                                 },
                             ],
                         },
+                        {
+                            model: User,
+                            as: "customerUser",
+                            attributes: ["id", "phone", "urlImage", "userName", "email", "gender"]
+                        }
                     ]
                 }
             );

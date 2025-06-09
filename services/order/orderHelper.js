@@ -1,10 +1,17 @@
 const { OrderStatus, OrderForwarderStatus, OrderSubStatus } = require("../../constants/status");
+const { LocationConfig } = require("../configService/locationConfig");
+const { DataMasking } = require("../dataMasking");
 
 const ScheduleOrderTimer = process.env.SCHEDULE_ORDER_TIMER || 1000 * 60 * 30; // 30 minutes
 
 
 class OrderHelper {
-    constructor() {}
+    dataMasking;
+    locationConfig;
+    constructor() {
+        this.dataMasking = new DataMasking();
+        this.locationConfig = new LocationConfig().getInstance();
+    }
 
     async orderStaffProcessDisplay(orders, orderForwarders, opts) {
         try {
@@ -120,6 +127,59 @@ class OrderHelper {
             return false;
         }
     }
+
+    attachCustomerProvinceAddress(data, province, isHide) {
+        if(!data) return;
+        if(!province || !province.name) {
+            if(data.address) {
+                let address = data.address;
+                if(isHide) {
+                    address = this.dataMasking.process(address);
+                }
+                data.address = address;
+                data.setDataValue("address", address);
+            }
+        }
+        else {
+            let address = data.address;
+            if(isHide) {
+                address = this.dataMasking.process(address);
+            }
+            let processed = [address, province.name].join(", ");
+            if(data.address) {
+                data.address = processed;
+                data.setDataValue("address", processed);
+            }
+        }
+    }
+
+    attachHidenInfo(data) {
+        if(!data) return;
+        if(data.phone) {
+            let processed = this.dataMasking.process(data.phone);
+            data.phone = processed;
+            data?.setDataValue("phone", processed);
+        }
+        if(data?.customerUser?.phone) {
+            let processed = this.dataMasking.process(data?.customerUser?.phone);
+            data.customerUser.phone = processed;
+            data.customerUser?.setDataValue("phone", processed);
+        }
+        if(data?.user?.phone) {
+            let processed = this.dataMasking.process(data?.user?.phone);
+            data.user.phone = processed;
+            data.user?.setDataValue("phone", processed);
+        }
+    }
+
+    attachOrderCustomerProvince(order) {
+        if(!order?.provinceId) return;
+        let province = this.locationConfig.getProvinceInfo(order.provinceId);
+
+        order.province = province;
+        order?.setDataValue("province", province);
+    }
+
 }
 
 module.exports = {

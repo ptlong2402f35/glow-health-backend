@@ -20,7 +20,7 @@ const ReviewController = require("../controllers/ReviewController");
 router.get("/test", AuthController.test);
 
 /* Auth Controllers */
-router.post("/auth/login", AuthController.login);
+router.post("/auth/login", Middleware.loginLimit, AuthController.login);
 router.post("/auth/login-dev", AuthController.loginForDev);
 router.post("/auth/signup", AuthController.signup);
 router.get("/auth/me", auth.auth, AuthController.me);

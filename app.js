@@ -120,9 +120,9 @@ function onListening() {
 
 // new FirebaseConfig().getInstance().init();
 
-// new GeneralRedisClient()
-// 		.getInstance()
-// 		.getClient();
+new GeneralRedisClient()
+		.getInstance()
+		.getClient();
 //connect socket
 setTimeout(()=>initSocket(server), 5000);
 new LocationConfig().getInstance().init();

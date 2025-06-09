@@ -153,7 +153,7 @@ class OrderQuerier {
             {
 				model: User,
 				as: "customerUser",
-                attributes: ["id", "userName", "phone"]
+                attributes: ["id", "userName", "phone", "urlImage"]
 			},
             {
                 model: Voucher,
