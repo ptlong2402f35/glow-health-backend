@@ -267,6 +267,16 @@ class UserController {
 
             await User.update(
                 {
+                    expoToken: null
+                },
+                {
+                    where: {
+                        expoToken: token
+                    }
+                }
+            );
+            await User.update(
+                {
                     expoToken: token
                 },
                 {
@@ -276,19 +286,6 @@ class UserController {
                 }
             );
 
-            await User.update(
-                {
-                    expoToken: null
-                },
-                {
-                    where: {
-                        id: {
-                            [Op.ne]: userId,
-                        },
-                        expoToken: token
-                    }
-                }
-            );
 
             return res.status(200).json({message: "Done"});
         }
