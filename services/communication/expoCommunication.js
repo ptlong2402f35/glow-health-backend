@@ -76,7 +76,7 @@ class ExpoCommunicationConfig {
                 custom: data.custom
             },
             priority: "high",
-            channelId: "default"
+            // channelId: "default"
         }
     }
 }
