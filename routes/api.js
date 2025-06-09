@@ -41,7 +41,7 @@ router.put("/user/admin-update-user/:id", auth.onlyAdmin, UserController.adminUp
 router.get("/customer-address/my-address", auth.auth, CustomerAddressController.userGetAddress);
 router.post("/customer-address/add-address", auth.auth, CustomerAddressController.userCreateAddress);
 router.put("/customer-address/update-address/:id", auth.auth, CustomerAddressController.userUpdateAddress);
-router.delete("/customer-address/remove-address", auth.auth, CustomerAddressController.userRemoveAddress);
+router.delete("/customer-address/remove-address/:id", auth.auth, CustomerAddressController.userRemoveAddress);
 router.get("/customer-address/my-address-default", auth.auth, CustomerAddressController.userGetAddressDefault);
 
 /* Payment */

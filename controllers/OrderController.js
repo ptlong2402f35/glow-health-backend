@@ -537,7 +537,9 @@ class OrderController {
             for(let item of data?.docs) {
                 orderHelper.attachOrderCustomerProvince(item);
                 orderHelper.attachCustomerProvinceAddress(item, item.province, item.status != OrderStatus.Approved);
-                orderHelper.attachHidenInfo(item);
+                if(item.status != OrderStatus.Approved) {
+                    orderHelper.attachHidenInfo(item);
+                }
             }
             return res.status(200).json(data);
 
@@ -614,7 +616,9 @@ class OrderController {
             try {
                 orderHelper.attachOrderCustomerProvince(order);
                 orderHelper.attachCustomerProvinceAddress(order, order.province, order.status != OrderStatus.Approved);
-                orderHelper.attachHidenInfo(order);
+                if(order.status != OrderStatus.Approved) {
+                    orderHelper.attachHidenInfo(order);
+                }
             }
             catch (err) {
                 console.error(err);
