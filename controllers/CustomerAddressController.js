@@ -114,7 +114,7 @@ class CustomerAddressControler {
           customerUserId: userId
         }
       });
-      let currentAddress = address.findOne(item => item.id === id);
+      let currentAddress = address.find(item => item.id === id);
       await CustomerAddress.destroy({
         where: {
           id,
