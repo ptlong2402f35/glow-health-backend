@@ -18,6 +18,7 @@ const { sequelize } = require("../model");
 const { StaffDisplayHandler } = require("../services/staff/staffDisplayHandler");
 const { StaffRole } = require("../constants/roles");
 const { logging } = require("googleapis/build/src/apis/logging");
+const { OrderType } = require("../constants/type");
 
 const Order = require("../model").Order;
 const Staff = require("../model").Staff;
@@ -364,18 +365,40 @@ class OrderController {
     }
 
     cancelMyOrder = async (req, res, next) => {
+        const pusherConfig = new PusherConfig().getInstance();
         try {
             let data = req.body;
             let userId = req.user.userId;
             let orderId = req.params.id ? parseInt(req.params.id) : null;
             if(!orderId) throw InputInfoEmpty;
             console.log("orderId", orderId);
-            await new OrderCancelService().customerCancel(
+            let order = await new OrderCancelService().customerCancel(
                 {
                     ...data, 
                     userId
                 }, orderId);
-
+            //pusher trigger
+            try {
+                if(order.storeId) {
+                    let storeOwner;
+                    if(!order.type != OrderType.QuickForward && order.storeId) {
+                        storeOwner = await Staff.findOne({
+                            where: {
+                                storeId: order.storeId,
+                                staffRole: StaffRole.OwnerStation
+                            }
+                        });
+                    }
+                    console.log("storeOwnerUserId", storeOwner.userId);
+                    pusherConfig.trigger({reload: true}, `pusher-channel-${storeOwner.userId}`, "reload-detail-order");
+                }
+                else {
+                    pusherConfig.trigger({reload: true}, `pusher-channel-${order.staffId}`, "reload-detail-order");
+                }
+            }
+            catch (err) {
+                console.error(err);
+            }
             return res.status(200).json({message: "DONE"});
         }
         catch (err) {

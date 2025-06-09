@@ -1,4 +1,5 @@
 const { OrderStatusInvalid } = require("../../constants/message");
+const { StaffRole } = require("../../constants/roles");
 const { OrderStatus } = require("../../constants/status");
 const { NotificationType, NotificationActionType } = require("../../constants/type");
 const { CommunicationService } = require("../communication/communicationService");
@@ -87,26 +88,61 @@ class OrderReviewService {
 
     async noti(order, staff) {
         try {
-            await this.communicationService.sendNotificationToUserId(
-                staff.userId,
-                "Thông báo",
-                `Khách hàng đánh giá dịch vụ của bạn.`,
-                NotificationType.OrderDetail,
-                {
-                    actionType: NotificationActionType.OrderDetail.type
-                },
-                order.id
-            );
+            let storeOwner;
+            if(staff.storeId) {
+                storeOwner = await Staff.findOne(
+                    {
+                        where: {
+                            storeId: staff.storeId,
+                            staffRole: StaffRole.OwnerStation
+                        }
+                    }
+                );
+                if(storeOwner) {
+                    await this.communicationService.sendNotificationToUserId(
+                        storeOwner.userId,
+                        "Thông báo",
+                        `Khách hàng đánh giá dịch vụ của bạn.`,
+                        NotificationType.OrderDetail,
+                        {
+                            actionType: NotificationActionType.OrderDetail.type
+                        },
+                        order.id
+                    );
+                }
+                
+            }
+            else {
+                await this.communicationService.sendNotificationToUserId(
+                    staff.userId,
+                    "Thông báo",
+                    `Khách hàng đánh giá dịch vụ của bạn.`,
+                    NotificationType.OrderDetail,
+                    {
+                        actionType: NotificationActionType.OrderDetail.type
+                    },
+                    order.id
+                );
+            }
         }
         catch (err) {
             console.error(err);
         }
         try {
-            await this.communicationService.sendMobileNotification(
-                staff.userId,
-                "Thông báo",
-                `Khách hàng đánh giá dịch vụ của bạn.`,
-            );
+            if(storeOwner) {
+                await this.communicationService.sendMobileNotification(
+                    storeOwner.userId,
+                    "Thông báo",
+                    `Khách hàng đánh giá dịch vụ của bạn.`,
+                );
+            }
+            else {
+                await this.communicationService.sendMobileNotification(
+                    staff.userId,
+                    "Thông báo",
+                    `Khách hàng đánh giá dịch vụ của bạn.`,
+                );
+            }
         }
         catch (err) {
             console.error(err);

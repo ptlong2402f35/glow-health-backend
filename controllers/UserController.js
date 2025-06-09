@@ -301,7 +301,7 @@ class UserController {
             let id = req.params.id ? parseInt(req.params.id): 3;
             const pusherConfig = new PusherConfig().getInstance();
             try {
-                pusherConfig.trigger({title: "Hello", content: "1234567", type: "success"}, `pusher-channel-${id}`, "notification");
+                pusherConfig.trigger({reload: true}, `pusher-channel-${id}`, "reload-detail-order");
             }
             catch (err) {
                 console.error(err);

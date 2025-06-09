@@ -29,6 +29,7 @@ class OrderCancelService {
         await this.updateOrderForwarder(order.id);
         await this.refund(order, customerUser);
 
+        return order;
     }
 
     async cancel(data, id) {

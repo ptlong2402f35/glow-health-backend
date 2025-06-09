@@ -46,6 +46,16 @@ class OrderReadyService {
             await this.quickForwardHandler.applyStaffForQuickForwardOrder(order, cStaff);
             await this.approveOrder(orderId);
             await this.cancelOrderForwarder(orderId, null, staff.storeId);
+            await Staff.update(
+                {
+                    busy: true,
+                },
+                {
+                    where: {
+                        id: chosenStaffId
+                    }
+                }
+            );
             //noti apply
             this.noti(order, staff);
 
@@ -92,6 +102,16 @@ class OrderReadyService {
             await this.quickForwardHandler.applyStaffForQuickForwardOrder(order, staff);
             await this.approveOrder(orderId);
             await this.cancelOrderForwarder(orderId, staff.id);
+            await Staff.update(
+                {
+                    busy: true,
+                },
+                {
+                    where: {
+                        id: staff.id
+                    }
+                }
+            );
             //noti apply
             this.noti(order, staff);
 
