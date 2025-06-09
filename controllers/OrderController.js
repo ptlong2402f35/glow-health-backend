@@ -778,6 +778,7 @@ class OrderController {
 
     ownerGetStaffOrders = async (req, res, next) => {
         const orderQuerier = new OrderQuerier();
+        const orderHelper = new OrderHelper();
         try {
             let page = req.query.page ? parseInt(req.query.page) : 1;
             let perPage = req.query.perPage ? parseInt(req.query.perPage) : 10;
@@ -860,6 +861,16 @@ class OrderController {
             let data = await new OrderHelper().orderStaffProcessDisplay(orders, orderForwarders, {orderOffset, forwardOffset, limit: perPage});
             for(let item of data.docs) {
                 new OrderHelper().attachOrderReadyOwner(item, staff);
+                try {
+                    orderHelper.attachOrderCustomerProvince(item);
+                    orderHelper.attachCustomerProvinceAddress(item, item.province, item.status != OrderStatus.Approved);
+                    if(item.status != OrderStatus.Approved) {
+                        orderHelper.attachHidenInfo(item);
+                    }
+                }
+                catch (err) {
+                    console.error(err);
+                }
             }
             return res.status(200).json(data);
         }
@@ -936,7 +947,16 @@ class OrderController {
                 order = await orderHelper.convertForwardDataToOrder(order, forwarder, staff);
             }
             new OrderHelper().attachOrderReadyOwner(order, staff);
-
+            try {
+                orderHelper.attachOrderCustomerProvince(order);
+                orderHelper.attachCustomerProvinceAddress(order, order.province, order.status != OrderStatus.Approved);
+                if(order.status != OrderStatus.Approved) {
+                    orderHelper.attachHidenInfo(order);
+                }
+            }
+            catch (err) {
+                console.error(err);
+            }
 
             return res.status(200).json(order);
         }
