@@ -145,7 +145,7 @@ router.put("/store-owner/order-forwarder-ready/:id", auth.auth, OrderController.
 router.put("/store-owner/order-forwarder-reject/:id", auth.auth, OrderController.ownerRejectOrderForwarder);
 router.put("/store-owner/order-forwarder-cancel/:id", auth.auth, OrderController.ownerCancelOrder);
 router.put("/store-owner/order-forwarder-finish/:id", auth.auth, OrderController.ownerFinishOrder);
-
+router.get("/order-estimate", OrderController.orderEstimate);
 /* Location Controllers */
 router.get("/provinces", CustomerAddressController.getProvinceList);
 router.get("/districts", CustomerAddressController.getDistrictList);

@@ -19,6 +19,7 @@ const { StaffDisplayHandler } = require("../services/staff/staffDisplayHandler")
 const { StaffRole } = require("../constants/roles");
 const { logging } = require("googleapis/build/src/apis/logging");
 const { OrderType } = require("../constants/type");
+const { OrderCreateBuilder } = require("../services/order/orderCreate/orderCreateBuilder");
 
 const Order = require("../model").Order;
 const Staff = require("../model").Staff;
@@ -1162,6 +1163,25 @@ class OrderController {
         }
     }
 
+    orderEstimate = async (req, res, next) => {
+        try {
+            let staffId = req.query.staffId ? parseInt(req.query.staffId) : null;
+            let staffServicePriceIds = req.query.staffServicePriceIds ? req.query.staffServicePriceIds?.split(";").map(item => parseInt(item)) : null;
+            let voucherCode = req.query.voucherCode?.trim() || null;
+            let data = await new OrderCreateBuilder().buildMoneyData(
+                {
+                    voucherCode,
+                    staffServicePriceIds,
+                }
+            )
+            return res.status(200).json(data?.money);
+        }
+        catch (err) {
+            console.error(err);
+            let {code, message} = new ErrorService(req).getErrorResponse(err);
+            return res.status(code).json({message});
+        }
+    }
 }
 
 module.exports = new OrderController();
