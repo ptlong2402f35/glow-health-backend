@@ -662,7 +662,25 @@ class OrderController {
             let id = req.params.id ? parseInt(req.params.id) : null;
             if(!id) throw InputInfoEmpty;
             let userId = req.user.userId;
-            let staff = await Staff.findOne({where: {userId}});
+            let staff = await Staff.findOne(
+                {
+                    where: 
+                        {
+                            userId
+                        },
+                    include: [
+                        {
+                            model: User,
+                            as: "user",
+                            attributes: ["id", "totalMoney", "phone", "urlImage"]
+                        }
+                    ]
+                }
+            );
+
+            if(staff.user.totalMoney <= -200000) {
+                return res.status(403).json({message: "Số dư không đủ 200000, vui lòng nạp tiền"});
+            }
 
             let {isApproved, isReady, isQuickForward, order} = await new OrderReadyService().ready(id, staff);
 
@@ -1002,8 +1020,19 @@ class OrderController {
             let staff = await Staff.findOne({
                 where: {
                     userId
-                }
+                },
+                include: [
+                     {
+                            model: User,
+                            as: "user",
+                            attributes: ["id", "totalMoney", "phone", "urlImage"]
+                        }
+                ]
             });
+
+            if(staff.user.totalMoney <= -200000) {
+                return res.status(403).json({message: "Số dư không đủ 200000, vui lòng nạp tiền"});
+            }
 
             let {isApproved, isReady, isQuickForward, order} = await new OrderReadyService().ownerReady(orderId, staff, staffIds);
 
