@@ -136,7 +136,11 @@ class StoreController {
     adminGetStoreOption = async (req, res, next) => {
         try {
 
-            let store = await Store.findAll();
+            let store = await Store.paginate({
+                page: 1,
+                paginate: 20,
+                order: [["id", "desc"]]
+            });
 
             return res.status(200).json(store);
         }
