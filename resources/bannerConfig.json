@@ -10,7 +10,7 @@
                 "image": "",
                 "label": "",
                 "description": "",
-                "name": "Vé 200k",
+                "name": "Vé Massage 200k",
                 "staff": {},
                 "staffServiceIds": []
             },
@@ -19,7 +19,7 @@
                 "image": "",
                 "label": "",
                 "description": "",
-                "name": "Vé 400K",
+                "name": "Vé Massage 400K",
                 "staff": {},
                 "staffServiceIds": []
             },
@@ -28,42 +28,42 @@
                 "image": "",
                 "label": "",
                 "description": "",
-                "name": "Vé 600k",
+                "name": "Vé Massage 600k",
                 "staff": {},
                 "staffServiceIds": []
             }
         ]
     },
     {
-        "id": "training-at-home",
-        "label": "Training tại nhà",
+        "id": "nail-at-home",
+        "label": "Nail tại nhà",
         "image": "",
-        "serviceGroup": "Training",
+        "serviceGroup": "Nail",
         "pinnedStaff": [
             {
-                "id": 1,
+                "id": 13,
                 "image": "",
                 "label": "",
                 "description": "",
-                "name": "",
+                "name": "Vé nail 200k",
                 "staff": {},
                 "staffServiceIds": []
             },
             {
-                "id": 2,
+                "id": 14,
                 "image": "",
                 "label": "",
                 "description": "",
-                "name": "",
+                "name": "Vé nail 400k",
                 "staff": {},
                 "staffServiceIds": []
             },
             {
-                "id": 3,
+                "id": 15,
                 "image": "",
                 "label": "",
                 "description": "",
-                "name": "",
+                "name": "Vé nail 600k",
                 "staff": {},
                 "staffServiceIds": []
             }
