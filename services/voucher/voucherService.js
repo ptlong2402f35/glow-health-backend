@@ -7,7 +7,7 @@ class VoucherService {
             name: data.name,
             code: data.code,
             reduceValue: data.reduceValue,
-            reducePercent: data.reducePercent,
+            reducePercent: data.reducePercent || 1,
             startAt: data.startAt,
             endAt: data.endAt,
             scope: data.scope,

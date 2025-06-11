@@ -107,6 +107,7 @@ router.delete("/service-group/:id", auth.onlyAdmin, ServiceGroupController.remov
 
 /* Service Controllers */
 router.get("/service", ServiceController.getService);
+router.get("/service-by-admin", ServiceController.getServiceByAdmin);
 router.get("/service/:id", ServiceController.getServiceDetail);
 router.post("/service", auth.onlyAdmin, ServiceController.createService);
 router.put("/service/:id", auth.onlyAdmin, ServiceController.updateService);
@@ -156,6 +157,8 @@ router.post("/update-my-expo-token", auth.auth, UserController.updateExpoToken);
 /* Review Controllers */
 router.get("/reviews", ReviewController.getReviews);
 router.get("/reviews-staff/:staffId", ReviewController.getStaffReviews);
+
+router.get("/store-option", StoreController.adminGetStoreOption)
 
 /* Test pusher*/
 router.post("/test-pusher-noti/:id", UserController.testPusherNoti);

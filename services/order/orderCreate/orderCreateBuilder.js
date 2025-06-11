@@ -118,8 +118,10 @@ class OrderCreateBuilder {
                         }
                     },
                 });
-                console.log("voucher apply ===", voucher.id);
-                voucherIds.push(voucher.id);
+                if(voucher) {
+                    console.log("voucher apply ===", voucher.id);
+                    voucherIds.push(voucher.id);
+                } 
             }
             let money =  await this.priceHelper.calcOrderFee({
                 staffServicePriceIds: data.staffServicePriceIds,

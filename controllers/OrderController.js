@@ -53,7 +53,7 @@ class OrderController {
             });
 
             let attributes = orderQuerier.buildAttributes();
-            let includes = orderQuerier.buildIncludes(
+            let includes = await orderQuerier.buildIncludes(
                 {
                     includeStaffServicesPrice: true,
                     includeStore : true
@@ -69,6 +69,19 @@ class OrderController {
                 include: includes,
                 order: sort
             });
+            try {
+                const totalAmount = await Order.findAll({
+                    attributes: [
+                        [sequelize.fn('SUM', sequelize.col('totalPay')), 'totalPay'],
+                    ],
+                    raw: true
+                });
+    
+                data.totalPay = totalAmount?.[0]?.totalPay;
+            }
+            catch (err) {
+                console.error(err);
+            }
 
             data.currentPage = page;
 

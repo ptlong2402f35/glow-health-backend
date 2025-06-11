@@ -2,12 +2,35 @@ const { ErrorService } = require("../services/errorService");
 const { StaffServiceHelper } = require("../services/staffService/staffServiceHelper");
 
 const Service = require("../model").Service;
+const StaffService = require("../model").StaffService;
 const ServiceGroup = require("../model").ServiceGroup;
 
 class ServiceController {
     getService = async (req, res, next) => {
         try {
             return res.status(200).json(await new StaffServiceHelper().getDefaultFormat());
+        }
+        catch (err) {
+            console.error(err);
+            let {code, message} = new ErrorService(req).getErrorResponse(err);
+            return res.status(code).json({message});
+        }
+    }
+
+    getServiceByAdmin = async (req, res, next) => {
+        try {
+            let staffServices = await Service.findAll(
+                {
+                    order: [["id", "desc"]],
+                    include: [
+                        {
+                            model: ServiceGroup,
+                            as: "serviceGroup"
+                        }
+                    ]
+                }
+            )
+            return res.status(200).json(staffServices);
         }
         catch (err) {
             console.error(err);

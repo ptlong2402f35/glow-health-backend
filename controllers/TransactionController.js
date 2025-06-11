@@ -8,6 +8,7 @@ const { NotificationType, NotificationActionType } = require("../constants/type"
 const AdminUserId = process.env.ADMIN_USER_ID ? parseInt(process.env.ADMIN_USER_ID) : 1;
 const Transaction = require("../model").Transaction;
 const User = require("../model").User;
+const util = require("util");
 
 class TransactionController {
     adminGetTrans = async (req, res, next) => {
@@ -15,6 +16,9 @@ class TransactionController {
             let page = req.query.page ? parseInt(req.query.page) : 1;
             let perPage = req.query.perPage ? parseInt(req.query.perPage) : 50;
             let phone = req.query.phone || null;
+            let keyword = req.query.keyword || null;
+            let fromDate = req.query.fromDate ? new Date(req.query.fromDate) : null;
+            let toDate = req.query.toDate ? new Date(req.query.toDate) : null;
             let search = [];
 
             if(phone) {
@@ -30,6 +34,41 @@ class TransactionController {
                 search = [...search, {forUserId: { [Op.in]: userIds }}];
             }
 
+            if(keyword) {
+                search = [
+                    ...search,
+                    {
+                        code: {
+                            [Op.iLike]: `%${keyword}%`
+                        }
+                    }
+                ]
+            }
+
+            if(fromDate) {
+                search = [
+                    ...search,
+                    {
+                        createdAt: {
+                            [Op.gte]: fromDate
+                        }
+                    }
+                ]
+            }
+
+            if(toDate) {
+                search = [
+                    ...search,
+                    {
+                        createdAt: {
+                            [Op.lte]: toDate
+                        }
+                    }
+                ]
+            }
+
+            console.log("search ===", util.inspect(search, false, null, true))
+
             let data = await Transaction.paginate({
                 page,
                 paginate: perPage,
@@ -38,6 +77,20 @@ class TransactionController {
                 },
                 order: [["id", "desc"]],
             });
+
+            try {
+                const totalAmount = await Transaction.findAll({
+                    attributes: [
+                        [sequelize.fn('SUM', sequelize.fn('ABS', sequelize.col('money'))), 'totalMoney'],
+                    ],
+                    raw: true
+                });
+    
+                data.totalMoney = totalAmount?.[0]?.totalMoney;
+            }
+            catch (err) {
+                console.error(err);
+            }
 
             data.currentPage = page;
 

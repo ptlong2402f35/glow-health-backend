@@ -40,7 +40,13 @@ class UserController {
             let page = req.query.page ? parseInt(req.query.page) : 1;
             let perPage = req.query.perPage ? parseInt(req.query.perPage) : 50;
             let phone = req.query.phone || null;
-            let search = [];
+            let search = [
+                {
+                    id: {
+                        [Op.ne]: 1
+                    }
+                }
+            ];
             if(phone) {
                 search.push({ phone : { [Op.iLike]: `%${phone}%` }});
             }

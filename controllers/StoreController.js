@@ -132,6 +132,20 @@ class StoreController {
             return res.status(code).json({message});
         }
     }
+
+    adminGetStoreOption = async (req, res, next) => {
+        try {
+
+            let store = await Store.findAll();
+
+            return res.status(200).json(store);
+        }
+        catch (err) {
+            console.error(err);
+            let {code, message} = new ErrorService(req).getErrorResponse(err);
+            return res.status(code).json({message});
+        }
+    }
 }
 
 module.exports = new StoreController();
