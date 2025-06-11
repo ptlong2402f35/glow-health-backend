@@ -32,6 +32,8 @@ class ServiceController {
 
     getServiceByAdmin = async (req, res, next) => {
         try {
+            let page = req.query.page ? parseInt(req.query.page) : 1;
+            let perPage = req.query.perPage ? parseInt(req.query.perPage) : 10;
             let active = req.query.active?.trim() || null;
             let name = req.query.search || null;
             let search = {};
@@ -49,8 +51,10 @@ class ServiceController {
                     }
                 }
             }
-            let staffServices = await Service.findAll(
+            let staffServices = await Service.paginate(
                 {
+                    page,
+                    paginate: perPage,
                     where: search,
                     order: [["id", "desc"]],
                     include: [
