@@ -89,7 +89,7 @@ class OrderQuerier {
             conds = [
                 ...conds,
                 {
-                    fromDate: {
+                    createdAt: {
                         [Op.gte]: fromDate
                     }
                 }
@@ -99,7 +99,7 @@ class OrderQuerier {
             conds = [
                 ...conds,
                 {
-                    toDate: {
+                    createdAt: {
                         [Op.lte]: toDate
                     }
                 }
