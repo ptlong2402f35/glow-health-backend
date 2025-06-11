@@ -33,7 +33,7 @@ class ServiceController {
     getServiceByAdmin = async (req, res, next) => {
         try {
             let active = req.query.active?.trim() || null;
-            let name = req.query.name || null;
+            let name = req.query.search || null;
             let search = {};
             if(active) {
                 search = {
