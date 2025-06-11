@@ -17,6 +17,18 @@ class ServiceController {
         }
     }
 
+    getServiceOptions = async (req, res, next) => {
+        try {
+            let service = await Service.findAll();
+            return res.status(200).json(service);
+        }
+        catch (err) {
+            console.error(err);
+            let {code, message} = new ErrorService(req).getErrorResponse(err);
+            return res.status(code).json({message});
+        }
+    }
+
     getServiceByAdmin = async (req, res, next) => {
         try {
             let staffServices = await Service.findAll(

@@ -107,6 +107,7 @@ router.delete("/service-group/:id", auth.onlyAdmin, ServiceGroupController.remov
 
 /* Service Controllers */
 router.get("/service", ServiceController.getService);
+router.get("/service-options", ServiceController.getServiceOptions);
 router.get("/service-by-admin", ServiceController.getServiceByAdmin);
 router.get("/service/:id", ServiceController.getServiceDetail);
 router.post("/service", auth.onlyAdmin, ServiceController.createService);

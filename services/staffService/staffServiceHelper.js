@@ -102,23 +102,23 @@ class StaffServiceHelper {
 
     buildStaffServiceData(data) {
         return {
-            name: data.name,
-            code: data.code,
-            active: data.active,
-            description: data.description,
-            serviceGroupId: data.serviceGroupId,
-            staffId: data.staffId,
-            serviceId: data.serviceId
+            ...(data.name? {name: data.name} : {}),
+            ...(data.code? {code: data.code} : {}),
+            ...(data.active? {active: data.active} : {}),
+            ...(data.description? {description: data.description} : {}),
+            ...(data.serviceGroupId? {serviceGroupId: data.serviceGroupId} : {}),
+            ...(data.staffId? {staffId: data.staffId} : {}),
+            ...(data.serviceI? {serviceId: data.serviceId} : {})
         }
     }
 
     buildStaffServicePriceData(data) {
         return {
-            staffServiceId: data.staffServiceId,
-            price: data.price,
-            unit: data.unit,
-            serviceGroupId: data.serviceGroupId,
-            staffId: data.staffId,
+            ...(data.staffServiceId? {staffServiceId: data.staffServiceId} : {}),
+            ...(data.price? {price: data.price} : {}),
+            ...(data.unit? {unit: data.unit} : {}),
+            ...(data.serviceGroupId? {serviceGroupId: data.serviceGroupId} : {}),
+            ...(data.staffId? {staffId: data.staffId} : {}),
         }
     }
 

@@ -18,6 +18,7 @@ const Staff = require("../model").Staff;
 const Review = require("../model").Review;
 const Order = require("../model").Order;
 const StaffService = require("../model").StaffService;
+const Service = require("../model").Service;
 const StaffServicePrice = require("../model").StaffServicePrice;
 
 class StaffController {
@@ -83,6 +84,10 @@ class StaffController {
                             {
                                 model: StaffServicePrice,
                                 as: "prices"
+                            },
+                            {
+                                mdoel: Service,
+                                as: "service"
                             }
                         ]
                     }
@@ -94,7 +99,14 @@ class StaffController {
                     where: {
                         staffId: id
                     },
-                    order:[["id", "desc"]]
+                    order:[["id", "desc"]],
+                    include: [
+                        {
+                            model: User,
+                            as: "userCustomer",
+                            attributes: ["id", "phone", "userName", "urlImage"]
+                        }
+                    ]
                 }
             );
 
