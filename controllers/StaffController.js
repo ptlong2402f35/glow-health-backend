@@ -75,6 +75,10 @@ class StaffController {
                     {
                         model: User,
                         as: "user"
+                    },
+                    {
+                        model: StaffService,
+                        as: "staffServices"
                     }
                 ],
             });
