@@ -108,7 +108,7 @@ class StaffServiceHelper {
             ...(data.description? {description: data.description} : {}),
             ...(data.serviceGroupId? {serviceGroupId: data.serviceGroupId} : {}),
             ...(data.staffId? {staffId: data.staffId} : {}),
-            ...(data.serviceI? {serviceId: data.serviceId} : {})
+            ...(data.serviceId? {serviceId: data.serviceId} : {})
         }
     }
 

@@ -1,3 +1,4 @@
+const { Op, where } = require("sequelize");
 const { ErrorService } = require("../services/errorService");
 const { StaffServiceHelper } = require("../services/staffService/staffServiceHelper");
 
@@ -31,8 +32,26 @@ class ServiceController {
 
     getServiceByAdmin = async (req, res, next) => {
         try {
+            let active = req.query.active?.trim() || null;
+            let name = req.query.name || null;
+            let search = {};
+            if(active) {
+                search = {
+                    ...search,
+                    active
+                }
+            }
+            if(name) {
+                search = {
+                    ...search,
+                    name: {
+                        [Op.iLike]: `%${name}%`
+                    }
+                }
+            }
             let staffServices = await Service.findAll(
                 {
+                    where: search,
                     order: [["id", "desc"]],
                     include: [
                         {
@@ -131,7 +150,7 @@ class ServiceController {
             if(!id) throw InputInfoEmpty;
             let data = req.body;
             let bData = {
-                status: data.status
+                active: data.active
             }
             let resp = await Service.update(
                 {

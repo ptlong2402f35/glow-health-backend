@@ -181,6 +181,8 @@ class StaffQuerier {
             "type",
             "serviceIds",
             "serviceGroupIds",
+            "createdAt",
+            "updatedAt"
         ];
 
         if(useCoordinate) {
