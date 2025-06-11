@@ -86,7 +86,7 @@ class StaffController {
                                 as: "prices"
                             },
                             {
-                                mdoel: Service,
+                                model: Service,
                                 as: "service"
                             }
                         ]
