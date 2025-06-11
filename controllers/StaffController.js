@@ -89,6 +89,18 @@ class StaffController {
                 ],
             });
 
+            let reviews = await Review.findAll(
+                {
+                    where: {
+                        staffId: id
+                    },
+                    order:[["id", "desc"]]
+                }
+            );
+
+            staff.reviews = reviews || [];
+            staff.setDataValue("reviews", reviews);
+
             return res.status(200).json(staff);
         }
         catch (err) {
