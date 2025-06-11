@@ -25,6 +25,7 @@ class StaffQuerier {
         provinceIds,
         districtIds,
         communeIds,
+        serviceGroupId
     }) {
         return {
             phone,
@@ -39,7 +40,7 @@ class StaffQuerier {
             provinceIds: provinceIds ? provinceIds.split(";") : null,
             districtIds: districtIds ? districtIds.split(";") : null,
             communeIds: communeIds ? communeIds.split(";") : null,
-            
+            serviceGroupId: serviceGroupId ? parseInt(serviceGroupId) : null,
         }
     }
 
@@ -57,7 +58,7 @@ class StaffQuerier {
             provinceIds,
             districtIds,
             communeIds,
-
+            serviceGroupId
         }
     ) {
         let conds = [];
@@ -130,6 +131,9 @@ class StaffQuerier {
         }
         if(communeIds) {
             conds = [...conds, {communeId: {[Op.in]: provinceIds}}]
+        }
+        if(serviceGroupId) {
+            conds = [...conds, {serviceGroupIds: {[Op.contains]: [serviceGroupId]}}]
         }
 
         return conds;
