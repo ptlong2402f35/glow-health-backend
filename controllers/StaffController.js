@@ -78,7 +78,13 @@ class StaffController {
                     },
                     {
                         model: StaffService,
-                        as: "staffServices"
+                        as: "staffServices",
+                        include: [
+                            {
+                                model: StaffServicePrice,
+                                as: "prices"
+                            }
+                        ]
                     }
                 ],
             });
