@@ -19,7 +19,11 @@ class OrderQuerier {
             customerUserId,
             storeId,
             type,
-            displayForCustomer
+            displayForCustomer,
+            fromDate,
+            toDate,
+            code,
+            phone
         }
     ) {
         let conds = [];
@@ -81,6 +85,46 @@ class OrderQuerier {
                 }
             ]
         }
+        if(fromDate) {
+            conds = [
+                ...conds,
+                {
+                    fromDate: {
+                        [Op.gte]: fromDate
+                    }
+                }
+            ]
+        }
+        if(toDate) {
+            conds = [
+                ...conds,
+                {
+                    toDate: {
+                        [Op.lte]: toDate
+                    }
+                }
+            ]
+        }
+        if(code) {
+            conds = [
+                ...conds,
+                {
+                    code: {
+                        [Op.iLike]: `%${code}%`
+                    }
+                }
+            ]
+        }
+        // if(phone) {
+        //     conds = [
+        //         ...conds,
+        //         {
+        //             phone: {
+        //                 [Op.iLike]: `%${phone}%`
+        //             }
+        //         }
+        //     ]
+        // }
 
         return conds;
     }

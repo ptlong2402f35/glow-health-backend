@@ -11,7 +11,10 @@ module.exports = (sequelize, DataTypes) => {
          */
 
         static associate(models) {
-
+            Transaction.belongsTo(models.User, {
+				foreignKey: "forUserId",
+				as: "user",
+			}); 
         }
     }
     Transaction.init(

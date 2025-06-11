@@ -104,7 +104,8 @@ class ServiceController {
             }
             let resp = await Service.create(
                 {
-                    ...bData
+                    ...bData,
+                    active: true
                 }
             );
 

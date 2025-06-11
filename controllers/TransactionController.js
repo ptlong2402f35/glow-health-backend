@@ -16,7 +16,7 @@ class TransactionController {
             let page = req.query.page ? parseInt(req.query.page) : 1;
             let perPage = req.query.perPage ? parseInt(req.query.perPage) : 50;
             let phone = req.query.phone || null;
-            let keyword = req.query.keyword || null;
+            let keyword = req.query.search || null;
             let fromDate = req.query.fromDate ? new Date(req.query.fromDate) : null;
             let toDate = req.query.toDate ? new Date(req.query.toDate) : null;
             let search = [];
@@ -76,6 +76,13 @@ class TransactionController {
                     [Op.and]: search
                 },
                 order: [["id", "desc"]],
+                include: [
+                    {
+                        model: User,
+                        as: "user",
+                        attributes: ["id", "userName", "phone"]
+                    }
+                ]
             });
 
             try {

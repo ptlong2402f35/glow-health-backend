@@ -6,6 +6,7 @@ const { StaffCreateService } = require("../services/staff/staffCreateService");
 const { StoreService } = require("../services/store/storeService");
 
 const Store = require("../model").Store;
+const User = require("../model").User;
 
 class StoreController {
     adminGetStore = async (req, res, next) => {
@@ -22,6 +23,13 @@ class StoreController {
                     [Op.and]: searchConds
                 },
                 order: [["id", "desc"]],
+                include: [
+                    {
+                        model: User,
+                        as: "storeOwnerUser",
+                        attributes: ["id", "userName", "phone"]
+                    }
+                ]
             });
 
             data.currentPage = page;

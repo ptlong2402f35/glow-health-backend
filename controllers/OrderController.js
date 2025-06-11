@@ -42,6 +42,10 @@ class OrderController {
             let customerUserId = req.query.customerUserId ? parseInt(req.query.customerUserId) : null;
             let storeId = req.query.storeId ? parseInt(req.query.customerUserId) : null;
             let type = req.query.type ? parseInt(req.query.type) : null;
+            let fromDate = req.query.fromDate ? new Date(req.query.fromDate) : null;
+            let toDate = req.query.toDate ? new Date(req.query.toDate) : null;
+            let code = req.query.code?.trim() || null;
+            let phone = req.query.phone?.trim() || null;
 
             let conds = orderQuerier.buildWhere({
                 staffId,
@@ -50,6 +54,10 @@ class OrderController {
                 customerUserId,
                 storeId,
                 type,
+                fromDate,
+                toDate,
+                code,
+                phone
             });
 
             let attributes = orderQuerier.buildAttributes();
