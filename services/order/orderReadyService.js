@@ -27,6 +27,7 @@ class OrderReadyService {
         if(chosenStaffIds.includes(order.staffId)) {
             await this.approveOrder(orderId);
             await this.cancelOrderForwarder(orderId, null, staff.storeId);
+            await this.updateStaff(order.staffId);
             //noti approve
             this.noti(order, staff);
 
@@ -86,6 +87,7 @@ class OrderReadyService {
         if(order.staffId === staff.id) {
             await this.approveOrder(orderId);
             await this.cancelOrderForwarder(orderId, staff.id);
+            await this.updateStaff(staff.id);
             //noti approve
             this.noti(order, staff);
 
@@ -161,6 +163,19 @@ class OrderReadyService {
                 }
             }
         )
+    }
+
+    async updateStaff(staffId) {
+        await Staff.update(
+            {
+                busy: true
+            },
+            {
+                where: {
+                    id: staffId
+                }
+            }
+        );
     }
 
     async storeReadyOrder(orderForwarder, order, chosenStaffIds) {
