@@ -29,7 +29,7 @@ class OrderReadyService {
             await this.cancelOrderForwarder(orderId, null, staff.storeId);
             await this.updateStaff(order.staffId);
             //noti approve
-            this.noti(order, staff);
+            await this.noti(order, staff);
 
             return {
                 isApproved: true,
@@ -58,7 +58,7 @@ class OrderReadyService {
                 }
             );
             //noti apply
-            this.noti(order, staff);
+            await this.noti(order, staff);
 
             return {
                 isApproved: false,
@@ -89,7 +89,7 @@ class OrderReadyService {
             await this.cancelOrderForwarder(orderId, staff.id);
             await this.updateStaff(staff.id);
             //noti approve
-            this.noti(order, staff);
+            await this.noti(order, staff);
 
             return {
                 isApproved: true,
@@ -115,7 +115,7 @@ class OrderReadyService {
                 }
             );
             //noti apply
-            this.noti(order, staff);
+            await this.noti(order, staff);
 
             return {
                 isApproved: false,

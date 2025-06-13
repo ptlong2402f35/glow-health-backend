@@ -111,7 +111,7 @@ class OrderCreateService {
                         throw err1;
                     }
                     await this.createTransaction(order, userCustomer);
-                    this.notiCustomerPrePaid(order);
+                    await this.notiCustomerPrePaid(order);
                     break;
                 }
                 default: {
@@ -121,7 +121,7 @@ class OrderCreateService {
             await this.createOrderPrices(order.id, data.staffServicePriceIds);
             await this.createOrderForwarder(order, staff);
             //noti
-            this.noti(order, staff);
+            await this.noti(order, staff);
             return order;
         }
         catch (err) {

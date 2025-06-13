@@ -23,7 +23,7 @@ class OrderReviewService {
         await this.updateStaff(data, staff);
 
         //noti
-        this.noti(order, staff);
+        await this.noti(order, staff);
     }
 
     async updateStaff(data, staff) {

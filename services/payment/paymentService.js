@@ -84,7 +84,7 @@ class PaymentService {
                     let token = await this.paypalPaymentService.getAccessToken();
                     let resp = await this.paypalPaymentService.capturePaymentInfo(token, data.paypalTransactionId);
                     let user = await this.createTransaction(data, resp.vndAmount || 0);
-                    this.noti(data.userId, user.totalMoney);
+                    await this.noti(data.userId, user.totalMoney);
                 }
 
                 default: {

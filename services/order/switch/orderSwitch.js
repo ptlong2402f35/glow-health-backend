@@ -29,7 +29,7 @@ class OrderSwitch {
         await this.updateForwardStaff(forwardStaff);
 
         //noti
-        this.noti(switchedOrder, forwardStaff);
+        await this.noti(switchedOrder, forwardStaff);
 
         return {
             switchedOrder,
