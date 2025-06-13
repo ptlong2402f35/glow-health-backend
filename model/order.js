@@ -72,6 +72,7 @@ module.exports = (sequelize, DataTypes) => {
                 defaultValue: true
             },
             orderSubStatus: DataTypes.INTEGER,
+            isReviewed: DataTypes.BOOLEAN,
         },
         {
             sequelize,

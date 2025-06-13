@@ -53,7 +53,13 @@ class OrderReviewService {
                 note: data.note,
                 storeId: order.storeId
             }
-        )
+        );
+
+        await order.update(
+            {
+                isReviewed: true
+            }
+        );
     }
 
     async prepare(orderId) {
