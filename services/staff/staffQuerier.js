@@ -150,7 +150,7 @@ class StaffQuerier {
             sort = [["id", "desc"], ...sort];
         }
 
-        if(sortDistance && useCoordinate) {
+        if(useCoordinate) {
 			sort = [sequelize.literal("distance asc"), ...sort];
         }
 

@@ -11,7 +11,7 @@ const { StaffRole } = require("../constants/roles");
 const { QuickForwardConfig } = require("../services/order/quickForward/quickForwardConfig");
 const { StaffDisplayHandler } = require("../services/staff/staffDisplayHandler");
 const { StaffServiceHelper } = require("../services/staffService/staffServiceHelper");
-
+const util = require("util");
 const Transaction = require("../model").Transaction;
 const User = require("../model").User;
 const Staff = require("../model").Staff;
@@ -201,12 +201,16 @@ class StaffController {
             let searchConds = await staffQuerier.buildWhere(whereQuerier);
             let orderBy = staffQuerier.buildSort({
                 sortId: true,
-                sortDistance: whereQuerier.useCoordinate && whereQuerier.coordinateDistance
+                useCoordinate: whereQuerier.useCoordinate && whereQuerier.coordinateLat && whereQuerier.coordinateLong,
             });
             let attributes = staffQuerier.buildAttributes(whereQuerier);
             let include = await staffQuerier.buildIncludes({
                 // includeStaffServices: true
             });
+
+            console.log("orderBy", util.inspect(orderBy, false, null, true));
+            console.log("wherequerier", util.inspect(whereQuerier, false, null, true));
+            console.log("where===", util.inspect(searchConds, false, null, true));
 
             let data = await Staff.paginate({
                 page,
