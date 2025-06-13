@@ -76,7 +76,14 @@ class ExpoCommunicationConfig {
                 custom: data.custom
             },
             priority: "high",
-            // channelId: "default"
+            // channelId: "default",
+            android: {
+                channelId: "default",
+                icon: "ic_notification",
+                color: "#000000",
+                priority: "high", 
+                visibility: "public", 
+            },
         }
     }
 }
