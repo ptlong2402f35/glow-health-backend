@@ -83,7 +83,7 @@ class OrderForwarderService {
 		console.log(`==== [OrderForwardStarter] done create order forwarders`);
 
 		if (recommendStaffs?.length) {
-			this.notiOrderForwardStaffs(recommendStaffs, order, stores);
+			await this.notiOrderForwardStaffs(recommendStaffs, order, stores);
 		}
 
 		return records;
